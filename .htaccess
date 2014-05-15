@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+	# Disable directory slash
+	DirectorySlash Off
+
+    RewriteEngine On
+	RewriteBase /paper_tool
+
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.*)/$ $1 [L,R=301]
+
+    # Handle Front Controller...
+	# public directory still used for CSS/JS/images
+	# robots.txt and index.php allowed
+    RewriteCond %{REQUEST_URI} !^/(static/|robots\.txt|index\.php)
+    RewriteRule ^ index.php [L]
+</IfModule>

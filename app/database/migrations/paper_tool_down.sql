@@ -1,0 +1,17 @@
+DROP TABLE `authors`;
+DROP TABLE `author_paper`;
+DROP TABLE `conferences`;
+DROP TABLE IF EXISTS `conference_editions`;
+DROP TABLE IF EXISTS `departments`;
+DROP TABLE IF EXISTS `files`;
+DROP TABLE IF EXISTS `file_review`;
+DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS `labs`;
+DROP TABLE IF EXISTS `papers`;
+DROP TABLE IF EXISTS `rankings`;
+DROP TABLE IF EXISTS `reviews`;
+DROP TABLE IF EXISTS `review_user`;
+DROP TABLE IF EXISTS `submissions`;
+DROP TABLE IF EXISTS `universities`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `workshops`;

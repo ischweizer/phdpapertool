@@ -1,0 +1,20 @@
+Installation Howto
+
+1a. Copy template.env.php to .env.php.
+1b. Modify ".env.php" for the environment.
+
+2a. Make sure mod_rewrite is enabled and overriding .htaccess is allowed.
+2b. Modify ".htaccess", change the argument of "RewriteBase" to your needs.
+
+3a. Get composer (see https://getcomposer.org/download/)
+3b. Run "php composer.phar install" (or "composer install" depending on how you installed composer) 
+3c. Alternatively run "php composer.phar update" (or "composer update"). Should not be used in production environment as dependencies may have been updated (i.e. should be tested again).
+	Whenever someone used update and composer.lock changed everyone has to run "install"
+
+4. Create the mysql database you specified in 1b.
+
+5. Run "php artisan migrate" to bring your database up to date.
+	Whenever someone pushed a migration this has to be done. To be sure, run it after each upgrade.
+(5b. currently for the base database paper_tool_up.sql has to be manually executed)
+	-> by default there is a user 'admin@example.org' with password '1234'.
+	-> after the first login a valid email and a secure password should be set
