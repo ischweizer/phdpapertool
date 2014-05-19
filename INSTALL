@@ -15,6 +15,3 @@ Installation Howto
 
 5. Run "php artisan migrate" to bring your database up to date.
 	Whenever someone pushed a migration this has to be done. To be sure, run it after each upgrade.
-(5b. currently for the base database paper_tool_up.sql has to be manually executed)
-	-> by default there is a user 'admin@example.org' with password '1234'.
-	-> after the first login a valid email and a secure password should be set
