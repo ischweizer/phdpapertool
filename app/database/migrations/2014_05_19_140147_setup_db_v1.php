@@ -177,10 +177,11 @@ class SetupDbV1 extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->binary('password'); 					//Hier macht laravel immer blob
+			// CHAR(60) could be ci, but laravel does the password check in php either way
+			$table->char('password', 60);
 			$table->string('email', 255);
 			$table->integer('author_id')->unsigned();
-			$table->tinyInteger('active');					//Hier ist die größe immer 4 
+			$table->boolean('active')->default(0);
 			$table->char('remember_token',100)->nullable()->default(NULL);
 
 			$table->timestamps();
@@ -188,7 +189,7 @@ class SetupDbV1 extends Migration {
 			$table->foreign('author_id')->references('id')->on('authors')->onUpdate('cascade');
 		});
 
-		DB::insert('insert into users (password, email, author_id, active, created_at, updated_at) values (?, ?, ?, ?, ?, ?)', array('$2y$10$jts0no3R6B6SpomanQIpxuwzYycfhv8JZMnTLttyvYVWp5pZ64f5O', 'admin@example.org', 1, 1, '2014-05-15 15:35:16', '2014-05-15 15:35:16'));
+		DB::insert('insert into users (password, email, author_id, active, created_at, updated_at) values (?, ?, ?, ?, ?, ?)', array(Hash::make('1234'), 'admin@example.org', 1, 1, '2014-05-15 15:35:16', '2014-05-15 15:35:16'));
 
 		Schema::create('files', function($table) 
 		{
@@ -256,8 +257,7 @@ class SetupDbV1 extends Migration {
 			$table->timestamp('notification_date');
 			$table->tinyInteger('notification_result')->nullable()->default(NULL);
 			$table->timestamp('camera_ready_due');
-			$table->integer('event_id')->unsigned();
-			$table->string('event_type', 19);
+			$table->morphs('event');
 
 			$table->timestamps();
 
@@ -290,6 +290,79 @@ class SetupDbV1 extends Migration {
 	 */
 	public function down()
 	{
+		Schema::table('departments', function(Blueprint $table)
+		{
+			$table->dropForeign('departments_university_id_foreign');
+		});
+		Schema::table('labs', function(Blueprint $table)
+		{
+			$table->dropForeign('labs_department_id_foreign');
+		});
+		Schema::table('groups', function(Blueprint $table)
+		{
+			$table->dropForeign('groups_lab_id_foreign');
+		});
+		Schema::table('authors', function(Blueprint $table)
+		{
+			$table->dropForeign('authors_group_id_foreign');
+		});
+		Schema::table('author_paper', function(Blueprint $table)
+		{
+			$table->dropForeign('author_paper_paper_id_foreign');
+		});
+		Schema::table('author_paper', function(Blueprint $table)
+		{
+			$table->dropForeign('author_paper_author_id_foreign');
+		});
+		Schema::table('conferences', function(Blueprint $table)
+		{
+			$table->dropForeign('conferences_ranking_id_foreign');
+		});
+		Schema::table('conference_editions', function(Blueprint $table)
+		{
+			$table->dropForeign('conference_editions_conference_id_foreign');
+		});
+		Schema::table('users', function(Blueprint $table)
+		{
+			$table->dropForeign('users_author_id_foreign');
+		});
+		Schema::table('files', function(Blueprint $table)
+		{
+			$table->dropForeign('files_user_id_foreign');
+		});
+		Schema::table('files', function(Blueprint $table)
+		{
+			$table->dropForeign('files_paper_id_foreign');
+		});
+		Schema::table('reviews', function(Blueprint $table)
+		{
+			$table->dropForeign('reviews_user_id_foreign');
+		});
+		Schema::table('file_review', function(Blueprint $table)
+		{
+			$table->dropForeign('file_review_review_id_foreign');
+		});
+		Schema::table('file_review', function(Blueprint $table)
+		{
+			$table->dropForeign('file_review_file_id_foreign');
+		});
+		Schema::table('review_user', function(Blueprint $table)
+		{
+			$table->dropForeign('review_user_review_id_foreign');
+		});
+		Schema::table('review_user', function(Blueprint $table)
+		{
+			$table->dropForeign('review_user_user_id_foreign');
+		});
+		Schema::table('submissions', function(Blueprint $table)
+		{
+			$table->dropForeign('submissions_paper_id_foreign');
+		});
+		Schema::table('workshops', function(Blueprint $table)
+		{
+			$table->dropForeign('workshops_conference_editions_id_foreign');
+		});
+		
 		Schema::drop('universities');
 		Schema::drop('departments');
 		Schema::drop('labs');
@@ -301,6 +374,7 @@ class SetupDbV1 extends Migration {
 		Schema::drop('conferences');
 		Schema::drop('conference_editions');
 		Schema::drop('users');
+		Schema::drop('files');
 		Schema::drop('reviews');
 		Schema::drop('file_review');
 		Schema::drop('review_user');
