@@ -40,7 +40,7 @@ class CreateUserRolesTable extends Migration {
 			$table->foreign('administration_id')->references('id')->on('administrations')->onUpdate('cascade');
 		});
 
-		DB::insert('insert into user_roles (user_id, role_id, role_type) values (1, 1, "administrations")', array());
+		DB::insert('insert into user_roles (user_id, role_id, role_type) values (1, 1, "Administration")', array());
 	}
 
 	/**
