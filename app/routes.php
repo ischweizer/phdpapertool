@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('enrol/', 'EnrolInGroupController@showUniversities');
+Route::get('enrol/', 'EnrolInGroupController@index');
 Route::get('registration/', 'RegistrationController@showForm');
 Route::post('register/', 'RegistrationController@register');
 Route::match(array('GET', 'POST'), 'login/', 'LoginController@authenticate');
