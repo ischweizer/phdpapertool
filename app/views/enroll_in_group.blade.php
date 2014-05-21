@@ -116,12 +116,10 @@
 
 			$('#submit').click(function(){	
 				var group_id = $('#group_select option:selected').val();
-				alert();
 				$.ajax({
 						url: "enrollInGroup",
 						data: {'group':group_id},
 						success: function(data){
-							alert(data);
 							if(data){
 								$('#infotext').html('Accepted');
 							} else {
