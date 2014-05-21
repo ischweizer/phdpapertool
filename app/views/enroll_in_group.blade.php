@@ -113,6 +113,23 @@
 					$('#submit').prop('disabled',false);
 				}
 			});
+
+			$('#submit').click(function(){	
+				var group_id = $('#group_select option:selected').val();
+				alert();
+				$.ajax({
+						url: "enrollInGroup",
+						data: {'group':group_id},
+						success: function(data){
+							alert(data);
+							if(data){
+								$('#infotext').html('Accepted');
+							} else {
+								$('#infotext').html('Error');
+							}
+						}
+					});
+			});
 		});
 		
 	</script>
@@ -123,7 +140,6 @@
 <div class="container">
 	<h1>Enroll in a research group</h1>
 
-	<form class="form-horizontal" role="form">
 
 		<div class="form-group">
 			<label for="university_select">University</label>
@@ -156,9 +172,9 @@
 				
 			</select>
 		</div>
-		<button type="submit" id="submit" class="btn btn-primary btn-lg" disabled>save</button>
+		<button id="submit" class="btn btn-primary btn-lg" disabled>save</button>
+		<span id="infotext"></span>
 
-	</form>
 </div> 
 
 @stop
