@@ -23,7 +23,7 @@ class LoginController extends BaseController {
             return "Please enter your password";   
         $isRembered = Input::has('isRembered') && Input::get('isRembered');
         if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password')), $isRembered)) 
-            return "Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
+            return Redirect::to('timeline.html'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
         return "Login failed!";
     }    
     

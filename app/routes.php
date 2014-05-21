@@ -43,22 +43,22 @@ Route::get('paper/', function()
 
 Route::post('paper/create', 'PaperController@createPaper');
 
-Route::get('timeline.html', function() 
+Route::get('timeline.html', array('before' => 'auth', function() 
 {
 	return View::make('timeline');
-});
+}));
 
-Route::get('profile.html', function() 
+Route::get('profile.html', array('before' => 'auth', function() 
 {
 	return View::make('profile');
-});
+}));
 
-Route::get('overview.html', function() 
+Route::get('overview.html', array('before' => 'auth', function() 
 {
 	return View::make('overview');
-});
+}));
 
-Route::get('data.html', function() 
+Route::get('data.html', array('before' => 'auth', function() 
 {
 	return View::make('data');
-});
+}));
