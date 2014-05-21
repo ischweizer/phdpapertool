@@ -7,14 +7,12 @@
 	DirectorySlash Off
 
     RewriteEngine On
-	RewriteBase /paper_tool
 
     # Redirect Trailing Slashes...
     RewriteRule ^(.*)/$ $1 [L,R=301]
 
     # Handle Front Controller...
-	# public directory still used for CSS/JS/images
-	# robots.txt and index.php allowed
-    RewriteCond %{REQUEST_URI} !^/(static/|robots\.txt|index\.php)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>

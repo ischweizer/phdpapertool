@@ -1,10 +1,11 @@
 Installation Howto
 
+0. laravel expects public/ to be the document root.
+
 1a. Copy template.env.php to .env.php.
 1b. Modify ".env.php" for the environment.
 
 2a. Make sure mod_rewrite is enabled and overriding .htaccess is allowed.
-2b. Modify ".htaccess", change the argument of "RewriteBase" to your needs.
 
 3a. Get composer (see https://getcomposer.org/download/)
 3b. Run "php composer.phar install" (or "composer install" depending on how you installed composer) 
