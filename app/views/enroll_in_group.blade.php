@@ -4,11 +4,10 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('#university_select').change(function(){
-				var university = $('#university_select option:selected').val();
-				alert(university);
+				var university_id = $('#university_select option:selected').val();
 				$.ajax({
-					url: "/enroll",
-					data: {'university':university},
+					url: "enroll",
+					data: {'university':university_id},
 					success: function(data){
 						console.log(data);
 					}

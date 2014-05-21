@@ -28,17 +28,17 @@ class EnrollInGroupController extends BaseController {
     }
     
     private function getDepartments($universityId) {
-        $departments = Department::where('university_id', '=', $universityId);
+        $departments = Department::where('university_id', '=', $universityId)->get();
         return Response::json($departments);
     }
     
     private function getLabs($departmentId) {
-        $labs = Lab::where('department_id', '=', $departmentId);
+        $labs = Lab::where('department_id', '=', $departmentId)->get();
         return Response::json($labs);
     }    
     
     private function getGroups($labId) {
-        $groups = Group::where('lab_id', '=', $labId);
+        $groups = Group::where('lab_id', '=', $labId)->get();
         return Response::json($groups);
     }    
 }
