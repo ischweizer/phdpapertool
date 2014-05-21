@@ -4,7 +4,7 @@
  *
  * @author jost
  */
-class EnrolInGroupController extends BaseController {
+class EnrollInGroupController extends BaseController {
     
     public function index() {
         if(Request::ajax())
