@@ -22,17 +22,14 @@ class RegistrationController extends BaseController {
         if(!Input::has('repeatPassword') || Input::get('password') != Input::get('repeatPassword'))
             return "Please repeat the password correctly"; 
         if(!User::where('email', '=', Input::get('email'))->count()) {
-            //FALLS EMAIL BEIM AUTHOR BEREITS EXISTIERT MUSS DIESER AUTHOR GENOMMEN WERDEN!!!
-            $authors = Author::where('email', '=', Input::get('email'));
-            if($authors->count() > 0)
-                $author = $authors->first();
-            else {
+            $author = Author::where('email', '=', Input::get('email'))->first();
+            if($author == null) {
                 $author = new Author;
-                $author->last_name = Input::get('lastName');
-                $author->first_name = Input::get('firstName');
                 $author->email = Input::get('email');
-                $author->save();
             }
+            $author->last_name = Input::get('lastName');
+            $author->first_name = Input::get('firstName');
+            $author->save();
             $user = new User;
             $user->password = Hash::make(Input::get('password'));
             $user->email = Input::get('email');

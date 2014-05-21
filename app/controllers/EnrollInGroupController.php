@@ -12,6 +12,18 @@ class EnrollInGroupController extends BaseController {
         return $this::showUniversities();
     }
     
+    public function enroll() {
+        if(!Input::has('group') || !Auth::check())
+            return null;
+        $groupId = Input::get('group');
+        $group = Group::find($groupId);
+        if($group == null)
+            return "Group does not exist!";
+        $author = Author::where('email', '=', Auth::user()->email)->first();
+        $author->group_id = $groupId;
+        $author->save();
+    }
+    
     public function showUniversities() {
         $universities = University::all();
         return View::make('enroll_in_group')->with('universities', $universities);

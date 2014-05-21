@@ -39,7 +39,7 @@
 						<button type="submit" class="btn btn-default">Search</button>
 					</form>
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="#">Logout</a></li>
+						<li><a href="logout">Logout</a></li>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
 							<ul class="dropdown-menu">
