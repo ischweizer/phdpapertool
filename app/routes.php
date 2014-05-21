@@ -11,6 +11,7 @@
 |
 */
 
+Route::post('create/', 'CreateDomainController@index');
 Route::get('enroll/', 'EnrollInGroupController@index');
 Route::get('registration/', 'RegistrationController@showForm');
 Route::post('register/', 'RegistrationController@register');
