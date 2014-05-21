@@ -13,7 +13,7 @@
 
 Route::get('registration/', 'RegistrationController@showForm');
 Route::post('register/', 'RegistrationController@register');
-Route::post('login/', 'LoginController@authenticate');
+Route::match(array('GET', 'POST'), 'login/', 'LoginController@authenticate');
 Route::get('logout/', 'LoginController@logout');
 Route::get('/', 'LoginController@showForm');
 /*
