@@ -29,9 +29,4 @@ Route::get('test/', function()
 });
 Route::get('test/controller/', 'HomeController@showWelcome');
 
-Route::get('paper/', function()
-{
-	return View::make('paper');
-});
-
-Route::post('paper/create', 'PaperController@createPaper');
+Route::controller('paper', 'PaperController');
