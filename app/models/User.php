@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
@@ -81,5 +82,25 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function group()
 	{
 		return $this->belongsTo('Group');
+	}
+
+	public function userRoles()
+	{
+		return $this->hasMany('UserRole');
+	}
+
+	/**
+	 * Returns all users waiting for activation who this user may manage.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function getInactiveManagedUsers()
+	{
+		$result = new Collection;
+		foreach ($this->userRoles()->with('role')->get() as $userRole)
+		{
+			$result->merge($userRole->role->getInactiveUsersQuery()->get());
+		}
+		return $result;
 	}
 }
