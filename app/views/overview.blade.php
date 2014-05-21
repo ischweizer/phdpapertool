@@ -27,18 +27,6 @@
 		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
 		</div>
 
-<div id="sticky_navigation">
-		<div id="main">
-			<div style="width:500px" class="pull-right">        
-                <ul >
-                    <li><a href="timeline.html">Timeline</a></li>
-						<li class="active"><a href="overview.html">Overview</a></li>
-						<li><a href="data.html">Data Manager</a></li>
-						<li><a href="profile.html">Your Profile</a></li>
-                </ul>
-            </div>
-        </div>
-   </div>
 
 		<div id='main'>
 

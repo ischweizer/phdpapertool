@@ -9,8 +9,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-		<link type="text/stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-		<link type="text/stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet">
 		<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 		{{ HTML::script('static/javascripts/script.js'); }}
 		{{ HTML::style('static/stylesheets/style.css'); }}
@@ -50,10 +50,22 @@
 								<li><a href="#">Separated link</a></li>
 							</ul>
 						</li>
-					</ul
+					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
 			</nav>
+		</div>
+		<div id="sticky_navigation">
+			<div id="main">
+				<div style="width:500px" class="pull-right">        
+					<ul >
+						<li><a href="timeline.html">Timeline</a></li>
+							<li><a href="overview.html">Overview</a></li>
+							<li><a href="data.html">Data Manager</a></li>
+							<li><a href="profile.html">Your Profile</a></li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		@yield('content')
 	</body>
