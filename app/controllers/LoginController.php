@@ -10,7 +10,7 @@ class LoginController extends BaseController {
     
     public function showForm() {
         if(Auth::check())
-            return "You are logged in as " . Auth::user()->email;
+            return Redirect::to('timeline.html'); //"You are logged in as " . Auth::user()->email;
         return View::make(LoginController::$view);
     }
 
