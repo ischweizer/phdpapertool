@@ -14,14 +14,15 @@ class EnrollInGroupController extends BaseController {
     
     public function enroll() {
         if(!Input::has('group') || !Auth::check())
-            return null;
+            return false;
         $groupId = Input::get('group');
         $group = Group::find($groupId);
         if($group == null)
-            return "Group does not exist!";
+            return false;
         $author = Author::where('email', '=', Auth::user()->email)->first();
         $author->group_id = $groupId;
         $author->save();
+        return true;
     }
     
     public function showUniversities() {
