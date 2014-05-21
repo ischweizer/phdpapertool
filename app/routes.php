@@ -11,6 +11,12 @@
 |
 */
 
+Route::get('registration/', 'RegistrationController@showForm');
+Route::post('register/', 'RegistrationController@register');
+Route::post('login/', 'LoginController@authenticate');
+Route::get('logout/', 'LoginController@logout');
+Route::get('/', 'LoginController@showForm');
+/*
 Route::get('/', function()
 {
 	if (Auth::check()) {
@@ -23,9 +29,10 @@ Route::get('/', function()
 		return 'Log in not successful';
 	}
 });
+*/
 Route::get('test/', function()
 {
-	return View::make('hello');
+	return View::make('test');
 });
 Route::get('test/controller/', 'HomeController@showWelcome');
 
@@ -35,3 +42,23 @@ Route::get('paper/', function()
 });
 
 Route::post('paper/create', 'PaperController@createPaper');
+
+Route::get('timeline.html', function() 
+{
+	return View::make('timeline');
+});
+
+Route::get('profile.html', function() 
+{
+	return View::make('profile');
+});
+
+Route::get('overview.html', function() 
+{
+	return View::make('overview');
+});
+
+Route::get('data.html', function() 
+{
+	return View::make('data');
+});
