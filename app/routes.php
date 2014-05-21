@@ -36,12 +36,8 @@ Route::get('test/', function()
 });
 Route::get('test/controller/', 'HomeController@showWelcome');
 
-Route::get('paper/', function()
-{
-	return View::make('paper');
-});
 
-Route::post('paper/create', 'PaperController@createPaper');
+Route::controller('paper', 'PaperController');
 
 Route::get('timeline.html', array('before' => 'auth', function() 
 {
@@ -62,3 +58,4 @@ Route::get('data.html', array('before' => 'auth', function()
 {
 	return View::make('data');
 }));
+

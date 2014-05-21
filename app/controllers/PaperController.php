@@ -14,12 +14,26 @@ class PaperController extends BaseController {
 	|	Route::get('/', 'HomeController@showWelcome');
 	|
 	*/
+	
+	public function getIndex() {
+		if (Auth::check()) {
+			return View::make('paper');
+		} else {
+			return 'You are not logged in!';
+		}
+	}
 
-	public function createPaper()
+	/* POST METHOD */
+	public function postCreate()
 	{
-		$input = Input::all();
-		Paper::create( $input );
-		return View::make('hello');
+		if (Auth::check()) {
+			$input = Input::all();
+			$paper = Paper::create( $input );
+			$paper->authors()->attach(Auth::user()->author->id);
+			return View::make('hello');
+		} else {
+			return 'You are not logged in!';
+		}
 	}
 
 }
