@@ -65,13 +65,7 @@ return array(
     'PHD_DATABASE_USER' => 'root',
 	
 	/*
-	|--------------------------------------------------------------------------
-	| Encryption Key
-	|--------------------------------------------------------------------------
-	|
-	| This key is used by the Illuminate encrypter service and should be set
-	| to a random, 32 character string, otherwise these encrypted strings
-	| will not be safe. Please do this before deploying an application!
+	| Database password.
 	|
 	*/
     'PHD_DATABASE_PASSWORD' => '',
