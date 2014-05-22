@@ -61,6 +61,9 @@ return array(
 			'charset'   => 'utf8',
 			'collation' => 'utf8_general_ci',
 			'prefix'    => '',
+			'options'   => array(
+				PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+			),
 		),
 
 		'pgsql' => array(
@@ -120,5 +123,4 @@ return array(
 		),
 
 	),
-
 );
