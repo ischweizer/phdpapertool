@@ -2,10 +2,10 @@
 
 @section('head')
 		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-		<script src="//cdn.datatables.net/plug-ins/e9421181788/integration/jqueryui/dataTables.jqueryui.js"></script>
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
-		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/e9421181788/integration/jqueryui/dataTables.jqueryui.css">
-		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+		<script src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		<style>
 			.chart {
 				shape-rendering: crispEdges;
@@ -63,12 +63,6 @@
 @stop
 
 @section('content')
-		<div class="jumbotron">
-		  <h1>Welcome to PhD Paper Tool!</h1>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
-		</div>
-
-
 
 		<div id='main'>
 
@@ -76,7 +70,7 @@
    		<h1>Timeline</h1>
 		</div>
 
-<h3 class="cat-title">Interactive Conference Timeline</h3>
+<h3 class="cat-title">Interactive Paper Timeline</h3>
 <div id="graph">
 
 <script type="text/javascript">
@@ -370,62 +364,60 @@ function getPaths(items) {
 </script>
 </div>
 <p>&nbsp;</p>
-<h3 class="cat-title">Time</h3>
-			<div class="well">
-				<table id="example" class="display" cellspacing="0" width="100%">
-					<thead>
-				      <tr>
-				          <th>Date</th>
-				          <th>Event</th>
-				          <th>Status</th>
-				          <th>Description</th>
-				      </tr>
-				  </thead>
-		 
-				  <tfoot>
-				      <tr>
-				          <th>Date</th>
-				          <th>Event</th>
-				          <th>Status</th>
-				          <th>Description</th>
-				      </tr>
-				  </tfoot>
-		 
-				  <tbody>
-				      <tr>
-						      <td>2011/04/25</td>
-						      <td>Submit Paper 1</td>
-								<td>Closed</td>
-								<td></td>
-				      </tr>
-				      <tr>
-						      <td>2011/07/25</td>
-						      <td>Review Paper 1</td>
-								<td>Closed</td>
-								<td>1. Attempt</td>
-				      </tr>
-				      <tr>
-						      <td>2011/08/12</td>
-						      <td>Submit Paper 2</td>
-								<td>Closed</td>
-								<td></td>
-				      </tr>
-				      <tr>
-						      <td>2012/03/29</td>
-						      <td>Review Paper 2</td>
-								<td>Processing</td>
-								<td>1. Attempt</td>
-				      </tr>
-				      <tr>
-						      <td>2012/11/28</td>
-						      <td>Upload Paper 1's Camera Ready</td>
-								<td>Open</td>
-								<td></td>
-				      </tr>
-				  
-					</tbody>
-				</table>
-			</div>
+<h3 class="cat-title">Papers</h3>
+			<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+			  <thead>
+				  <tr>
+					  <th>Paper</th>
+					  <th>Submit</th>
+					  <th>Review</th>
+					  <th>Camera Ready</th>
+						 <th>Complete</th>
+				  </tr>
+			  </thead>
+	 
+			  <tfoot>
+				  <tr>
+					  <th>Paper</th>
+					  <th>Submit</th>
+					  <th>Review</th>
+					  <th>Camera Ready</th>
+						<th>Complete</th>
+				  </tr>
+			  </tfoot>
+	 
+			  <tbody>
+				  <tr>
+							<td>Paper 1</td>
+						  <td>2011/04/25</td>
+							<td>2011/05/25</td>
+							<td>2011/06/25</td>
+							<td>2011/06/25</td>
+				  </tr>
+				  <tr>
+							<td>Paper 2</td>
+						  <td>2011/07/25</td>
+							<td>2012/04/25</td>
+							<td>2013/04/25</td>
+							<td>2011/06/25</td>
+				  </tr>
+					<tr>
+							<td>Paper 3</td>
+						  <td>2011/07/25</td>
+							<td>2011/04/26</td>
+							<td>2011/04/27</td>
+							<td>2011/06/25</td>
+				  </tr>
+					<tr>
+							<td>Paper 4</td>
+						  <td>2011/07/25</td>
+							<td>2011/10/25</td>
+							<td>2011/11/25</td>
+							<td>2011/06/25</td>
+				  </tr>
+
+				</tbody>
+			</table>
 
 			<hr>
 			<div style="text-align:center">
