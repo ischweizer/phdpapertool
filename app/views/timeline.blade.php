@@ -334,10 +334,10 @@ function display () {
 
 function moveBrush () {
 	var origin = d3.mouse(this)
-	  , point = x.invert(origin[0])
 	  , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
-	  , start = new Date(point.getTime() - halfExtent)
-	  , end = new Date(point.getTime() + halfExtent);
+	  , point = Math.min(Math.max(x.invert(origin[0]).getTime(), x.domain()[0].getTime() + halfExtent), x.domain()[1].getTime() - halfExtent)
+	  , start = new Date(point - halfExtent)
+	  , end = new Date(point + halfExtent);
 
 	mini.select('.brush').call(brush.extent([start,end]));
 	display();
