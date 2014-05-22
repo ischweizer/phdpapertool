@@ -272,11 +272,11 @@ display();
 function display () {
 
 	var rects, labels
-	  , minExtent = d3.time.day(brush.extent()[0])
-	  , maxExtent = d3.time.day(brush.extent()[1])
+	  , minExtent = brush.extent()[0].getTime()
+	  , maxExtent = brush.extent()[1].getTime()
 	  , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent});
 
-	mini.select('.brush').call(brush.extent([minExtent, maxExtent]));		
+	//mini.select('.brush').call(brush.extent([minExtent, maxExtent]));		
 
 	x1.domain([minExtent, maxExtent]);
 
@@ -345,7 +345,7 @@ function moveBrush () {
 	  , start = new Date(point.getTime() - halfExtent)
 	  , end = new Date(point.getTime() + halfExtent);
 
-	brush.extent([start,end]);
+	mini.select('.brush').call(brush.extent([start,end]));
 	display();
 }
 
