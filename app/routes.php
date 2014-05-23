@@ -11,54 +11,51 @@
 |
 */
 
-Route::post('create/', 'CreateDomainController@index');
-Route::get('enrollInGroup/', 'EnrollInGroupController@enroll');
-Route::get('enroll/', 'EnrollInGroupController@index');
-Route::get('registration/', 'RegistrationController@showForm');
-Route::post('register/', 'RegistrationController@register');
-Route::match(array('GET', 'POST'), 'login/', 'LoginController@authenticate');
-Route::get('logout/', 'LoginController@logout');
+Route::post('create', 'CreateDomainController@index');
+Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
+Route::get('enroll', 'EnrollInGroupController@index');
+
+// Sites which should be accessible in both states
+// / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
+// either way it should become our "welcome" page.
 Route::get('/', 'LoginController@showForm');
-/*
-Route::get('/', function()
-{
-	if (Auth::check()) {
-		Auth::logout();
-		return 'Logged in already, logging out';
-	}
-	else if (Auth::attempt(array('email' => 'admin@example.org', 'password' => '1234'))) {
-		return 'Log in successful!<br>Author named ' . Auth::user()->author->first_name . ' with a paper-count of: ' . Auth::user()->author->papers()->count();
-	} else {
-		return 'Log in not successful';
-	}
+
+// In here go sites which are accessible as a guest
+Route::group(array('before' => 'guest'), function() {
+	// filter is "before", so the login attempt belongs here when the user is still a guest
+	Route::post('login', 'LoginController@authenticate');
+
+	Route::get('registration', 'RegistrationController@showForm');
+	Route::post('register', 'RegistrationController@register');
 });
-*/
-Route::get('test/', function()
+
+
+// In here go sites which are accessible as a authenticated user
+Route::group(array('before' => 'auth'), function()
 {
-	return View::make('test');
+	Route::controller('paper', 'PaperController');
+
+	Route::get('timeline', function() 
+	{
+		return View::make('timeline');
+	});
+
+	Route::get('profile', function() 
+	{
+		return View::make('profile');
+	});
+
+	Route::get('overview', function() 
+	{
+		return View::make('overview');
+	});
+
+	Route::get('data', function() 
+	{
+		return View::make('data');
+	});
+
+	// again, filter is "before" so logout belongs into this section
+	Route::get('logout', 'LoginController@logout');
 });
-Route::get('test/controller/', 'HomeController@showWelcome');
-
-
-Route::controller('paper', 'PaperController');
-
-Route::get('timeline.html', array('before' => 'auth', function() 
-{
-	return View::make('timeline');
-}));
-
-Route::get('profile.html', array('before' => 'auth', function() 
-{
-	return View::make('profile');
-}));
-
-Route::get('overview.html', array('before' => 'auth', function() 
-{
-	return View::make('overview');
-}));
-
-Route::get('data.html', array('before' => 'auth', function() 
-{
-	return View::make('data');
-}));
 

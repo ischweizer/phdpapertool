@@ -10,7 +10,7 @@ class LoginController extends BaseController {
     
     public function showForm() {
         if(Auth::check())
-            return Redirect::to('timeline.html'); //"You are logged in as " . Auth::user()->email;
+            return Redirect::to('timeline'); //"You are logged in as " . Auth::user()->email;
         return View::make(LoginController::$view);
     }
 
@@ -23,7 +23,7 @@ class LoginController extends BaseController {
             return "Please enter your password";   
         $isRembered = Input::has('isRembered') && Input::get('isRembered');
         if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password')), $isRembered)) 
-            return Redirect::to('timeline.html'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
+            return Redirect::to('timeline'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
         return "Login failed!";
     }    
     

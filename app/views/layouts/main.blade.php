@@ -39,7 +39,7 @@
 						<button type="submit" class="btn btn-default">Search</button>
 					</form>
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="logout">Logout</a></li>
+						<li>{{ HTML::link('logout', 'Logout') }}</li>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -59,10 +59,10 @@
 			<div id="main">
 				<div style="width:500px" class="pull-right">        
 					<ul >
-						<li><a href="timeline.html">Timeline</a></li>
-							<li><a href="overview.html">Overview</a></li>
-							<li><a href="data.html">Data Manager</a></li>
-							<li><a href="profile.html">Your Profile</a></li>
+						<li>{{ HTML::link('timeline', 'Timeline') }}</li>
+							<li>{{ HTML::link('overview', 'Overview') }}</li>
+							<li>{{ HTML::link('data', 'Data Manager') }}</li>
+							<li>{{ HTML::link('profile', 'Your Profile') }}</li>
 					</ul>
 				</div>
 			</div>
