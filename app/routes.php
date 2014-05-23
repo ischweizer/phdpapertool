@@ -55,6 +55,8 @@ Route::group(array('before' => 'auth'), function()
 		return View::make('data');
 	});
 
+	Route::controller('conferences', 'ConferenceController');
+
 	// again, filter is "before" so logout belongs into this section
 	Route::get('logout', 'LoginController@logout');
 });
