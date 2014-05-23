@@ -14,4 +14,14 @@ class ConferenceController extends BaseController {
 			return null;
 		}
 	}
+
+	public function getAutocomplete() {
+		// because of problems with '/' in the query do not use a '/query', but '?q=query' 
+        if(Request::ajax()) {
+			// order for consistent results
+			return Conference::select(array('id', 'name'))->where('name', 'LIKE', Input::get('q').'%')->orderBy('id', 'ASC')->take(5)->get()->toJson();
+		} else {
+			return null;
+		}
+	}
 }
