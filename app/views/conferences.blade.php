@@ -29,49 +29,6 @@
 				});
 			});
 		</script>
-		<style type="text/css">
-		/* move into CSS file some day... */
-
-.twitter-typeahead {
-  width: 100%;
-}
-
-#remote input {
-  width: 100%;
-}
-
-.tt-hint {
-  color: #999
-}
-
-.tt-dropdown-menu {
-  width: 100%;
-  margin-top: 8px;
-  padding: 6px 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-          box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
-.tt-suggestion {
-  padding: 3px 15px;
-}
-
-.tt-suggestion.tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
-}
-
-.tt-suggestion p {
-  margin: 0;
-}
-		</style>
 @stop
 
 @section('content')
