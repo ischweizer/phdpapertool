@@ -15,7 +15,7 @@
 			$(document).ready(function() {
 				// install conference typeahead
 				var conferences = new Bloodhound({
-					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
 					queryTokenizer: Bloodhound.tokenizers.whitespace,
 					remote: "{{ URL::to('conferences/autocomplete?q=%QUERY') }}"
 				});
@@ -25,7 +25,16 @@
 				}, {
 					name: 'conferences',
 					displayKey: 'name',
-					source: conferences.ttAdapter()
+					source: conferences.ttAdapter(),
+					templates: {
+						suggestion: function (obj) {
+							if (obj.acronym) {
+								return '<i>' + obj.acronym + '</i> - ' + obj.name;
+							} else {
+								return obj.name;
+							}
+						}
+					}
 				});
 
 				// install datepickers
@@ -155,7 +164,7 @@
 			</div>
 			<div class="form-group">
 				<label for="exampleInputEmail1">Location</label>
-				<input type="text" class="form-control" name="location" required data-bv-notempty-message="May not be empty">
+				<input type="text" class="form-control" name="location" placeholder="Location" required data-bv-notempty-message="May not be empty">
 			</div>
 			<div class="form-group">
 				<label for="edition">Conference Edition</label>
