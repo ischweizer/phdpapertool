@@ -165,28 +165,28 @@
 				<label for="abstract-due">Abstract Submission Deadline</label>
 				<div class="input-group date" id="abstract-datepicker">
 					<input type="text" class="form-control input-sm" id="abstract-datepicker-input" name="abstract-due" required data-bv-notempty-message="May not be empty" data-bv-confdate data-bv-confdate-message="Must be the first date" data-bv-confdate-before="paper-due notification-date camera-ready-due start end">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
 				<label for="paper-due">Paper Submission Deadline</label>
 				<div class="input-group date" id="paper-datepicker">
 					<input type="text" class="form-control input-sm" id="paper-datepicker-input" name="paper-due" required data-bv-notempty-message="May not be empty" data-bv-confdate data-bv-confdate-message="Must be a date before everything except the abstract submission deadline" data-bv-confdate-before="notification-date camera-ready-due start end" data-bv-confdate-after="abstract-due">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
 				<label for="notification-due">Notification Date</label>
 				<div class="input-group date" id="notification-datepicker">
 					<input type="text" class="form-control input-sm" id="notification-datepicker-input" name="notification-date" required data-bv-notempty-message="May not be empty" data-bv-confdate data-bv-confdate-message="Must be a date before the camera ready submission deadline and conference, but after the abstract and paper submission deadlines" data-bv-confdate-before="camera-ready-due start end" data-bv-confdate-after="abstract-due paper-due">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
 				<label for="camera-ready-due">Camera Ready Submission Deadline</label>
 				<div class="input-group date" id="camera-ready-datepicker">
 					<input type="text" class="form-control input-sm" id="camera-ready-datepicker-input" name="camera-ready-due" required data-bv-notempty-message="May not be empty" data-bv-confdate data-bv-confdate-message="Must be a date before the conference, but after the other deadlines and notification" data-bv-confdate-before="start end" data-bv-confdate-after="abstract-due paper-due notification-date">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group range-date">
