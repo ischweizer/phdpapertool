@@ -58,12 +58,13 @@
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:500px" class="pull-right">        
+					<div style="width:615px" class="pull-right">        
 						<ul >
 							<li>{{ HTML::link('timeline', 'Timeline') }}</li>
-								<li>{{ HTML::link('overview', 'Overview') }}</li>
-								<li>{{ HTML::link('data', 'Data Manager') }}</li>
-								<li>{{ HTML::link('profile', 'Your Profile') }}</li>
+							<li>{{ HTML::link('overview', 'Overview') }}</li>
+							<li>{{ HTML::link('paper', 'Paper') }}</li>
+							<li>{{ HTML::link('data', 'Data Manager') }}</li>
+							<li>{{ HTML::link('profile', 'Your Profile') }}</li>
 						</ul>
 					</div>
 				</div>

@@ -3,16 +3,28 @@
 class PaperController extends BaseController {
 	
 	public function getIndex() {
-		return View::make('paper');
+		$papers = Paper::all();
+		return View::make('paper/index', array('papers' => $papers));
+	}
+	
+	public function getCreate() {
+		return View::make('paper/create');
 	}
 
 	/* POST METHOD */
 	public function postCreate()
 	{
 		$input = Input::all();
+		
 		$paper = Paper::create( $input );
 		$paper->authors()->attach(Auth::user()->author->id);
-		return View::make('hello');
+		
+		return $this->getIndex();
+	}
+	
+	public function missingMethod($parameters = array())
+	{
+	    var_dump($parameters);
 	}
 
 }
