@@ -9,7 +9,7 @@
 
 		<script>
 			$(document).ready(function() {
-				
+				 $('#papers').dataTable();
 			});
 		</script>
 @stop
@@ -30,6 +30,7 @@
 					<th>Title</th>
 					<th>Abstract</th>
 					<th>Repository</th>
+					<th>Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,6 +39,7 @@
 						<td>{{ $paper->title }}</td>
 						<td>{{ $paper->abstract }}</td>
 						<td>{{ $paper->repository_url }}</td>
+						<td>{{ HTML::link('profile', 'Edit') }}</td>
 					</tr>
 				@endforeach
 			</tbody>

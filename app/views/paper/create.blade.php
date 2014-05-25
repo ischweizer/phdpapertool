@@ -9,7 +9,16 @@
 
 		<script>
 			$(document).ready(function() {
-				
+				$('#add_author').click(function(){
+					var authorId = $( "#authorlist" ).val();
+					var name = $( "#authorlist" ).text();
+					
+					$('#selected_authors').append(
+				        $('<option></option>').val(authorId).html(name)
+				    );
+				    
+				    $("#authorlist option[value='"+authorId+"']").remove();
+				});
 			});
 		</script>
 @stop
@@ -32,6 +41,12 @@
 			<!-- repository -->
 			{{ Form::label('repository_url', 'Repository') }}<br>
 			{{ Form::text('repository_url', '', array('placeholder' => 'Repository', 'class' => 'form-control')) }}<br>
+			
+			<!-- authors -->
+			{{ Form::label('authors', 'Authors') }}<br>
+			{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist')) }}
+			{{ Form::button('Add', array('id' => 'add_author')) }}<br><br>
+			{{ Form::select('selectedauthors', [], null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors')) }}<br>
 			
 			<!-- abstract -->
 			{{ Form::label('abstract', 'Abstract') }}<br>
