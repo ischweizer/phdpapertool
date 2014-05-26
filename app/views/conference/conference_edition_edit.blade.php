@@ -1,7 +1,6 @@
 @extends('layouts/main')
 
 @section('head')
-		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 		{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
@@ -51,7 +50,7 @@
 				$('#camera-ready-datepicker').datepicker({
 				});
 
-				var datepickersComplete = [$('#abstract\\.due'), $('#paper\\.due'), $('#notification\\.date'), $('#camera\\.ready\\.due'), $('#start'), $('#end')];
+				var datepickersComplete = [$('#abstract_due'), $('#paper_due'), $('#notification_date'), $('#camera_ready_due'), $('#start'), $('#end')];
 
 				// revalidate on date pick
 				datepickersComplete.forEach(function (datepicker) {
@@ -90,6 +89,9 @@
 						}
 						var date = $field.datepicker('getDate');
 						if (isNaN(date.getTime())) {
+							return false;
+						}
+						if (!value.match(/[A-Z][a-z]+ \d{2}, \d{4}/)) {
 							return false;
 						}
 						if (options.before) {
@@ -155,6 +157,14 @@
 
 		<div class="page-header">
    		<h1>Create Conference Edition</h1>
+		@if ( $errors->count() > 0 )
+			<p>The following errors have occurred:</p>
+			<ul>
+			@foreach( $errors->all() as $message )
+				<li>{{{ $message }}}</li>
+			@endforeach
+			</ul>
+		@endif
 		</div>
 		{{ Form::model($edition, array('action' => 'ConferenceEditionController@postEdit', 'id' => 'conference-edition-form', 'role' => 'form')) }}
 			{{ Form::hidden('id') }}
@@ -171,39 +181,39 @@
 				{{ Form::text('edition', null, array('class' => 'form-control', 'placeholder' => 'Edition / Year', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 			<div class="form-group single-date">
-				{{ Form::label('abstract.due', 'Abstract Submission Deadline') }}
+				{{ Form::label('abstract_due', 'Abstract Submission Deadline') }}
 				<div class="input-group date" id="abstract-datepicker">
-					{{ Form::text('abstract.due', null, array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the first date', 'data-bv-confdate-before' => 'paper.due notification.date camera.ready.due start end')) }}
+					{{ Form::text('abstract_due', @date_format(Form::getValueAttribute('abstract_due'), 'M d, Y'), array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the first date', 'data-bv-confdate-before' => 'paper_due notification_date camera_ready_due start end')) }}
 					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
-				{{ Form::label('paper.due', 'Paper Submission Deadline') }}
+				{{ Form::label('paper_due', 'Paper Submission Deadline') }}
 				<div class="input-group date" id="paper-datepicker">
-					{{ Form::text('paper.due', null, array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before everything except the abstract submission deadline', 'data-bv-confdate-before' => 'notification.date camera.ready.due start end', 'data-bv-confdate-after' => 'abstract.due')) }}
+					{{ Form::text('paper_due', @date_format(Form::getValueAttribute('paper_due'), 'M d, Y'), array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before everything except the abstract submission deadline', 'data-bv-confdate-before' => 'notification_date camera_ready_due start end', 'data-bv-confdate-after' => 'abstract_due')) }}
 					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
-				{{ Form::label('notification.date', 'Notification Date') }}
+				{{ Form::label('notification_date', 'Notification Date') }}
 				<div class="input-group date" id="notification-datepicker">
-					{{ Form::text('notification.date', null, array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the camera ready submission deadline and conference, but after the abstract and paper submission deadlines', 'data-bv-confdate-before' => 'camera.ready.due start end', 'data-bv-confdate-after' => 'abstract.due paper.due')) }}
+					{{ Form::text('notification_date', @date_format(Form::getValueAttribute('notification_date'), 'M d, Y'), array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the camera ready submission deadline and conference, but after the abstract and paper submission deadlines', 'data-bv-confdate-before' => 'camera_ready_due start end', 'data-bv-confdate-after' => 'abstract_due paper_due')) }}
 					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group single-date">
-				{{ Form::label('camera.ready.due', 'Camera Ready Submission Deadline') }}
+				{{ Form::label('camera_ready_due', 'Camera Ready Submission Deadline') }}
 				<div class="input-group date" id="camera-ready-datepicker">
-					{{ Form::text('camera.ready.due', null, array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the conference, but after the other deadlines and notification', 'data-bv-confdate-before' => 'start end', 'data-bv-confdate-after' => 'abstract.due paper.due notification.date')) }}
+					{{ Form::text('camera_ready_due', @date_format(Form::getValueAttribute('camera_ready_due'), 'M d, Y'), array('class' => 'form-control input-sm', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the conference, but after the other deadlines and notification', 'data-bv-confdate-before' => 'start end', 'data-bv-confdate-after' => 'abstract_due paper_due notification_date')) }}
 					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 				</div>
 			</div>
 			<div class="form-group range-date">
 				{{ Form::label('start', 'Date') }}{{ Form::label('end', 'Dummy', array('style' => 'display:none')) }}
 				<div class="input-daterange input-group" id="start-end-datepicker">
-					{{ Form::text('start', null, array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the conference end, but after everything else', 'data-bv-confdate-before' => 'end', 'data-bv-confdate-after' => 'abstract.due paper.due notification.date camera.ready.due')) }}
+					{{ Form::text('start', @date_format(Form::getValueAttribute('start'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the conference end, but after everything else', 'data-bv-confdate-before' => 'end', 'data-bv-confdate-after' => 'abstract_due paper_due notification_date camera_ready_due')) }}
 					<span class="input-group-addon">to</span>
-					{{ Form::text('end', null, array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the last date', 'data-bv-confdate-after' => 'abstract.due paper.due notification.date camera.ready.due start')) }}
+					{{ Form::text('end', @date_format(Form::getValueAttribute('end'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the last date', 'data-bv-confdate-after' => 'abstract_due paper_due notification_date camera_ready_due start')) }}
 				</div>
 			</div>
 			<button type="submit" class="btn btn-default">Submit</button>
