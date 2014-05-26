@@ -11,7 +11,7 @@
 				$('#conferences').dataTable({
 					"processing": true,
 					"serverSide": true,
-					"sAjaxSource": "{{ URL::to('conferences/data') }}",
+					"sAjaxSource": "{{ URL::action('ConferenceController@getData') }}",
 					"columnDefs": [{
 						"targets": -1,
 						"searchable": false,

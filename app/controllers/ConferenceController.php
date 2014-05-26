@@ -21,12 +21,25 @@ class ConferenceController extends BaseController {
 		}
 	}
 
-	public function getAutocomplete() {
-		// because of problems with '/' in the query do not use a '/query', but '?q=query' 
+	public function getAutocomplete($query) {
         if(Request::ajax()) {
 			// order for consistent results
-			$search = '%'.Input::get('q').'%';
+			$search = '%'.$query.'%';
 			return Conference::select(array('id', 'name', 'acronym'))->where('name', 'LIKE', $search)->orWhere('acronym', 'LIKE', $search)->orderBy('id', 'ASC')->take(5)->get()->toJson();
+		} else {
+			return null;
+		}
+	}
+
+	public function anyCheck($name = null) {
+        if(Request::ajax()) {
+			if (is_null($name)) {
+				$name = Input::get('name');
+			}
+			$exists = Conference::where('name', '=', $name)->first();
+			return json_encode(array(
+				'valid' => (bool) $exists,
+			));
 		} else {
 			return null;
 		}

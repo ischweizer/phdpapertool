@@ -16,7 +16,13 @@
 				var conferences = new Bloodhound({
 					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
 					queryTokenizer: Bloodhound.tokenizers.whitespace,
-					remote: "{{ URL::to('conferences/autocomplete?q=%QUERY') }}"
+					remote: {
+						url: "{{ URL::action('ConferenceController@getAutocomplete', array('QUERY')) }}",
+						replace: function (url, query) {
+							// double encode query as it gets decoded -> splitted, which would destroy queries containing '/'
+							return url.replace('QUERY', encodeURIComponent(encodeURIComponent(query)));
+						}
+					}
 				});
 				conferences.initialize();
 				$('#conference\\[name\\]').typeahead({
@@ -34,6 +40,11 @@
 							}
 						}
 					}
+				}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
+					$('#conference-edition-form')
+						.data('bootstrapValidator')
+						.updateStatus('conference[name]', 'NOT_VALIDATED', null)
+						.validateField('conference[name]');
 				});
 
 				// install datepickers
@@ -170,7 +181,7 @@
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('conference[name]', 'Conference') }}
-				{{ Form::text('conference[name]', null, array('class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+				{{ Form::text('conference[name]', null, array('class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
 			</div>
 			<div class="form-group">
 				{{ Form::label('location', 'Location') }}
