@@ -3,7 +3,6 @@
 @section('head')
 		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 		<script src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 
 		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
 
@@ -20,7 +19,7 @@
 
 		<div class="page-header">
    			<h1>Papers</h1>
-   			<a href="/paper/create">Create</a>
+			{{ HTML::linkAction('PaperController@getCreate', 'Create') }}
 		</div>
 
 		<h3 class="cat-title">Paper Table</h3>
@@ -39,7 +38,7 @@
 						<td>{{ $paper->title }}</td>
 						<td>{{ $paper->abstract }}</td>
 						<td>{{ $paper->repository_url }}</td>
-						<td>{{ HTML::link('profile', 'Edit') }}</td>
+						<td>{{ HTML::link('#', 'TODO') }}</td>
 					</tr>
 				@endforeach
 			</tbody>

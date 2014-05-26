@@ -1,11 +1,7 @@
 @extends('layouts/main')
 
 @section('head')
-		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-		<script src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
-
-		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
 
 		<script>
 			$(document).ready(function() {
@@ -29,11 +25,11 @@
 
 		<div class="page-header">
    			<h1>Papers</h1>
-   			<a href="/paper/index">Back</a>
+			{{ HTML::linkAction('PaperController@getIndex', 'Back') }}
 		</div>
 
 		<h3 class="cat-title">Create Paper</h3>
-		{{ Form::open(array('url' => 'paper/create')) }}
+		{{ Form::open(array('action' => 'PaperController@postCreate')) }}
 		    <!-- title -->
 			{{ Form::label('title', 'Title') }}<br>
 			{{ Form::text('title', '', array('placeholder' => 'Title', 'class' => 'form-control')) }}<br>
