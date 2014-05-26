@@ -1,14 +1,20 @@
  <?php
 
 class ConferenceController extends BaseController {
-    public function getIndex() {
-		return View::make('conferences');
+    public function getIndex($id = null) {
+		if (!is_null($id)) {
+			$conference = Conference::with('editions')->find($id);
+			if (!is_null($conference)) {
+				return View::make('conference/conference')->with('conference', $conference);
+			}
+		}
+		return View::make('conference/conferences');
     }
 
-	public function anyData() {
+	public function getData() {
         if(Request::ajax()) {
 			$query = Conference::join('rankings', 'rankings.id', '=', 'conferences.ranking_id')
-					->select(array('conferences.name', 'acronym', 'rankings.name AS ranking_name', 'field_of_research'));
+					->select(array('conferences.name', 'acronym', 'rankings.name AS ranking_name', 'field_of_research', 'conferences.id'));
 			return Datatables::of($query)->make();
 		} else {
 			return null;

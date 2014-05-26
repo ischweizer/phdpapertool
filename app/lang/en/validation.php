@@ -21,6 +21,7 @@ return array(
 	"alpha_num"            => "The :attribute may only contain letters and numbers.",
 	"array"                => "The :attribute must be an array.",
 	"before"               => "The :attribute must be a date before :date.",
+	"before_or_equal"               => "The :attribute must be a date before (or equal to) :date.",
 	"between"              => array(
 		"numeric" => "The :attribute must be between :min and :max.",
 		"file"    => "The :attribute must be between :min and :max kilobytes.",
@@ -30,6 +31,7 @@ return array(
 	"confirmed"            => "The :attribute confirmation does not match.",
 	"date"                 => "The :attribute is not a valid date.",
 	"date_format"          => "The :attribute does not match the format :format.",
+	"date_format2"          => "The :attribute does not match the format :format.",
 	"different"            => "The :attribute and :other must be different.",
 	"digits"               => "The :attribute must be :digits digits.",
 	"digits_between"       => "The :attribute must be between :min and :max digits.",
