@@ -62,8 +62,14 @@ class PaperController extends BaseController {
 			}
 		}
 		
-		return Redirect::to('paper/index');
+		return Redirect::to('paper/index');	
+	}
+	
+	public function postCreateAuthor() {
+		$input = Input::all();
+		$author = Author::create( $input );
 		
+		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));
 	}
 	
 	/*public function missingMethod($parameters = array())
