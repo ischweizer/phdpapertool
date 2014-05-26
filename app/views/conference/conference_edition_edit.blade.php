@@ -1,7 +1,6 @@
 @extends('layouts/main')
 
 @section('head')
-		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 		{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
