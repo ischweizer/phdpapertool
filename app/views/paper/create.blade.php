@@ -10,8 +10,9 @@
 		<script>
 			$(document).ready(function() {
 				$('#add_author').click(function(){
-					var authorId = $( "#authorlist" ).val();
-					var name = $( "#authorlist" ).text();
+					var selection = $("#authorlist").children("option").filter(":selected");
+					var authorId = selection.val();
+					var name = selection.text();
 					
 					$('#selected_authors').append(
 				        $('<option></option>').val(authorId).html(name)
@@ -20,6 +21,10 @@
 				    $("#authorlist option[value='"+authorId+"']").remove();
 				});
 			});
+			
+			var checkform = function(){
+				$('#selected_authors option').prop('selected', true);
+			}
 		</script>
 @stop
 
@@ -33,7 +38,7 @@
 		</div>
 
 		<h3 class="cat-title">Create Paper</h3>
-		{{ Form::open(array('url' => 'paper/create')) }}
+		{{ Form::open(array('url' => 'paper/create', 'onsubmit' => 'checkform()')) }}
 		    <!-- title -->
 			{{ Form::label('title', 'Title') }}<br>
 			{{ Form::text('title', '', array('placeholder' => 'Title', 'class' => 'form-control')) }}<br>
@@ -46,7 +51,7 @@
 			{{ Form::label('authors', 'Authors') }}<br>
 			{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist')) }}
 			{{ Form::button('Add', array('id' => 'add_author')) }}<br><br>
-			{{ Form::select('selectedauthors', [], null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors')) }}<br>
+			{{ Form::select('selectedauthors[]', [], null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
 			
 			<!-- abstract -->
 			{{ Form::label('abstract', 'Abstract') }}<br>

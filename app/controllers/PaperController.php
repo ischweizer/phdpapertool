@@ -24,13 +24,15 @@ class PaperController extends BaseController {
 	{
 		$input = Input::all();
 		
-		/*$authors = $input['selectedauthors'];
-		if($authors != null) {
-			var_dump($author)
-		}*/
-		
 		$paper = Paper::create( $input );
 		$paper->authors()->attach(Auth::user()->author->id);
+		
+		$authors = $input['selectedauthors'];
+		if($authors != null) {
+			foreach ($authors as $author) {
+				$paper->authors()->attach($author);
+			}
+		}
 		
 		return $this->getIndex();
 	}

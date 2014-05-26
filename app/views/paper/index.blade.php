@@ -48,6 +48,7 @@
 					<th>Title</th>
 					<th>Abstract</th>
 					<th>Repository</th>
+					<th>Action</th>
 				 </tr>
 			</tfoot>
 	 	</table>
