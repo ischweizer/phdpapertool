@@ -35,7 +35,7 @@
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:450px" class="pull-right">        
+					<div style="width:500px" class="pull-right">        
 						<ul >
 							<li>{{ HTML::link('timeline', 'Timeline') }}</li>
 							<li>{{ HTML::link('paper', 'My Paper') }}</li>
