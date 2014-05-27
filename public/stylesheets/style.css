@@ -54,6 +54,7 @@ body {
 	box-shadow: 0 0 1px #999; 
 	background-color:#428bca;
 	z-index:999;
+	opacity: .95;
 }
 
 #sticky_navigation ul { 

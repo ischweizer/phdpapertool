@@ -31,6 +31,7 @@
 				</div>
 		</div>
 		
+		@yield('menu')
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
