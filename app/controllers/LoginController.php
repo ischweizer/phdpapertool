@@ -5,33 +5,86 @@
  * @author jost
  */
 class LoginController extends BaseController {
-    
-    public static $view = 'bootstrap_loginsample';
-    
     public function showForm() {
-        if(Auth::check())
+        if(Auth::check()) {
             return Redirect::to('timeline'); //"You are logged in as " . Auth::user()->email;
-        return View::make(LoginController::$view);
+        } else {
+        	return View::make('login', array('mode' => 'login'));
+        }
     }
 
     public function authenticate() {
-        if (Auth::check()) 
-            return "You are already logged in as " . Auth::user()->email . "<br><a href='logout/'>Logout?</a>";
-        if(!Input::has('email'))
-            return "Please enter your email adress";
-        if(!Input::has('password'))
-            return "Please enter your password";   
+        if (Auth::check()) {
+        	return View::make(
+				'login', 
+				array(
+					'mode' => 'logged', 
+					'msg' => array(
+						'success' => false,
+						'content' => "You are already logged in as " . Auth::user()->email . ". <a href='logout/'>Logout?</a>"
+					),
+				)
+			);
+        }
+        
+        if(!Input::has('email')) {
+        	return View::make(
+				'login', 
+				array(
+					'mode' => 'login', 
+					'msg' => array(
+						'success' => false,
+						'content' => "Please enter your email adress"
+					),
+				)
+			);
+        }
+        
+        if(!Input::has('password')) {
+        	return View::make(
+				'login', 
+				array(
+					'mode' => 'login', 
+					'msg' => array(
+						'success' => false,
+						'content' => "Please enter your password"
+					),
+					'input' => Input::get()
+				)
+			);
+        }
+         
         $isRembered = Input::has('isRembered') && Input::get('isRembered');
         if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password')), $isRembered)) 
             return Redirect::intended('timeline'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
-        return "Login failed!";
+            
+        return View::make(
+				'login', 
+				array(
+					'mode' => 'login', 
+					'msg' => array(
+						'success' => false,
+						'content' => "Login failed"
+					),
+				)
+			);
     }    
     
     public function logout() {
         if(Auth::check()) {
             Auth::logout();
-            return "Logout successfull";
+            
+            return View::make(
+				'login', 
+				array(
+					'mode' => 'logout', 
+					'msg' => array(
+						'success' => true,
+						'content' => "Logout successful"
+					),
+				)
+			);
         }
-        return View::make(LoginController::$view);
+        return View::make('login', array('mode' => 'login'));
     }
 }
