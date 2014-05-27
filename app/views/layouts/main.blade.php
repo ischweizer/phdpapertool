@@ -27,7 +27,7 @@
 					<button type="submit" class="btn btn-default">Search</button>
 				</form>
 				<div class="header_link">
-					<a class="btn btn-warning" href="#">Log out</a>
+					<a class="btn btn-warning" href="/logout">Log out</a>
 				</div>
 		</div>
 		
