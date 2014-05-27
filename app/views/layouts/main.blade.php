@@ -16,61 +16,52 @@
 		{{ HTML::style('stylesheets/style.css'); }}
 		@yield('head')
 	</head>
+	
 	<body>
-		<div id='main'>
-		<nav class="navbar navbar-default" role="navigation">
-			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#">PhD Paper Tool</a>
+		<div id="top_toolbar">
+				<a class="navbar-brand" href="#">PhD Paper Tool</a>
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+						<input type="text" id='search-bar' class="form-control" placeholder="Search">
+					</div>
+					<button type="submit" class="btn btn-default">Search</button>
+				</form>
+				<div class="header_link">
+					<a class="btn btn-warning" href="#">Log out</a>
 				</div>
-				<!-- Collect the nav links, forms, and other content for toggling -->
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					<form class="navbar-form navbar-left" role="search">
-						<div class="form-group">
-							<input type="text" id='search-bar' class="form-control" placeholder="Search">
-						</div>
-						<button type="submit" class="btn btn-default">Search</button>
-					</form>
-					<ul class="nav navbar-nav navbar-right">
-						<li>{{ HTML::link('logout', 'Logout') }}</li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Action</a></li>
-								<li><a href="#">Another action</a></li>
-								<li><a href="#">Something else here</a></li>
-								<li class="divider"></li>
-								<li><a href="#">Separated link</a></li>
-							</ul>
-						</li>
-					</ul>
-				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container-fluid -->
-			</nav>
 		</div>
+		
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:615px" class="pull-right">        
+					<div style="width:450px" class="pull-right">        
 						<ul >
 							<li>{{ HTML::link('timeline', 'Timeline') }}</li>
-							<li>{{ HTML::link('overview', 'Overview') }}</li>
-							<li>{{ HTML::link('paper', 'Paper') }}</li>
-							<li>{{ HTML::link('data', 'Data Manager') }}</li>
-							<li>{{ HTML::link('profile', 'Your Profile') }}</li>
+							<li>{{ HTML::link('paper', 'My Paper') }}</li>
+							<li>{{ HTML::link('data', 'My Review') }}</li>
+							<li>{{ HTML::link('profile', 'My Profile') }}</li>
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-		@yield('content')
+		
+		<div class="jumbotron">
+		  <h1>Welcome to PhD Paper Tool!</h1>
+		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
+		</div>
+
+
+		<div id='main'>
+			@yield('content')
+			
+			<hr>
+			<div style="text-align:center">
+				<p>Designed and built with all the love in the world by <a href="" target="_blank">TU Darmstadt</a>.</p>
+				<p>Maintained by the <a href="#">core team</a> with the help of <a href="#">our contributors</a>.</p>
+				<p>Code licensed under <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">MIT</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+			</div>
+		</div>
 	</body>
 </html>
 

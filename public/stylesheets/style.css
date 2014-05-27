@@ -21,6 +21,19 @@ body {
 	margin-bottom: 10px;
 }
 
+#top_toolbar { 
+	width:100%; 
+	height:50px; 
+	background-color:#fff;
+}
+
+.header_link {
+	padding-top: 10px;
+	padding-right: 10px;
+	text-align: right;
+	float:right; 
+}
+
 /* sticky navigation stuff */
 #sticky_navigation.affix {
     position: fixed;

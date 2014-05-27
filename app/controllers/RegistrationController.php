@@ -7,7 +7,7 @@
 class RegistrationController extends BaseController {
     
     public function showForm() {
-        return View::make('bootstrap_registrationsample');
+        return View::make('register', array('mode' => 'register'));
     }
     
     public function register() {
@@ -37,8 +37,27 @@ class RegistrationController extends BaseController {
             $user->active = 1;
             
             $user->save();
-            return "User created!";
+            
+            return View::make(
+				'register', 
+				array(
+					'mode' => 'result', 
+					'msg' => array(
+						'success' => true,
+						'content' => "User created!"
+					),
+				)
+			);
         }
-        return "User with email adress \"" . Input::get('email') . "\" already exists!";
+        return View::make(
+			'register', 
+			array(
+				'mode' => 'result', 
+				'msg' => array(
+					'success' => false,
+					'content' => "User with email adress \"" . Input::get('email') . "\" already exists!"
+				),
+			)
+		);
     }
 }

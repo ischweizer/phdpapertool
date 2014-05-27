@@ -1,20 +1,11 @@
 @extends('layouts/main')
 
 @section('content')
-
-		<div class="jumbotron">
-		  <h1>Welcome to PhD Paper Tool!</h1>
-		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
-		</div>
-
-
-	<div id='main'>
-
 		<div class="page-header">
    		<h1>Your Profile</h1>
 		</div>
 
-<div class="row">
+		<div class="row">
         <div class="col-xs-8">
             <form role="form" action="" method="POST">
                 <div class="form-group">
@@ -94,11 +85,4 @@
             </div>
         </div>
             </div>
-			<hr>
-			<div style="text-align:center">
-				 <p>Designed and built with all the love in the world by <a href="" target="_blank">TU Darmstadt</a>.</p>
-				 <p>Maintained by the <a href="#">core team</a> with the help of <a href="#">our contributors</a>.</p>
-				 <p>Code licensed under <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">MIT</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-			</div>
-		</div>
 @stop
