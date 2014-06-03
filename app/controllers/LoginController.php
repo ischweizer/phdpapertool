@@ -14,17 +14,17 @@ class LoginController extends BaseController {
     }
 
     public function authenticate() {
-        if (Auth::check()) {
-        	return View::make(
-				'login', 
-				array(
-					'mode' => 'logged', 
-					'msg' => array(
-						'success' => false,
-						'content' => "You are already logged in as " . Auth::user()->email . ". <a href='logout/'>Logout?</a>"
-					),
-				)
-			);
+        if (Auth::check() && Auth::user()->email_confirmed == 1) {
+            return View::make(
+                            'login', 
+                            array(
+                                    'mode' => 'logged', 
+                                    'msg' => array(
+                                            'success' => false,
+                                            'content' => "You are already logged in as " . Auth::user()->email . ". <a href='logout/'>Logout?</a>"
+                                    ),
+                            )
+                    );
         }
         
         if(!Input::has('email')) {
