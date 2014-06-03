@@ -26,11 +26,14 @@ class EnrollInGroupController extends BaseController {
     }
     
     public function showLabs() {
+        //TODO Nur active Labs
         $labs = Lab::all();
         return View::make('enroll_in_group')->with('labs', $labs);
     }  
     
     public function getDomain() {
+
+        //TODO Nur active groups
         if(Input::has('lab')) 
             return $this::getGroups(Input::get('lab'));
         /*if(Input::has('department'))

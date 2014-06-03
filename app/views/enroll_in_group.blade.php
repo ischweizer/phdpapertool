@@ -97,6 +97,10 @@
 									new Option('new','new')
 								);
 							box.prop('disabled',false);
+							@if (Auth::user()->group_id)
+								var group_id = {{{ Auth::user()->group_id}}};
+								box.val(group_id).change();
+							@endif
 						}
 					});
 				}
@@ -121,13 +125,29 @@
 						data: {'group':group_id},
 						success: function(data){
 							if(data){
-								$('#infotext').html('Accepted');
+								$('#infotext')
+									.html('Group Enrollment Accepted')
+									.addClass('alert-success')
+									.show();
 							} else {
-								$('#infotext').html('Error');
+								$('#infotext')
+									.html('Error')
+									.addClass('alert-danger')
+									.show();
 							}
 						}
 					});
 			});
+
+			@if (Auth::user()->group_id)
+				$(function(){
+					var lab_id = {{{ Auth::user()->group->lab_id }}};
+					$('#lab_select').val(lab_id).change();
+				});
+			@endif
+
+			
+
 		});
 		
 	</script>
@@ -137,11 +157,10 @@
 
 <div class="container">
 	<h1>Enroll in a research group</h1>
-
 		<div class="form-group">
 			<label for="lab_select">Lab</label>
 			<select class="form-control" id="lab_select">
-				<option>...</option>
+				<option></option>
 				@foreach ($labs as $lab)
 					<option value="{{{ $lab->id }}}">
 						{{{ $lab->name }}}
@@ -156,8 +175,9 @@
 				
 			</select>
 		</div>
+		<div id="infotext" class="alert" style="display:none"></div>
 		<button id="submit" class="btn btn-primary btn-lg" disabled>save</button>
-		<span id="infotext"></span>
+		
 
 </div> 
 
