@@ -1,4 +1,4 @@
- <?php
+<?php
 
 class ConferenceController extends BaseController {
     public function getIndex($id = null) {
