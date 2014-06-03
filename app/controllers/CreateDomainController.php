@@ -37,7 +37,9 @@ class CreateDomainController extends BaseController {
     }
     
     private function createGroup($name, $labId) {    
-        $isGroupActive = $this::getUserRole(1) != null;
+        if(Lab::find($labId)->active == 0)
+            return null;
+        $isGroupActive = UserRole::getUserRole(UserRole::LAB_LEADER) != null;
         $group = new Group;
         $group->name = $name;
         $group->lap_id = $labId;
@@ -46,7 +48,7 @@ class CreateDomainController extends BaseController {
         $user = Auth::user();
         $user->group_confirmed = $isGroupActive;
         $user->save();
-        $this::updateRole(0, $isGroupActive);
+        //$this::updateRole(UserRole::GROUP_LEADER, $isGroupActive);
         return $group;
     }
     
@@ -56,12 +58,12 @@ class CreateDomainController extends BaseController {
         //$lab->department_id = $departmentId;
         $lab->active = 0;
         $lab->save();
-        $this::updateRole(1, false);
+        //$this::updateRole(UserRole::LAB_LEADER, false);
         return $lab;
     }    
     
-    private function updateRole($roleId, $isActive) {
-        $role = getUserRole($roleId);
+   /* private function updateRole($roleId, $isActive) {
+        $role = UserRole::getUserRole($roleId);
         if($role != null) {
             $role->active = $isActive;
             return $role;
@@ -72,16 +74,7 @@ class CreateDomainController extends BaseController {
         $newRole->active = $isActive;
         $newRole->save();     
         return $newRole;
-    }
-    
-    private function getUserRole($roleId) {
-        $roles = User_role::where('user_id', '=', Auth::user()->id);
-        foreach($roles as $role) {
-            if($role->role_id == $roleId) 
-                return $role;
-        }      
-        return null;
-    }
+    }*/
     
    /*private function createDepartment($name, $universityId) {
         $department = new Department;
