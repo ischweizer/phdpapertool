@@ -9,8 +9,7 @@ class EnrollInGroupController extends BaseController {
     public function index() {
         if(Request::ajax())
             return $this::getDomain();
-        //return $this::showUniversities();
-        return null;
+        return $this::showLabs();
     }
     
     public function enroll() {
@@ -26,10 +25,10 @@ class EnrollInGroupController extends BaseController {
         return Response::json(true);
     }
     
-    /*public function showUniversities() {
-        $universities = University::all();
-        return View::make('enroll_in_group')->with('universities', $universities);
-    } */ 
+    public function showLabs() {
+        $labs = Lab::all();
+        return View::make('enroll_in_group')->with('labs', $labs);
+    }  
     
     public function getDomain() {
         if(Input::has('lab')) 

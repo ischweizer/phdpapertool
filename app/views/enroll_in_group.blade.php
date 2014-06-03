@@ -3,7 +3,7 @@
 @section('head')
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#university_select').change(function(){
+			/*$('#university_select').change(function(){
 				var university_id = $(this).val();
 				if(university_id == 'empty' || university_id == 'new'){
 					$('#department_select').empty().prop('disabled',true);
@@ -68,7 +68,7 @@
 						}
 					});
 				}
-			});
+			});*/
 
 			$('#lab_select').change(function(){
 				var lab_id = $(this).val();
@@ -76,7 +76,7 @@
 					$('#group_select').empty().prop('disabled',true);
 					$('#submit').prop('disabled',true);
 					if (lab_id == 'new') {
-						console.log('TODO');
+						console.log('TODO: new Lab');
 					};
 				} else {
 					$.ajax({
@@ -107,7 +107,7 @@
 				if(group_id == 'empty' || group_id == 'new'){
 					$('#submit').prop('disabled',true);
 					if (group_id == 'new') {
-						console.log('TODO');
+						console.log('TODO: new Group');
 					} 
 				} else {
 					$('#submit').prop('disabled',false);
@@ -138,30 +138,16 @@
 <div class="container">
 	<h1>Enroll in a research group</h1>
 
-
-		<div class="form-group">
-			<label for="university_select">University</label>
-			<select class="form-control" id="university_select">
-				<option value="empty"></option>
-				@foreach ($universities as $university)
-					<option value="{{{ $university->id }}}">
-						{{{ $university->name }}}
-					</option>
-				@endforeach	
-				<option value="new">new</option>
-			</select>
-		</div>
-
-		<div class="form-group">
-			<label for="department_select">Department</label>
-			<select class="form-control" id="department_select" disabled>
-				
-			</select>
-		</div>
 		<div class="form-group">
 			<label for="lab_select">Lab</label>
-			<select class="form-control" id="lab_select" disabled>
-				
+			<select class="form-control" id="lab_select">
+				<option>...</option>
+				@foreach ($labs as $lab)
+					<option value="{{{ $lab->id }}}">
+						{{{ $lab->name }}}
+					</option>
+				@endforeach
+				<option value="new">new</option>
 			</select>
 		</div>
 		<div class="form-group">
