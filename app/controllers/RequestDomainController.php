@@ -7,10 +7,48 @@
 class RequestDomainController extends BaseController {
    
     public function index() {
-        $roles = UserRole::where('user_id', '=', Auth::user()->id);
-        foreach($roles as $role) {
-            
+        $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
+        if($roleAdmin != null && $roleAdmin->active == 1) {
+            $users = User::getUnconfirmedUsers(null);
+            $groups = Group::getGroups($users);
+            $labs = Lab::getLabs($groups);
+            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
+        $roleLabLeader = UserRole::getUserRole(UserRole::LAB_LEADER);
+        $userGroup = Group::find(Auth::user()->group_id);
+        $labs = array(Lab::find($userGroup->lab_id));
+        if($roleLabLeader !=  null && $roleLabLeader->active == 1) {
+            $groups = Group::getGroups($labs);
+            $users = User::getUnconfirmedUsers($groups);
+            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
+        }
+        $roleGroupLeader = UserRole::getUserRole(UserRole::GROUP_LEADER);
+        if($isActiveGroupLeader = $roleGroupLeader != null && $roleGroupLeader->active == 1) {
+            $groups = array($userGroup);
+            $users = User::getUnconfirmedUsers($userGroup);
+            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
+        }
+        return View::make('handleRequests')->with('users', array())->with('groups', array())->with('labs', array());
+    }
+    
+    public function confirm() {
+        if(Input::has('labId'))
+            $this::confirmLab();
+        else if(Input::has('groupId'))
+            $this::confirmGroup();
+        else if(Input::has('userId'))
+            $this::confirmUser();
+        return $this::index();
+    }
+    
+    public function refuse() {
+         if(Input::has('labId'))
+            $this::refuseLab();
+        else if(Input::has('groupId'))
+            $this::refuseGroup();
+        else if(Input::has('userId'))
+            $this::refuseUser();
+        return $this::index();       
     }
     
     public function confirmUser() {
