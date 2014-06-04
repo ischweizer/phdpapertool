@@ -27,7 +27,7 @@
 					<button type="submit" class="btn btn-default">Search</button>
 				</form>
 				<div class="header_link">
-					<a class="btn btn-warning" href="#">Log out</a>
+					<a class="btn btn-warning" href="/logout">Log out</a>
 				</div>
 		</div>
 		
@@ -36,7 +36,7 @@
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:450px" class="pull-right">        
+					<div style="width:500px" class="pull-right">        
 						<ul >
 							<li {{ ($currentPage == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
 							<li {{ ($currentPage == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>

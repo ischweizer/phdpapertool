@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
-		"bllim/datatables": "*"
+		"bllim/datatables": "*",
+		"doctrine/dbal": "2.5.*@dev"
 	},
 	"autoload": {
 		"classmap": [
