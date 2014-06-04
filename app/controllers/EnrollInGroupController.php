@@ -17,7 +17,7 @@ class EnrollInGroupController extends BaseController {
             return Response::json(false);
         $groupId = Input::get('group');
         $group = Group::find($groupId);
-        if($group == null)
+        if($group == null || $group->active != 1)
             return Response::json(false);
         $user = Auth::user();
         $user->group_id = $groupId;
