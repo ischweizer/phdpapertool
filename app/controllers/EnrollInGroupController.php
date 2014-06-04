@@ -21,6 +21,7 @@ class EnrollInGroupController extends BaseController {
             return Response::json(false);
         $user = Auth::user();
         $user->group_id = $groupId;
+        $user->group_confirm = 0;
         $user->save();
         return Response::json(true);
     }
