@@ -31,7 +31,7 @@
 				</div>
 		</div>
 		
-		
+		<?php $currentPage = ''; ?>
 		@yield('menu')
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
