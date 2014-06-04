@@ -15,4 +15,18 @@ class Lab extends Eloquent {
 			->join('labs', 'labs.id', '=', 'groups.lab_id')
 			->where('labs.id', '=', $this->id)->select('users.*');
 	}
+        
+        public static function getLabs($groups) {
+            $labs = Lab::all();
+            if($groups == null)
+                return $labs;
+            $result = array();
+            foreach($groups as $group) {
+                foreach($labs as $lab) {
+                    if($lab->id == $group->lab_id)
+                        $result[] = $lab;
+                }     
+            }
+            return $result;
+        }
 }
