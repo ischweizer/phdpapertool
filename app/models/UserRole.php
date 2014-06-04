@@ -17,7 +17,7 @@ class UserRole extends Eloquent {
 	}
         
         public static function getUserRole($roleId) {
-            $roles = UserRole::where('user_id', '=', Auth::user()->id);
+            $roles = UserRole::where('user_id', '=', Auth::user()->id)->get();
             foreach($roles as $role) {
                 if($role->role_id == $roleId) 
                     return $role;
@@ -31,7 +31,7 @@ class UserRole extends Eloquent {
                 $role->active = $isActive;
                 return $role;
             }
-            $newRole = new User_role;
+            $newRole = new UserRole;
             $newRole->user_id = $user->id;
             $newRole->role_id = $roleId;
             $newRole->active = $isActive;

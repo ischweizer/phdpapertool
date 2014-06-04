@@ -4,7 +4,7 @@
  *
  * @author jost
  */
-class RequestDomainController {
+class RequestDomainController extends BaseController {
    
     public function index() {
         $roles = UserRole::where('user_id', '=', Auth::user()->id);
@@ -16,13 +16,13 @@ class RequestDomainController {
     public function confirmUser() {
         if(!Input::has('userId'))
             return Response::json(false);
-        return $this::confirmUserId(Input::get('userId'));
+        return $this::confirmUserId(User::find(Input::get('userId')));
     }
     
-    private function confirmUserId($userId) {
-        if(!isAbleToDecideAboutUser($userId))
+    private function confirmUserId($confirmedUser) {
+        if(!$this::isAbleToDecideAboutUser($confirmedUser))
             return Response::json(false);
-        $confirmedUser = User::find($userId);
+        //$confirmedUser = User::find($userId);
         $confirmedUser->group_confirmed = 1;
         $confirmedUser->save();
         return Response::json(true);        
@@ -31,53 +31,51 @@ class RequestDomainController {
     public function confirmGroup() {
         if(!Input::has('groupId'))
             return Response::json(false);
-        return $this::confirmGroupId(Input::get('groupId'));
+        return $this::confirmGroupId(Group::find(Input::get('groupId')));
     }
     
-    private function confirmGroupId($groupId) {
-        if(!$this::isAble2DecideAboutGroup())
+    private function confirmGroupId($confirmedGroup) {
+        if(!$this::isAble2DecideAboutGroup($confirmedGroup))
             return Response::json(false);
-        $confirmedGroup = Group::find($groupId);
+        //$confirmedGroup = Group::find($groupId);
         $confirmedGroup->active = 1;
         $confirmedGroup->save();
-        $groupLeader = User::where('group_id', '=', $groupId)->first();
+        $groupLeader = User::where('group_id', '=', $confirmedGroup->id)->first();
         UserRole::updateRole($groupLeader, UserRole::GROUP_LEADER, true);
-        $this::confirmUserId($groupLeader->id);        
+        return $this::confirmUserId(User::find($groupLeader->id));        
     }
     
     public function confirmLab() {
         if(!Input::has('labId'))
             return Response::json(false);
-        return $this::confirmLabId(Input::get('labId'));        
+        return $this::confirmLabId(Lab::find(Input::get('labId')));        
     }
     
-    private function confirmLabId($labId) {
-        if(!$this::isAble2DecideAboutLab())
+    private function confirmLabId($confirmedLab) {
+        if(!$this::isAble2DecideAboutLab($confirmedLab))
             return Response::json(false);
-        $confirmedLab = Lab::find($labId);
-        if($confirmedLab == null) 
-            return Response::json(false);
+        //$confirmedLab = Lab::find($labId);
         $confirmedLab->active = 1;
         $confirmedLab->save();
         
-        $group = Group::where('lab_id', '=', $labId)->first();
+        $group = Group::where('lab_id', '=', $confirmedLab->id)->first();
         $labLeader = User::where('group_id', '=', $group->id)->first();
         UserRole::updateRole($labLeader, UserRole::LAB_LEADER, true);
-        confirmUserId($labLeader->id);              
-        $this::confirmGroupId($group->id);  
+        //$this::confirmUserId($labLeader);              
+        return $this::confirmGroupId($group);  
     }    
     
     
     public function refuseUser() {
         if(!Input::has('userId'))
             return Response::json(false);
-        return $this::refuseUserId(Input::get('userId'));        
+        return $this::refuseUserId(User::find(Input::get('userId')));        
     }
     
-    private function refuseUserId($userId) {
-        if(!$this::isAbleToDecideAboutUser($userId))
+    private function refuseUserId($refusedUser) {
+        if(!$this::isAbleToDecideAboutUser($refusedUser))
            return Response::json(false);
-        $refusedUser = User::find($userId);
+        //$refusedUser = User::find($userId);
         $refusedUser->group_id = null;
         $refusedUser->save();
         return Response::json(true);
@@ -86,36 +84,38 @@ class RequestDomainController {
     public function refuseGroup() {
         if(!Input::has('groupId'))
             return Response::json(false);
-        return $this::refuseGroupId(Input::get('groupId'));
+        return $this::refuseGroupId(Group::find(Input::get('groupId')));
     }
     
-    private function refuseGroupId($groupId) {
-        if(!$this::isAble2DecideAboutGroup($groupId))
+    private function refuseGroupId($refusedGroup) {
+        if(!$this::isAble2DecideAboutGroup($refusedGroup))
             return Response::json(false);
-        $refusedUser = User::where('group_id', '=', $groupId)->first();
-        refuseUserId($refusedUser->id);
-        $refuseGroup = Group::find($groupId);
-        $refuseGroup->delete();
+        $refusedUser = User::where('group_id', '=', $refusedGroup->id)->first();
+        $this::refuseUserId($refusedUser);
+        //$refuseGroup = Group::find($groupId);
+        $refusedGroup->delete();
+        return Response::json(true);
     }
     
     public function refuseLab() {
         if(!Input::has('labId'))
             return Response::json(false);
-        return $this::refuseLabId(Input::get('labId'));
+        return $this::refuseLabId(Lab::find(Input::get('labId')));
     }
     
-    private function refuseLabId($labId) {
-        if(!$this::isAble2DecideAboutLab())
+    private function refuseLabId($refusedLab) {
+        if(!$this::isAble2DecideAboutLab($refusedLab))
             return Response::json(false);
-        $refusedGroup = Group::where('lab_id', '=', $labId)->first();
-        $this::refuseGroupId($refusedGroup->id);
-        $refusedLab = Lab::find($labId);
+        $refusedGroup = Group::where('lab_id', '=', $refusedLab->id)->first();
+        $this::refuseGroupId($refusedGroup);
+        //$refusedLab = Lab::find($labId);
         $refusedLab->delete();
+        return Response::json(true);
     }
     
-    private function isAbleToDecideAboutUser($userId) {
-        $confirmedUser = User::find(Input::get($userId));
-        if($confirmedUser == null)
+    private function isAbleToDecideAboutUser($confirmedUser) {
+        //$confirmedUser = User::find((integer)Input::get($userId));
+        if($confirmedUser == null || $confirmedUser->group_confirmed == 1)
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
@@ -131,9 +131,9 @@ class RequestDomainController {
         return $confirmedUserGroup->lab_id == $userGroup->lab_id;
     }
     
-    private function isAble2DecideAboutGroup($groupId) {
-        $confirmedGroup = Group::find($groupId);
-        if($confirmedGroup == null) 
+    private function isAble2DecideAboutGroup($confirmedGroup) {
+        //$confirmedGroup = Group::find($groupId);
+        if($confirmedGroup == null || $confirmedGroup->active == 1) 
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
@@ -144,7 +144,9 @@ class RequestDomainController {
         return $confirmedGroup->lab_id != Group::find(Auth::user()->group_id)->lab_id;
     }
     
-    private function isAble2DecideAboutLab() {
+    private function isAble2DecideAboutLab($confirmedLab) {
+        if($confirmedLab == null || $confirmedLab->active == 1)
+            return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         return $roleAdmin != null && $roleAdmin->active;
     }

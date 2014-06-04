@@ -24,36 +24,40 @@ class CreateDomainController extends BaseController {
     public function index() {
         if(!Input::has('groupName'))
             return null;
-        if(Auth::user()->group_confirmed != 1 && Auth::user()->group_id != null)
+        if(Auth::user()->group_confirmed != 1 && Auth::user()->group_id != null && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null)
             return null;
         if(!Input::has('labId')) {
             if(!Input::has('labName'))
                 return null;
             $labId = $this::createLab(Input::get('labName'))->id;
-        } else
+            $labCreated = true;
+        } else {
             $labId = Input::get('labId');
-        $this::createGroup(Input::get('groupName'), $labId);
+            $labCreated = false;
+        }
+        $this::createGroup(Input::get('groupName'), $labId, $labCreated);
         return null;
     }
     
-    private function createGroup($name, $labId) {    
-        if(Lab::find($labId)->active == 0)
+    private function createGroup($name, $labId, $labCreated) {    
+        if(!$labCreated && Lab::find($labId)->active == 0)
             return null;
         $isGroupActive = UserRole::getUserRole(UserRole::LAB_LEADER) != null;
         $group = new Group;
         $group->name = $name;
-        $group->lap_id = $labId;
+        $group->lab_id = $labId;
         $group->active = $isGroupActive;
         $group->save();
         $user = Auth::user();
         $user->group_confirmed = $isGroupActive;
+        $user->group_id = $group->id;
         $user->save();
         //$this::updateRole(UserRole::GROUP_LEADER, $isGroupActive);
         return $group;
     }
     
     private function createLab($name) {//, $departmentId) {
-        $lab = new Lap;
+        $lab = new Lab;
         $lab->name = $name;
         //$lab->department_id = $departmentId;
         $lab->active = 0;
