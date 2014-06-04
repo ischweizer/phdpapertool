@@ -1,8 +1,8 @@
 @extends('layouts/main')
 
-@section('head')
-	{{--*/ $currentPage = 'timeline' /*--}}
-@stop
+@section('menu')
+	<?php $currentPage = 'timeline'; ?>
+@overwrite
 
 @section('head')
 		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>

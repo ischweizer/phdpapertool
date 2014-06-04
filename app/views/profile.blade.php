@@ -1,5 +1,9 @@
 @extends('layouts/main')
 
+@section('menu')
+	<?php $currentPage = 'profile'; ?>
+@overwrite
+
 @section('content')
 		<div class="page-header">
    		<h1>Your Profile</h1>

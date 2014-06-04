@@ -31,16 +31,17 @@
 				</div>
 		</div>
 		
+		
 		@yield('menu')
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
 					<div style="width:450px" class="pull-right">        
 						<ul >
-							<li>{{ HTML::link('timeline', 'Timeline') }}</li>
-							<li>{{ HTML::link('paper', 'My Paper') }}</li>
-							<li>{{ HTML::link('data', 'My Review') }}</li>
-							<li>{{ HTML::link('profile', 'My Profile') }}</li>
+							<li {{ ($currentPage == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
+							<li {{ ($currentPage == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
+							<li {{ ($currentPage == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
+							<li {{ ($currentPage == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
 						</ul>
 					</div>
 				</div>
