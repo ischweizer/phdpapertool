@@ -3,7 +3,7 @@
 class PaperController extends BaseController {
 	
 	public function getIndex($id = null) {
-		$papers = Paper::all();
+		$papers = Auth::user()->author->papers;//Paper::all();
 		return View::make('paper/index', array('papers' => $papers));
 	}
 	
@@ -39,6 +39,14 @@ class PaperController extends BaseController {
 	public function postCreate($id = null)
 	{
 		$input = Input::all();
+	
+	    $validation = Paper::validate();
+		
+		if ($validation->fails())
+	    {
+	    	return $validator->messages()->toJson();//"Validation Failed";
+	        //return Redirect::to('register')->with_input()->with_errors($validation);
+	    }
 		
 		if (!is_null($id)) {
 			$paper = Paper::find($id);
@@ -51,7 +59,6 @@ class PaperController extends BaseController {
 			}
 		} else {
 			$paper = Paper::create( $input );
-			$paper->authors()->attach(Auth::user()->author->id);
 		}
 		
 		$paper->authors()->detach();
@@ -61,12 +68,20 @@ class PaperController extends BaseController {
 				$paper->authors()->attach($author);
 			}
 		}
+		$paper->authors()->attach(Auth::user()->author->id);
 		
 		return Redirect::to('paper/index');	
 	}
 	
 	public function postCreateAuthor() {
 		$input = Input::all();
+		
+		$validation = Author::validate();
+		if ($validation->fails())
+	    {
+	        return "Validation Failed";
+	        //return Redirect::to('register')->with_input()->with_errors($validation);
+	    }
 		$author = Author::create( $input );
 		
 		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));

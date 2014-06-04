@@ -48,6 +48,13 @@
 			
 			var checkform = function(){
 				$('#selected_authors option').prop('selected', true);
+				
+				if ($('#titlefield').val() == '') {
+					alert("You have to define a title!");
+					//return false;
+				}
+				
+				return true;
 			}
 		</script>
 @stop
@@ -62,10 +69,10 @@
 		</div>
 
 		<h3 class="cat-title">Create Paper</h3>
-		{{ Form::open(array('action' => array('PaperController@postCreate', $paper->id), 'onsubmit' => 'checkform()')) }}
+		{{ Form::open(array('action' => array('PaperController@postCreate', $paper->id), 'onsubmit' => ' return checkform();')) }}
 		    <!-- title -->
 			{{ Form::label('title', 'Title') }}<br>
-			{{ Form::text('title', $paper->title, array('placeholder' => 'Title', 'class' => 'form-control')) }}<br>
+			{{ Form::text('title', $paper->title, array('placeholder' => 'Title', 'class' => 'form-control', 'id' => 'titlefield')) }}<br>
 			
 			<!-- repository -->
 			{{ Form::label('repository_url', 'Repository') }}<br>
