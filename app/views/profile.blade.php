@@ -11,80 +11,53 @@
 
 		<div class="row">
         <div class="col-xs-8">
-            <form role="form" action="" method="POST">
-                <div class="form-group">
-                    <label>Institution *</label>
-                    <input type="text" class="form-control" placeholder="Institution" value="TU Darmstadt">
-                </div>
-
-                
+        	@if (isset($msg))
+        		@if ($msg['success'])
+        			<div class="alert alert-success">{{ $msg['content'] }}</div>
+        		@else
+        			<div class="alert alert-danger">{{ $msg['content'] }}</div>
+        		@endif
+			@endif
+					
+            <form role="form" action="profile" method="POST">
                 <div class="form-group">
                     <label>Password *</label>
-                    <input type="text" class="form-control" placeholder="Password">
+                    <input type="password" class="form-control" name="password" placeholder="Password">
                 </div>
 
                 <div class="form-group">
                     <label>First Name *</label>
-                    <input type="text" class="form-control" name="tx_nuacore_piusermanager[first_name]" placeholder="Vorname" value="Hermann">
+                    <input type="text" class="form-control" name="first_name" placeholder="First Name" value="{{ $author['first_name'] }}">
                 </div>
 
                 <div class="form-group">
                     <label>Last Name *</label>
-                    <input type="text" class="form-control" name="tx_nuacore_piusermanager[last_name]" placeholder="Nachname" value="Hanser">
-                </div>
-
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="text" class="form-control" name="tx_nuacore_piusermanager[email]" placeholder="Email" value="info@world.com">
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-4">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" checked="checked"> Newsletter
-                            </label>
-                        </div>
-                    </div>
-
-                <div class="col-xs-4">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox"> Info
-                                </label>
-                            </div>
-                        </div>
+                    <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ $author['last_name'] }}">
                 </div>
 
                 <hr>
                 <div class="uiButton">
-                    <input type="submit" class="btn btn-primary btn-lg" value="Save">
+                    <input type="submit" class="btn btn-primary btn-lg" value="Update">
                 </div>
             </form>
         </div>
                 <div class="col-xs-4">
             <div class="well">
                 <div class="form-group">
-                    <label>Username</label>
-                    <p>superman01</p>
+                    <label>Email</label>
+                    <p>{{ $user['email'] }}</p>
                 </div>
 
-                <div class="form-group">
-                    <label>Group</label>
-                    <p>ABC</p>
-                </div>
-                <div class="form-group">
-                    <label>Conference</label>
-                    <p>Open World 2015</p>
-                </div>
+				@if (isset($group['name']))
+					<div class="form-group">
+                 	   <label>Group</label>
+                  	  <p>{{ $group['name'] }}</p>
+                	</div>
+                @endif
+                
                 <div class="form-group">
                     <label>Joined date</label>
-                    <p>20.03.2014</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Last login</label>
-                    <p>20.03.2014</p>
+                    <p>{{ $user['created_at'] }}</p>
                 </div>
             </div>
         </div>

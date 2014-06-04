@@ -40,11 +40,6 @@ Route::group(array('before' => 'auth'), function()
 		return View::make('timeline');
 	});
 
-	Route::get('profile', function() 
-	{
-		return View::make('profile');
-	});
-
 	Route::get('overview', function() 
 	{
 		return View::make('overview');
@@ -54,6 +49,9 @@ Route::group(array('before' => 'auth'), function()
 	{
 		return View::make('data');
 	});
+	
+	Route::controller('profile', 'ProfileController');
+	Route::post('profile', 'ProfileController@save');
 
 	Route::controller('conferences', 'ConferenceController');
 
