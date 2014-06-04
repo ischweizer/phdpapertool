@@ -9,6 +9,18 @@ class ConferenceEditionController extends BaseController {
 	}
 
 	/**
+	 * Show conference edition information and co-located workshops.
+	 */
+	public function getDetails($id) {
+		$edition = ConferenceEdition::with('conference', 'event', 'workshops', 'workshops.event')->find($id);
+		if (!is_null($edition)) {
+			return View::make('conference/conference_edition')->with('edition', $edition);
+		} else {
+			App::abort(404);
+		}
+    }
+
+	/**
 	 * Edit or create a conference edition.
 	 */
     public function getEdit($id = null) {
@@ -16,7 +28,7 @@ class ConferenceEditionController extends BaseController {
 		if ($id != null) {
 			$edition = ConferenceEdition::with('conference', 'event')->find($id);
 		}
-		return View::make('conference/conference_edition_edit')->with('edition', $edition);
+		return View::make('conference/event_edit')->with('model', $edition)->with('type', 'Conference Edition')->with('action', 'ConferenceEditionController@postEdit')->with('conferenceName', 'conference[name]');
     }
 
 	/**
@@ -57,10 +69,6 @@ class ConferenceEditionController extends BaseController {
 			return Redirect::action('ConferenceEditionController@getEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
 		}
 
-		// return to set address or to success view
-		if (Session::has('url.conference-edition-creation.return')) {
-			Redirect::to(Session::get('url.conference-edition-creation.return'))->with('conference-edition-created', $edition->id);
-		}
-		return View::make('conference/conference_edition_edited')->with('conference_id', $edition->conference_id)->with('edited', $edit);
+		return View::make('conference/event_edited')->with('type', 'Conference Edition')->with('action', 'ConferenceEditionController@getDetails')->with('id', $edition->id)->with('edited', $edit);
     }
 }

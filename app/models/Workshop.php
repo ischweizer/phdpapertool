@@ -1,7 +1,7 @@
 <?php
 
 class Workshop extends Eloquent {
-	protected $fillable = array('name');
+	protected $fillable = array('name', 'conference_edition_id');
 
 	public function conferenceEdition()
 	{

@@ -25,7 +25,7 @@
 					}
 				});
 				conferences.initialize();
-				$('#conference\\[name\\]').typeahead({
+				$('#conference_name').typeahead({
 					highlight: true
 				}, {
 					name: 'conferences',
@@ -41,13 +41,13 @@
 						}
 					}
 				}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
-					$('#conference-edition-form')
+					$('#event-form')
 						.data('bootstrapValidator')
-						.updateStatus('conference[name]', 'NOT_VALIDATED', null)
-						.validateField('conference[name]');
-					updateIDRefField();
+						.updateStatus('{{ $conferenceName }}', 'NOT_VALIDATED', null)
+						.validateField('{{ $conferenceName }}');
+					conferenceNameChange();
 				});
-				$('#conference\\[name\\]').on('input', updateIDRefField);
+				$('#conference_name').on('input', conferenceNameChange);
 
 				// install datepickers
 				$.fn.datepicker.defaults.format = "M dd, yyyy";
@@ -70,7 +70,7 @@
 				datepickersComplete.forEach(function (datepicker) {
 					datepicker.datepicker().on('change', function(e) {
 						var field = $(this).attr('name');
-						$('#conference-edition-form')
+						$('#event-form')
 							.data('bootstrapValidator')
 							.updateStatus(field, 'NOT_VALIDATED', null)
 							.validateField(field);
@@ -78,7 +78,7 @@
 				});
 
 				// enable form validation
-				$('#conference-edition-form').bootstrapValidator({
+				$('#event-form').bootstrapValidator({
 					feedbackIcons: {
 						valid: 'glyphicon glyphicon-ok',
 						invalid: 'glyphicon glyphicon-remove',
@@ -87,15 +87,43 @@
 					live: 'enabled'
 				});
 
-				function updateIDRefField() {
+				function conferenceNameChange() {
+				@if ($type == 'Conference Edition')
 					$.ajax({
 						url: "{{ URL::action('ConferenceController@anyId') }}",
-						data: {'name': $('#conference\\[name\\]').val()},
+						data: {'name': $('#conference_name').val()},
+						dataType: 'text',
 						success: function(data) {
 							$('#conference_id').val(data);
 						}
 					});
+				@elseif ($type == 'Workshop')
+					$.ajax({
+						url: "{{ URL::action('ConferenceController@anyEditions') }}",
+						data: {'name': $('#conference_name').val()},
+						dataType: 'json',
+						success: function(data) {
+							var select = $('#conference_edition_id');
+							var oldVal = select.val();
+							var foundOldVal = false;
+							select.empty();
+							select.append(new Option('', ''));
+							for (var i = 0; i < data.length; i++) {
+								select.append(new Option(data[i].edition, data[i].id));
+								if (data[i].id == oldVal) {
+									foundOldVal = true;
+								}
+							}
+							if (foundOldVal) {
+								select.val(oldVal);
+							}
+						}
+					});
+				@endif
 				}
+
+				// in case an initial value is set
+				conferenceNameChange();
 			});
 
 			(function($) {
@@ -179,7 +207,7 @@
 		<div id='main'>
 
 		<div class="page-header">
-   		<h1>@if($edition) Edit @else Create @endif Conference Edition</h1>
+			<h1>@if($model) Edit @else Create @endif {{ $type }}</h1>
 		@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>
@@ -189,13 +217,27 @@
 			</ul>
 		@endif
 		</div>
-		{{ Form::model($edition, array('action' => 'ConferenceEditionController@postEdit', 'id' => 'conference-edition-form', 'role' => 'form')) }}
+		{{ Form::model($model, array('action' => $action, 'id' => 'event-form', 'role' => 'form')) }}
 			{{ Form::hidden('id') }}
-			{{ Form::hidden('conference_id', null, array('id' => 'conference_id')) }}
+		@if ($type == 'Conference Edition')
 			<div class="form-group">
-				{{ Form::label('conference[name]', 'Conference') }}
-				{{ Form::text('conference[name]', null, array('class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
+				{{ Form::label($conferenceName, 'Conference') }}
+		@elseif ($type == 'Workshop')
+			<div class="container-fluid"><div class="row"><div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
+				{{ Form::label($conferenceName, 'Co-located Conference') }}
+		@endif
+				{{ Form::text($conferenceName, null, array('id' => 'conference_name', 'class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
+		
+		@if ($type == 'Conference Edition')
 			</div>
+		@elseif ($type == 'Workshop')
+			</div><div class="form-group col-md-4" style="padding:0">
+				{{ Form::label('conference_edition_id', 'Edition') }}
+				{{ Form::select('conference_edition_id', $editionOption, null, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div></div></div>
+		@endif
+		@if ($type == 'Conference Edition')
+			{{ Form::hidden('conference_id', null, array('id' => 'conference_id')) }}
 			<div class="form-group">
 				{{ Form::label('location', 'Location') }}
 				{{ Form::text('location', null, array('class' => 'form-control', 'placeholder' => 'Location', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
@@ -204,6 +246,12 @@
 				{{ Form::label('edition', 'Conference Edition') }}
 				{{ Form::text('edition', null, array('class' => 'form-control', 'placeholder' => 'Edition / Year', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
+		@elseif ($type == 'Workshop')
+			<div class="form-group">
+				{{ Form::label('name', 'Workshop Name') }}
+				{{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div>
+		@endif
 			<div class="form-group single-date">
 				{{ Form::label('event[abstract_due]', 'Abstract Submission Deadline') }}
 				<div class="input-group date" id="abstract-datepicker">
@@ -233,8 +281,8 @@
 				</div>
 			</div>
 			<div class="form-group range-date">
-				{{ Form::label('event[start]', 'Date') }}{{ Form::label('event[end]', 'Dummy', array('style' => 'display:none')) }}
-				<div class="input-daterange input-group" id="start-end-datepicker">
+				{{ Form::label('event[start]', 'Date') }}{{ Form::label('event[end]', 'End Date', array('class' => 'sr-only')) }}
+				<div class="input-group input-daterange" id="start-end-datepicker">
 					{{ Form::text('event[start]', @date_format(Form::getValueAttribute('event[start]'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be a date before the conference end, but after everything else', 'data-bv-confdate-before' => 'event[end]', 'data-bv-confdate-after' => 'event[abstract_due] event[paper_due] event[notification_date] event[camera_ready_due]')) }}
 					<span class="input-group-addon">to</span>
 					{{ Form::text('event[end]', @date_format(Form::getValueAttribute('event[end]'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the last date', 'data-bv-confdate-after' => 'event[abstract_due] event[paper_due] event[notification_date] event[camera_ready_due] event[start]')) }}

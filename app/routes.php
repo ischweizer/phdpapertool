@@ -54,8 +54,8 @@ Route::group(array('before' => 'auth'), function()
 	Route::post('profile', 'ProfileController@save');
 
 	Route::controller('conferences', 'ConferenceController');
-
 	Route::controller('conference-editions', 'ConferenceEditionController');
+	Route::controller('workshops', 'WorkshopController');
 
 	// again, filter is "before" so logout belongs into this section
 	Route::get('logout', 'LoginController@logout');

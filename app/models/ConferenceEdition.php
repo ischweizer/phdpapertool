@@ -13,6 +13,11 @@ class ConferenceEdition extends Eloquent {
 		return $this->morphOne('EventModel', 'detail');
 	}
 
+	public function workshops()
+	{
+		return $this->hasMany('Workshop');
+	}
+
 	/**
 	 * Validate the given input.
 	 *

@@ -1,0 +1,78 @@
+<?php
+
+use Illuminate\Support\MessageBag;
+
+class WorkshopController extends BaseController {
+	
+	public function __construct() {
+		$this->beforeFilter('csrf', array('on' => 'post'));
+	}
+
+	/**
+	 * Show workshop information.
+	 */
+	public function getDetails($id) {
+		$workshop = Workshop::with('event', 'conferenceEdition', 'conferenceEdition.conference', 'conferenceEdition.event')->find($id);
+		if (!is_null($workshop)) {
+			return View::make('conference/workshop')->with('workshop', $workshop);
+		} else {
+			App::abort(404);
+		}
+    }
+
+	/**
+	 * Edit or create a workshop.
+	 */
+    public function getEdit($id = null) {
+		$workshop = null;
+		if ($id != null) {
+			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
+		}
+		$editionOption = array();
+		if ($workshop) {
+			$editionOption = array($workshop->conference_edition_id => 'Dummy');
+		}
+		return View::make('conference/event_edit')->with('model', $workshop)->with('type', 'Workshop')->with('action', 'WorkshopController@postEdit')->with('conferenceName', 'conferenceEdition[conference][name]')->with('editionOption', $editionOption);
+    }
+
+	/**
+	 * Handle edit/create result.
+	 */
+	public function postEdit() {
+		// validate
+		$validator = Workshop::validate(Input::all());
+		if ($validator->fails()) {
+			return Redirect::action('WorkshopController@getEdit')->withErrors($validator)->withInput();
+		}
+
+		$workshop = null;
+		$success = null;
+
+		// insert/update
+		$edit = (bool) Input::get('id');
+		if ($edit) {
+			$workshop = Workshop::with('event')->find(Input::get('id'));
+			$workshop->fill(Input::all());
+			$workshop->event->fill(Input::get('event'));
+			$success = $workshop->push();
+		} else {
+			$workshop = new Workshop(Input::all());
+			$success = $workshop->save();
+			if ($success) {
+				$event = new EventModel(Input::get('event'));
+				$success = (bool) $workshop->event()->save($event);
+				if (!$success) {
+					// could not save event -> clean workshop, too
+					$workshop->delete();
+				}
+			}
+		}
+
+		// check for success
+		if (!$success) {
+			return Redirect::action('WorkshopController@getEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+		}
+
+		return View::make('conference/event_edited')->with('type', 'Workshop')->with('action', 'WorkshopController@getDetails')->with('id', $workshop->id)->with('edited', $edit);
+    }
+}

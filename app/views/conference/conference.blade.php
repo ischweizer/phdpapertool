@@ -19,7 +19,7 @@
 		<div id='main'>
 
 		<div class="page-header">
-   		<h1>{{{ $conference->name }}}</h1>
+			<h1>{{{ $conference->name }}}</h1>
 		</div>
 		
 		<table class="table" cellspacing="0" width="100%">
@@ -55,7 +55,7 @@
 					<td>{{{ $edition->location }}}</td>
 					<td>{{{ $edition->edition }}}</td>
 					<td>{{{ $edition->event->start->format('M d, Y') }}} - {{{ $edition->event->end->format('M d, Y') }}}</td>
-					<td>{{ HTML::linkAction('ConferenceEditionController@getEdit', 'edit', array('id' => $edition->id)) }}</td>
+					<td>{{ HTML::linkAction('ConferenceEditionController@getDetails', 'details', array('id' => $edition->id)) }} {{ HTML::linkAction('ConferenceEditionController@getEdit', 'edit', array('id' => $edition->id)) }}</td>
 				</tr>
 			@endforeach
 			</tbody>
