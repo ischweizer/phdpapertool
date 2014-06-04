@@ -103,4 +103,20 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		}
 		return $result;
 	}
+
+	/**
+	 * Returns true iff this user is already enrolled in a Group, or the approval is pending
+	 */
+	public function hasGroup()
+	{
+		return $this->group_id != NULL;
+	}
+
+	/**
+	 * Returns true iff this user has a pending(not accepted or refused) lab or group creation and is not a super admin
+	 */
+	public function hasPendingCreation()
+	{
+		return (($this->group_id != null && Group::find($this->group_id)->active != 1 && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null)?true:false);
+	}
 }

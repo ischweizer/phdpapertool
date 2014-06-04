@@ -2,131 +2,109 @@
 
 @section('head')
 	<script type="text/javascript">
-		$(document).ready(function() {
-			/*$('#university_select').change(function(){
-				var university_id = $(this).val();
-				if(university_id == 'empty' || university_id == 'new'){
-					$('#department_select').empty().prop('disabled',true);
-					$('#lab_select').empty().prop('disabled',true);
-					$('#group_select').empty().prop('disabled',true);
-					$('#submit').prop('disabled',true);
-					if (university_id == 'new') {
-						console.log('TODO');
-					};
-				} else {
-					$.ajax({
-						url: "enroll",
-						data: {'university':university_id},
-						success: function(data){
-							var box = $('#department_select');
-							box.empty();
-							box.append(
-								new Option('','empty')
-							);
-							for (var i = 0; i < data.length; i++) {
-								box.append(
-									new Option(data[i].name,data[i].id)
-								);
-							};
-							box.append(
-									new Option('new','new')
-								);
-							box.prop('disabled',false);
-						}
-					});
-				}
-			});
 
-			$('#department_select').change(function(){
-				var department_id = $(this).val();
-				if(department_id == 'empty' || department_id == 'new'){
-					$('#lab_select').empty().prop('disabled',true);
-					$('#group_select').empty().prop('disabled',true);
-					$('#submit').prop('disabled',true);
-					if (department_id == 'new') {
-						console.log('TODO');
-					};
-				} else {
+	var lab_id,group_id;
+
+		@if (Auth::user()->hasGroup())
+			group_id = {{{ Auth::user()->group_id }}};
+			lab_id = {{{ Auth::user()->group->lab_id }}};
+		@endif
+
+		function createNewLab(){
+			var newLabName = prompt('Enter new lab name');
+			if(newLabName) {
+				var newGroupName = prompt('Enter group name for first group in the new lab: '+newLabName);
+				if(newGroupName){
 					$.ajax({
-						url: "enroll",
-						data: {'department':department_id},
+						url: "create",
+						data: {'groupName':newGroupName, "labName":newLabName},
 						success: function(data){
-							var box = $('#lab_select');
-							box.empty();
-							box.append(
-								new Option('','empty')
-							);
-							for (var i = 0; i < data.length; i++) {
-								box.append(
-									new Option(data[i].name,data[i].id)
-								);
-							};
-							box.append(
-									new Option('new','new')
-								);
-							box.prop('disabled',false);
+							if(data != true)
+								alert(data);
+							location.reload();						
 						}
+						//TODO no success
 					});
 				}
-			});*/
+			}
+		}
+
+		function createNewGroup(){
+			var newGroupName = prompt('Enter new group name');
+			if(newGroupName){
+				$.ajax({
+					url: "create",
+					data: {'groupName':newGroupName, "labId":lab_id},
+					success: function(data){
+						if(data != true)
+							alert(data);
+						location.reload();						
+					}
+					//TODO no success
+				});
+			}
+		}
+
+		$(document).ready(function() {
 
 			$('#lab_select').change(function(){
-				var lab_id = $(this).val();
-				if(lab_id == 'empty' || lab_id == 'new'){
-					$('#group_select').empty().prop('disabled',true);
-					$('#submit').prop('disabled',true);
-					if (lab_id == 'new') {
-						console.log('TODO: new Lab');
-					};
+
+				$('#submit').prop('disabled',true);
+				var box = $('#group_select')
+					.empty()
+					.prop('disabled',true);
+				lab_id = undefined;
+				group_id = undefined;
+
+				if ($(this).val() == 'new') {
+					createNewLab();
+				} else if($(this).val() == ''){
+
 				} else {
+					lab_id = parseInt($(this).val());
 					$.ajax({
 						url: "enroll",
 						data: {'lab':lab_id},
 						success: function(data){
-							var box = $('#group_select');
-							box.empty();
 							box.append(
 								new Option('','empty')
 							);
 							for (var i = 0; i < data.length; i++) {
-								box.append(
-									new Option(data[i].name,data[i].id)
-								);
+								box.append(new Option(data[i].name,data[i].id));
 							};
-							box.append(
-									new Option('new','new')
-								);
+							box.append(new Option('new','new'));
 							box.prop('disabled',false);
-							@if (Auth::user()->group_id)
-								var group_id = {{{ Auth::user()->group_id}}};
-								box.val(group_id).change();
-							@endif
+							
 						}
+						//TODO no success
 					});
 				}
 			});
 
 			$('#group_select').change(function(){
-				var group_id = $(this).val();
-				if(group_id == 'empty' || group_id == 'new'){
-					$('#submit').prop('disabled',true);
-					if (group_id == 'new') {
-						console.log('TODO: new Group');
-					} 
+
+				$('#submit').prop('disabled',true);
+				group_id = undefined;
+					
+				if ($(this).val() == 'new') {
+					createNewGroup();
+				} else if($(this).val() == ''){
+
 				} else {
+					group_id = parseInt($(this).val());
 					$('#submit').prop('disabled',false);
 				}
 			});
 
 			$('#submit').click(function(){	
-				var group_id = $('#group_select option:selected').val();
+				//var tried_group_id = parseInt($('#group_select option:selected').val());
 				$.ajax({
 						url: "enrollInGroup",
 						data: {'group':group_id},
 						success: function(data){
 							if(data){
 								$('#infotext')
-									.html('Group Enrollment Accepted')
+									.html('Your request was accepted and forwarded to the group leader')
 									.addClass('alert-success')
 									.show();
 							} else {
@@ -136,16 +114,9 @@
 									.show();
 							}
 						}
+						//TODO no success
 					});
 			});
-
-			@if (Auth::user()->group_id)
-				$(function(){
-					var lab_id = {{{ Auth::user()->group->lab_id }}};
-					$('#lab_select').val(lab_id).change();
-				});
-			@endif
-
 			
 
 		});
@@ -155,14 +126,64 @@
 
 @section('content')
 
+@if (Auth::user()->hasPendingCreation())
+	bla bla
+@else
+	bu bu
+@endif
+
 <div class="container">
 	<h1>Enroll in a research group</h1>
+
+	@if ($groupAccepted)
+		<div class="alert alert-success">You have successfully enrolled in this Group</div>
+	@elseif (Auth::user()->hasGroup()) 
+		<div class="alert alert-info">Your request is pending</div>
+	@endif
+
+	@if (Auth::user()->hasGroup())
 		<div class="form-group">
 			<label for="lab_select">Lab</label>
 			<select class="form-control" id="lab_select">
 				<option></option>
 				@foreach ($labs as $lab)
-					<option value="{{{ $lab->id }}}">
+					@if (Auth::user()->group->lab_id == $lab->id)
+						<option value="{{{ $lab->id }}}" selected>
+							{{{ $lab->name }}}
+						</option>
+					@else
+						<option value="{{{ $lab->id }}}">
+							{{{ $lab->name }}}
+						</option>
+					@endif
+				@endforeach
+				<option value="new">new</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="group_select">Group</label>
+			<select class="form-control" id="group_select">
+					@foreach ($labGroups as $group)
+						@if (Auth::user()->group_id == $group->id)
+							<option value="{{{ $group->id }}}" selected>
+								{{{ $group->name }}}
+							</option>
+						@else
+							<option value="{{{ $group->id }}}">
+								{{{ $group->name }}}
+							</option>
+						@endif
+					@endforeach
+				<option val="new">new</option>
+			</select>
+		</div>
+	@else
+		<div class="form-group">
+			<label for="lab_select">Lab</label>
+			<select class="form-control" id="lab_select">
+				<option></option>
+				@foreach ($labs as $lab)
+					<option value="{{{ $lab-> id}}}">
 						{{{ $lab->name }}}
 					</option>
 				@endforeach
@@ -172,12 +193,15 @@
 		<div class="form-group">
 			<label for="group_select">Group</label>
 			<select class="form-control" id="group_select" disabled>
-				
 			</select>
 		</div>
-		<div id="infotext" class="alert" style="display:none"></div>
-		<button id="submit" class="btn btn-primary btn-lg" disabled>save</button>
-		
+
+	@endif
+	
+	<div id="infotext" class="alert" style="display:none"></div>
+	<button id="submit" class="btn btn-primary btn-lg" disabled>request group access</button>
+
+	
 
 </div> 
 

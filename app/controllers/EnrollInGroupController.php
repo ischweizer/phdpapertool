@@ -21,15 +21,28 @@ class EnrollInGroupController extends BaseController {
             return Response::json(false);
         $user = Auth::user();
         $user->group_id = $groupId;
+        $user->group_confirmed = false;
         $user->save();
         return Response::json(true);
     }
     
     public function showLabs() {
         //TODO Nur active Labs
-        $labs = Lab::all();
-        return View::make('enroll_in_group')->with('labs', $labs);
-    }  
+        $labs = Lab::where('active', '=', '1')->get();
+        $groupAccepted = false;
+        $user = Auth::user();
+
+        if($user->hasGroup()){
+            $labGroups = Group::where('active','=','1')->where('lab_id', '=', $user->group->lab_id)->get();
+            $groupAccepted = $user->group_confirmed;
+        } else {
+            $labGroups = false;
+        }
+
+
+
+        return View::make('enroll_in_group')->with('labs', $labs)->with('labGroups', $labGroups)->with('groupAccepted', $groupAccepted);
+    }   
     
     public function getDomain() {
 
@@ -54,7 +67,7 @@ class EnrollInGroupController extends BaseController {
     }*/    
     
     private function getGroups($labId) {
-        $groups = Group::where('lab_id', '=', $labId)->get();
+        $groups = Group::where('active','=','1')->where('lab_id', '=', $labId)->get();
         return Response::json($groups);
     }    
 }

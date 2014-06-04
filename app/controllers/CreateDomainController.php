@@ -23,25 +23,25 @@ class CreateDomainController extends BaseController {
     
     public function index() {
         if(!Input::has('groupName'))
-            return null;
-        if(Auth::user()->group_confirmed != 1 && Auth::user()->group_id != null && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null)
-            return null;
-        if(!Input::has('labId')) {
+            return "Missing parameter groupName";
+        if(Auth::user()->group_id != null && Group::find(Auth::user()->group_id)->active != 1 && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null)
+            return "You cannot create a new group/lab, because your last group/lab creation is still pending";
+        if(!Input::has('labId')) { 
             if(!Input::has('labName'))
-                return null;
+                return "Missing parameter labName";
             $labId = $this::createLab(Input::get('labName'))->id;
             $labCreated = true;
         } else {
             $labId = Input::get('labId');
             $labCreated = false;
         }
-        $this::createGroup(Input::get('groupName'), $labId, $labCreated);
-        return null;
+        $result = $this::createGroup(Input::get('groupName'), $labId, $labCreated);
+        return $result;
     }
     
     private function createGroup($name, $labId, $labCreated) {    
         if(!$labCreated && Lab::find($labId)->active == 0)
-            return null;
+            return "Lab is not active";
         $isGroupActive = UserRole::getUserRole(UserRole::LAB_LEADER) != null;
         $group = new Group;
         $group->name = $name;
@@ -53,7 +53,7 @@ class CreateDomainController extends BaseController {
         $user->group_id = $group->id;
         $user->save();
         //$this::updateRole(UserRole::GROUP_LEADER, $isGroupActive);
-        return $group;
+        return true;
     }
     
     private function createLab($name) {//, $departmentId) {
