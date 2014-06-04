@@ -1,5 +1,11 @@
 @extends('layouts/main')
 
+@section('conf')
+	<?php 
+		$conf['loggedIn'] = false;
+	?>
+@stop
+
 @section('content')
 		<div class="page-header">
    		<h1>Account Registration</h1>

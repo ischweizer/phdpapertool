@@ -1,5 +1,11 @@
 @extends('layouts/main')
 
+@section('conf')
+	<?php 
+		$conf['loggedIn'] = false;
+	?>
+@stop
+
 @section('content')
 		<div class="page-header">
    		<h1>Account Login</h1>
@@ -31,6 +37,7 @@
 
 						<div class="uiButton">
 							<input type="submit" class="btn btn-primary btn-lg" value="Login">
+							{{ HTML::link('registration', 'Registration', array('class' => 'btn btn-default btn-lg')) }}
 						</div>
 					</form>
 				@else

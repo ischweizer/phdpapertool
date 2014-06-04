@@ -1,8 +1,8 @@
 @extends('layouts/main')
 
-@section('menu')
-	<?php $currentPage = 'profile'; ?>
-@overwrite
+@section('conf')
+	<?php $conf['currentPage'] = 'profile'; ?>
+@stop
 
 @section('content')
 		<div class="page-header">

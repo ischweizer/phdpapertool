@@ -17,6 +17,7 @@
 		@yield('head')
 	</head>
 	
+	@yield('conf')
 	<body>
 		<div id="top_toolbar">
 				<a class="navbar-brand" href="#">PhD Paper Tool</a>
@@ -27,21 +28,28 @@
 					<button type="submit" class="btn btn-default">Search</button>
 				</form>
 				<div class="header_link">
-					<a class="btn btn-warning" href="/logout">Log out</a>
+					@if (isset($conf['loggedIn']) && !$conf['loggedIn'])
+						{{ HTML::link('', 'Login', array('class' => 'btn btn-info')) }}
+					@else		
+						{{ HTML::link('logout', 'Logout', array('class' => 'btn btn-warning')) }}
+					@endif
 				</div>
 		</div>
-		
-		<?php $currentPage = ''; ?>
-		@yield('menu')
+				
+		<?php
+			if (!isset($conf['currentPage'])) {
+				$conf['currentPage'] = '';
+			}
+		?>		
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
 					<div style="width:500px" class="pull-right">        
 						<ul >
-							<li {{ ($currentPage == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
-							<li {{ ($currentPage == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
-							<li {{ ($currentPage == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
-							<li {{ ($currentPage == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
+							<li {{ ($conf['currentPage'] == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
+							<li {{ ($conf['currentPage'] == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
+							<li {{ ($conf['currentPage'] == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
+							<li {{ ($conf['currentPage'] == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
 						</ul>
 					</div>
 				</div>
