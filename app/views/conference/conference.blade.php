@@ -54,7 +54,7 @@
 				<tr>
 					<td>{{{ $edition->location }}}</td>
 					<td>{{{ $edition->edition }}}</td>
-					<td>{{{ $edition->start->format('M d, Y') }}} - {{{ $edition->end->format('M d, Y') }}}</td>
+					<td>{{{ $edition->event->start->format('M d, Y') }}} - {{{ $edition->event->end->format('M d, Y') }}}</td>
 					<td>{{ HTML::linkAction('ConferenceEditionController@getEdit', 'edit', array('id' => $edition->id)) }}</td>
 				</tr>
 			@endforeach

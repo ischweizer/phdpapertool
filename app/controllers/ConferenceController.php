@@ -3,7 +3,7 @@
 class ConferenceController extends BaseController {
     public function getIndex($id = null) {
 		if (!is_null($id)) {
-			$conference = Conference::with('editions')->find($id);
+			$conference = Conference::with('editions', 'editions.event')->find($id);
 			if (!is_null($conference)) {
 				return View::make('conference/conference')->with('conference', $conference);
 			}
@@ -40,6 +40,22 @@ class ConferenceController extends BaseController {
 			return json_encode(array(
 				'valid' => (bool) $exists,
 			));
+		} else {
+			return null;
+		}
+	}
+
+	public function anyId($name = null) {
+		if (Request::ajax()) {
+			if (is_null($name)) {
+				$name = Input::get('name');
+			}
+			$result = Conference::where('name', '=', $name)->first();
+			if ($result) {
+				return $result->id;
+			} else {
+				return '';
+			}
 		} else {
 			return null;
 		}
