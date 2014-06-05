@@ -153,7 +153,7 @@ class RequestDomainController extends BaseController {
     
     private function isAbleToDecideAboutUser($confirmedUser) {
         //$confirmedUser = User::find((integer)Input::get($userId));
-        if($confirmedUser == null || $confirmedUser->group_confirmed == 1)
+        if($confirmedUser == null || $confirmedUser->group_confirmed == 1 || $confiremdUser->id == 1)
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
@@ -171,7 +171,7 @@ class RequestDomainController extends BaseController {
     
     private function isAble2DecideAboutGroup($confirmedGroup) {
         //$confirmedGroup = Group::find($groupId);
-        if($confirmedGroup == null || $confirmedGroup->active == 1) 
+        if($confirmedGroup == null || $confirmedGroup->active == 1 || $confirmedGroup->id == 1) 
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
@@ -183,7 +183,7 @@ class RequestDomainController extends BaseController {
     }
     
     private function isAble2DecideAboutLab($confirmedLab) {
-        if($confirmedLab == null || $confirmedLab->active == 1)
+        if($confirmedLab == null || $confirmedLab->active == 1 || $confirmedLab->id == 1)
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         return $roleAdmin != null && $roleAdmin->active;

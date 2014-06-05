@@ -129,13 +129,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	public static function getUnconfirmedUsers($groups) {
-		$unconfirmedUsers = User::where('group_confirmed', '=', 0)->where('group_id', '!=', 'null')->get();
+		$unconfirmedUsers = User::where('id', '!=', 1)->get()->where('group_confirmed', '=', 0)->where('group_id', '!=', 'null')->get();
 		if($groups == null)
 			return $unconfirmedUsers;
 		$result = array();
                 foreach($unconfirmedUsers as $user) {
                     foreach($groups as $group) {
-                        if($user->group_id == $group->id)
+                        if($user->group_id == $group->id && $user->id != 1)
                                 $result[] = $user;
                     }
 		}

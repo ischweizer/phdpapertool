@@ -17,13 +17,13 @@ class Lab extends Eloquent {
 	}
         
         public static function getLabs($groups) {
-            $labs = Lab::all();
+            $labs = Lab::where('id', '!=', 1)->get();;
             if($groups == null)
                 return $labs;
             $result = array();
             foreach($labs as $lab) {
                 foreach($groups as $group) {
-                    if($lab->id == $group->lab_id)
+                    if($lab->id == $group->lab_id && $lab->id != 1)
                         $result[$lab->id] = $lab;
                 }     
             }
