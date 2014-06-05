@@ -229,6 +229,15 @@
 				{{ Form::textarea('abstract', null, array('placeholder' => 'Abstract', 'class' => 'form-control')) }}
 			</div>
 
+			@if ($submission['active'] != null)
+			<input type="hidden" name="submissionKind" value="none">
+				@if ($submission['kind'] == 'ConferenceEdition')
+					Conference: {{{ $submission['conferenceName'] }}}<br>
+					Edition: {{{ $submission['editionName'] }}}
+				@elseif ($submission['kind'] == 'Workshop')
+					Workshop: {{{ $submission['workshopName'] }}}
+				@endif <br><br>
+			@else
 			<div class="form-group">
 				{{ Form::label('submissionKind', 'Submission') }}
 				<div class="form-control">
@@ -259,6 +268,7 @@
 					{{ Form::text('workshop_name', $submission['workshopName'], array('class' => 'form-control', 'placeholder' => 'Workshop', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing workshop', 'data-bv-remote-url' => URL::action('WorkshopController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
 				</div>
 			</div>
+			@endif
 
 			{{ Form::submit('Submit', array('class' => 'btn btn-lg btn-primary')) }}
 		{{ Form::close() }}
