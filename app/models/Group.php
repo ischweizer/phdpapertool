@@ -32,4 +32,17 @@ class Group extends Eloquent {
             }
             return $result;
         }
+        
+        public static function getGroupsFromLabs($labs) {
+            $groups = Group::all();
+            if($labs == null)
+                return array();
+            $result = array();
+            foreach($labs as $lab) {
+                foreach($groups as $group) {
+                    if($group->lab_id == $lab->id)
+                        $result[] = $group;
+                }
+            }
+        }
 }

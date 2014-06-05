@@ -13,7 +13,11 @@ class EnrollInGroupController extends BaseController {
     }
     
     public function enroll() {
-        if(!Input::has('group') || !Auth::check()  || (Auth::user()->group_id != null && Auth::user()->group_confirmed != 1))
+        if(Auth::user()->group_id == null)
+            $group = null;
+        else
+            $group = Group::find(Auth::user()->group_id);
+        if(!Input::has('group') || !Auth::check()  || ($group != null && $group->active == 1))
             return Response::json(false);
         $groupId = Input::get('group');
         $group = Group::find($groupId);

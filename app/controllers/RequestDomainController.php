@@ -18,7 +18,7 @@ class RequestDomainController extends BaseController {
         $userGroup = Group::find(Auth::user()->group_id);
         $labs = array(Lab::find($userGroup->lab_id));
         if($roleLabLeader !=  null && $roleLabLeader->active == 1) {
-            $groups = Group::getGroups($labs);
+            $groups = Group::getGroupsFromLabs($labs);
             $users = User::getUnconfirmedUsers($groups);
             return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
