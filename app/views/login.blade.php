@@ -41,8 +41,10 @@
 					@else
 						alert-danger
 					@endif
-					">{{ $msg['content'] }}</div>				
-				@endif
+					">{{ $msg['content'] }}</div>	
+					<br>
+					<p class="text-center">{{ HTML::link('', 'Login again', array('class' => 'btn btn-info')) }}</p>
+				@endif	
 			</div>    
         </div>
 @stop
