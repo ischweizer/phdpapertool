@@ -26,9 +26,6 @@
 @stop
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
    		<h1>Conferences</h1>
 		</div>
@@ -54,6 +51,4 @@
 				 </tr>
 			</tfoot>
 	 	</table>
-
-		</div>
 @stop

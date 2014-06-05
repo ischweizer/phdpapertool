@@ -15,9 +15,6 @@
 @stop
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
 			<h1>{{{ $edition->conference->name }}}<br>Edition {{{ $edition->edition }}}</h1>
 			{{ HTML::linkAction('ConferenceEditionController@getEdit', 'edit', array('id' => $edition->id)) }}
@@ -87,6 +84,4 @@
 			@endforeach
 			</tbody>
 	 	</table>
-
-		</div>
 @stop

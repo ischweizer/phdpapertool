@@ -15,9 +15,6 @@
 @stop
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
 			<h1>{{{ $conference->name }}}</h1>
 		</div>
@@ -60,6 +57,4 @@
 			@endforeach
 			</tbody>
 	 	</table>
-
-		</div>
 @stop

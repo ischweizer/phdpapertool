@@ -203,9 +203,6 @@
 @stop
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
 			<h1>@if($model) Edit @else Create @endif {{ $type }}</h1>
 		@if ( $errors->count() > 0 )
@@ -290,8 +287,6 @@
 			</div>
 			<button type="submit" class="btn btn-default">Submit</button>
 		{{ Form::close() }}
-
-		</div>
 @stop
 
 

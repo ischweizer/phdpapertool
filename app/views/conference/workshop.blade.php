@@ -1,9 +1,6 @@
 @extends('layouts/main')
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
 			<h1>{{{ $workshop->name }}}</h1>
 			{{ HTML::linkAction('WorkshopController@getEdit', 'edit', array('id' => $workshop->id)) }}
@@ -53,6 +50,4 @@
 				</tr>
 			</tbody>
 		</table>
-
-		</div>
 @stop
