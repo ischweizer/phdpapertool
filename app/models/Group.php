@@ -20,13 +20,13 @@ class Group extends Eloquent {
 	}
         
         public static function getGroups($users) {
-            $groups = Group::all();
+            $groups = Group::where('id', '!=', 1)->get();
             if($users == null)
                 return $groups;
             $result = array();
             foreach($groups as $group) {
                 foreach($users as $user) {
-                    if($group->id == $user->group_id)
+                    if($group->id == $user->group_id && $group->id != 1)
                         $result[$group->id] = $group;
                 }
             }
@@ -34,13 +34,13 @@ class Group extends Eloquent {
         }
         
         public static function getGroupsFromLabs($labs) {
-            $groups = Group::all();
+            $groups = Group::where('id', '!=', 1)->get();
             if($labs == null)
-                return array();
+                return $groups;
             $result = array();
             foreach($groups as $group) {
                 foreach($labs as $lab) {
-                    if($group->lab_id == $lab->id)
+                    if($group->lab_id == $lab->id && $group->id != 1)
                         $result[$group->id] = $group;
                 }
             }
