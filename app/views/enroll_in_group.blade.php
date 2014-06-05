@@ -19,7 +19,7 @@
 						url: "create",
 						data: {'groupName':newGroupName, "labName":newLabName},
 						success: function(data){
-							if(data != true)
+							if(data != "true")
 								alert(data);
 							location.reload();						
 						}
@@ -36,7 +36,7 @@
 					url: "create",
 					data: {'groupName':newGroupName, "labId":lab_id},
 					success: function(data){
-						if(data != true)
+						if(data != "true")
 							alert(data);
 						location.reload();						
 					}
@@ -126,82 +126,82 @@
 
 @section('content')
 
-@if (Auth::user()->hasPendingCreation())
-	bla bla
-@else
-	bu bu
-@endif
-
 <div class="container">
 	<h1>Enroll in a research group</h1>
 
-	@if ($groupAccepted)
-		<div class="alert alert-success">You have successfully enrolled in this Group</div>
-	@elseif (Auth::user()->hasGroup()) 
-		<div class="alert alert-info">Your request is pending</div>
-	@endif
+	@if (Auth::user()->isAdmin())
+		<div class="alert alert-info">You are a group or lab leader</div>
+	@elseif (Auth::user()->hasPendingCreation()) 
+		<div class="alert alert-info">You have a pending group or lab creation</div>
+	@else
 
-	@if (Auth::user()->hasGroup())
-		<div class="form-group">
-			<label for="lab_select">Lab</label>
-			<select class="form-control" id="lab_select">
-				<option></option>
-				@foreach ($labs as $lab)
-					@if (Auth::user()->group->lab_id == $lab->id)
-						<option value="{{{ $lab->id }}}" selected>
-							{{{ $lab->name }}}
-						</option>
-					@else
-						<option value="{{{ $lab->id }}}">
-							{{{ $lab->name }}}
-						</option>
-					@endif
-				@endforeach
-				<option value="new">new</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label for="group_select">Group</label>
-			<select class="form-control" id="group_select">
-					@foreach ($labGroups as $group)
-						@if (Auth::user()->group_id == $group->id)
-							<option value="{{{ $group->id }}}" selected>
-								{{{ $group->name }}}
+		@if ($groupAccepted)
+			<div class="alert alert-success">You have successfully enrolled in this Group</div>
+		@elseif (Auth::user()->hasGroup())
+			<div class="alert alert-info">Your group request is pending</div>
+		@endif
+
+		@if (Auth::user()->hasGroup())
+			<div class="form-group">
+				<label for="lab_select">Lab</label>
+				<select class="form-control" id="lab_select">
+					<option></option>
+					@foreach ($labs as $lab)
+						@if (Auth::user()->group->lab_id == $lab->id)
+							<option value="{{{ $lab->id }}}" selected>
+								{{{ $lab->name }}}
 							</option>
 						@else
-							<option value="{{{ $group->id }}}">
-								{{{ $group->name }}}
+							<option value="{{{ $lab->id }}}">
+								{{{ $lab->name }}}
 							</option>
 						@endif
 					@endforeach
-				<option val="new">new</option>
-			</select>
-		</div>
-	@else
-		<div class="form-group">
-			<label for="lab_select">Lab</label>
-			<select class="form-control" id="lab_select">
-				<option></option>
-				@foreach ($labs as $lab)
-					<option value="{{{ $lab-> id}}}">
-						{{{ $lab->name }}}
-					</option>
-				@endforeach
-				<option value="new">new</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label for="group_select">Group</label>
-			<select class="form-control" id="group_select" disabled>
-			</select>
-		</div>
+					<option value="new">new</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="group_select">Group</label>
+				<select class="form-control" id="group_select">
+						@foreach ($labGroups as $group)
+							@if (Auth::user()->group_id == $group->id)
+								<option value="{{{ $group->id }}}" selected>
+									{{{ $group->name }}}
+								</option>
+							@else
+								<option value="{{{ $group->id }}}">
+									{{{ $group->name }}}
+								</option>
+							@endif
+						@endforeach
+					<option val="new">new</option>
+				</select>
+			</div>
+		@else
+			<div class="form-group">
+				<label for="lab_select">Lab</label>
+				<select class="form-control" id="lab_select">
+					<option></option>
+					@foreach ($labs as $lab)
+						<option value="{{{ $lab-> id}}}">
+							{{{ $lab->name }}}
+						</option>
+					@endforeach
+					<option value="new">new</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="group_select">Group</label>
+				<select class="form-control" id="group_select" disabled>
+				</select>
+			</div>
+
+		@endif
+		
+		<div id="infotext" class="alert" style="display:none"></div>
+		<button id="submit" class="btn btn-primary btn-lg" disabled>request group access</button>
 
 	@endif
-	
-	<div id="infotext" class="alert" style="display:none"></div>
-	<button id="submit" class="btn btn-primary btn-lg" disabled>request group access</button>
-
-	
 
 </div> 
 

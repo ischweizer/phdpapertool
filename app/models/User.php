@@ -117,7 +117,15 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function hasPendingCreation()
 	{
-		return (($this->group_id != null && Group::find($this->group_id)->active != 1 && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null)?true:false);
+		return ($this->group_id != null && Group::find($this->group_id)->active != 1 && UserRole::getUserRole(UserRole::SUPER_ADMIN) == null);
+	}
+
+	/**
+	 * Returns true iff the user is some kind of admin (group/lab/super)
+	 */
+	public function isAdmin()
+	{
+		return (count($this->userRoles) > 0);
 	}
 
 	public static function getUnconfirmedUsers($groups) {
