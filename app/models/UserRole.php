@@ -2,9 +2,10 @@
 
 class UserRole extends Eloquent {
         
-        const GROUP_LEADER = 0;
-        const LAB_LEADER = 1;
-        const SUPER_ADMIN = 2;
+
+        const SUPER_ADMIN = 1;
+        const LAB_LEADER = 2;
+        const GROUP_LEADER = 3;
     
 	public function user()
 	{
