@@ -205,12 +205,12 @@
 				<div class="col-md-6">
 					<div class="row">
 						<div class="col-md-6">
-							{{ Form::label('lastname', 'Last name') }}<br>
-							{{ Form::text('lastname', '', array('placeholder' => 'Lastname', 'class' => 'form-control', 'id' => 'last_name')) }}
-						</div>
-						<div class="col-md-6">
 							{{ Form::label('firstname', 'First name') }}<br>
 							{{ Form::text('firstname', '', array('placeholder' => 'First name', 'class' => 'form-control', 'id' => 'first_name')) }}
+						</div>
+						<div class="col-md-6">
+							{{ Form::label('lastname', 'Last name') }}<br>
+							{{ Form::text('lastname', '', array('placeholder' => 'Lastname', 'class' => 'form-control', 'id' => 'last_name')) }}
 						</div>
 					</div>
 					<br>
