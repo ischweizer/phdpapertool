@@ -114,23 +114,17 @@
 			
 			$('#labCreationSave').click(function(){
 				labName = $('#lab_name').val();
-				if(labName) {
-					$('#labCreationModal').modal('hide');
-					$('#groupCreationModal').modal('show');
+				groupName = $('#group_lab_name').val();
+				if(labName && groupName) {
+					createNewLab();
 				}
 			});
 
 			$('#groupCreationSave').click(function(){
 				groupName = $('#group_name').val();
-					if(groupName){
-						$('#groupCreationModal').modal('hide');
-						if(labName) {
-							createNewLab();
-						} else {
-							createNewGroup();
-						}
-
-					}
+				if(groupName){
+					createNewGroup();
+				}
 			});
 
 		});
@@ -213,49 +207,56 @@
 		@endif
 
 		<div class="modal fade" id="labCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		        <h4 class="modal-title" id="myModalLabel">Create a Lab</h4>
-		      </div>
-		      <div class="modal-body">
-		       <div class="form-group">
-			    <label for="lab_name" class="sr-only">Lab name</label>
-			    <div class="col-sm-10">
-			      <input type="text" class="form-control" id="lab_name" placeholder="Lab name">
-			    </div>
-			  </div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary" id="labCreationSave">Save changes</button>
-		      </div>
-		    </div>
-		  </div>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Create a Lab</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="lab_name" class="sr-only">Lab name</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="lab_name" placeholder="Lab name">
+							</div>
+						</div>
+						<br>
+						<div class="form-group">
+							<label for="group_lab_name" class="sr-only">Group name</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="group_lab_name" placeholder="Group name">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="labCreationSave">Save changes</button>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="modal fade" id="groupCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		        <h4 class="modal-title" id="myModalLabel">Create a Group</h4>
-		      </div>
-		      <div class="modal-body">
-		        <div class="form-group">
-			    <label for="group_name" class="sr-only">Group name</label>
-			    <div class="col-sm-10">
-			      <input type="text" class="form-control" id="group_name" placeholder="Group name">
-			    </div>
-			    </div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary" id="groupCreationSave">Save changes</button>
-		      </div>
-		    </div>
-		  </div>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Create a Group</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="group_name" class="sr-only">Group name</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="group_name" placeholder="Group name">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="groupCreationSave">Save changes</button>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div id="infotext" class="alert" style="display:none"></div>
