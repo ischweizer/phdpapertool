@@ -1,7 +1,7 @@
 @extends('layouts/main')
 @section('head')
 <?php
-function getGroup($user, $groups) {
+/*function getGroup($user, $groups) {
     foreach($groups as $group) {
         if($user->group_id == $group->id)
             return $group;
@@ -15,7 +15,7 @@ function getLab($group, $labs) {
             return $lab;
     }
     return null;
-}
+}*/
 ?>
 @stop
 
@@ -24,8 +24,10 @@ function getLab($group, $labs) {
         @foreach($users as $user)
             <li class="list-group-item">
                 <?php
-                    $group = getGroup($user, $groups);
-                    $lab = getLab($group, $labs);
+                    $group = $groups[$user->group_id];
+                    //$group = getGroup($user, $groups);
+                    $lab = $labs[$group->lab_id];
+                    //$lab = getLab($group, $labs);
                     if($group->active == 1) {
                         $text = $user->email." would like to join group '".$group->name."' in lab '".$lab->name."'";
                         $var = "userId=".$user->id;

@@ -24,7 +24,7 @@ class Lab extends Eloquent {
             foreach($groups as $group) {
                 foreach($labs as $lab) {
                     if($lab->id == $group->lab_id)
-                        $result[] = $lab;
+                        $result[$lab->id] = $lab;
                 }     
             }
             return $result;
