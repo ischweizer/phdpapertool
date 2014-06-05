@@ -9,7 +9,7 @@
    		<h1>Your Profile</h1>
 		</div>
 
-        <a href="/enroll">Enroll in a group</a><br><br>
+        <a href="enroll">Enroll in a group</a><br><br>
 
 		<div class="row">
         <div class="col-xs-8">
@@ -36,7 +36,6 @@
                     <label>Last Name *</label>
                     <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ $author['last_name'] }}">
                 </div>
-
                 <hr>
                 <div class="uiButton">
                     <input type="submit" class="btn btn-primary btn-lg" value="Update">
