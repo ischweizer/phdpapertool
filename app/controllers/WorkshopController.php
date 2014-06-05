@@ -23,7 +23,12 @@ class WorkshopController extends BaseController {
 	/**
 	 * Edit or create a workshop.
 	 */
-    public function getEdit($id = null) {
+    public function anyEdit($id = null) {
+		if (Input::get('workshop-create-return-url')) {
+			Session::set('workshop-create-return', Input::all());
+			// flash given workshop name
+			Session::flashInput(Input::only('name'));
+		}
 		$workshop = null;
 		if ($id != null) {
 			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
@@ -32,17 +37,17 @@ class WorkshopController extends BaseController {
 		if ($workshop) {
 			$editionOption = array($workshop->conference_edition_id => 'Dummy');
 		}
-		return View::make('conference/event_edit')->with('model', $workshop)->with('type', 'Workshop')->with('action', 'WorkshopController@postEdit')->with('conferenceName', 'conferenceEdition[conference][name]')->with('editionOption', $editionOption);
+		return View::make('conference/event_edit')->with('model', $workshop)->with('type', 'Workshop')->with('action', 'WorkshopController@postEditTarget')->with('conferenceName', 'conferenceEdition[conference][name]')->with('editionOption', $editionOption);
     }
 
 	/**
 	 * Handle edit/create result.
 	 */
-	public function postEdit() {
+	public function postEditTarget() {
 		// validate
 		$validator = Workshop::validate(Input::all());
 		if ($validator->fails()) {
-			return Redirect::action('WorkshopController@getEdit')->withErrors($validator)->withInput();
+			return Redirect::action('WorkshopController@anyEdit')->withErrors($validator)->withInput();
 		}
 
 		$workshop = null;
@@ -70,7 +75,13 @@ class WorkshopController extends BaseController {
 
 		// check for success
 		if (!$success) {
-			return Redirect::action('WorkshopController@getEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+			return Redirect::action('WorkshopController@anyEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+		}
+
+		if (Session::has('workshop-create-return')) {
+			$input = Session::get('workshop-create-return');
+			Session::forget('workshop-create-return');
+			return Redirect::to($input['workshop-create-return-url'])->withInput($input)->with('workshop_id', $workshop->id);
 		}
 
 		return View::make('conference/event_edited')->with('type', 'Workshop')->with('action', 'WorkshopController@getDetails')->with('id', $workshop->id)->with('edited', $edit);

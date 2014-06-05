@@ -7,13 +7,9 @@
 class ProfileController extends BaseController {
     
     public function getIndex($id = null) {
-    	$user = User::find(Auth::id());
-    	$author = Author::find($user->author_id);
-    	$group = false;
-
-    	if (!empty($author->group_id)) {
-    		$group = Group::find($author->group_id);
-    	}
+    	$user = Auth::user();
+    	$author = $user->author;
+    	$group = $user->group;
     	
         return View::make(
 				'profile', 

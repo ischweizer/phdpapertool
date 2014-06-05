@@ -285,7 +285,7 @@
 					{{ Form::text('event[end]', @date_format(Form::getValueAttribute('event[end]'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the last date', 'data-bv-confdate-after' => 'event[abstract_due] event[paper_due] event[notification_date] event[camera_ready_due] event[start]')) }}
 				</div>
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="submit" class="btn btn-default btn-primary">Submit</button>
 		{{ Form::close() }}
 @stop
 

@@ -31,10 +31,7 @@ Route::group(array('before' => 'auth'), function()
 {
 	Route::controller('paper', 'PaperController');
 
-	Route::get('timeline', function() 
-	{
-		return View::make('timeline');
-	});
+	Route::controller('timeline', 'TimelineController');
 
 	Route::get('overview', function() 
 	{

@@ -23,22 +23,27 @@ class ConferenceEditionController extends BaseController {
 	/**
 	 * Edit or create a conference edition.
 	 */
-    public function getEdit($id = null) {
+    public function anyEdit($id = null) {
+		if (Input::get('conference-edition-create-return-url')) {
+			Session::set('conference-edition-create-return', Input::all());
+			// flash given conference name
+			Session::flashInput(Input::only('conference'));
+		}
 		$edition = null;
 		if ($id != null) {
 			$edition = ConferenceEdition::with('conference', 'event')->find($id);
 		}
-		return View::make('conference/event_edit')->with('model', $edition)->with('type', 'Conference Edition')->with('action', 'ConferenceEditionController@postEdit')->with('conferenceName', 'conference[name]');
+		return View::make('conference/event_edit')->with('model', $edition)->with('type', 'Conference Edition')->with('action', 'ConferenceEditionController@postEditTarget')->with('conferenceName', 'conference[name]');
     }
 
 	/**
 	 * Handle edit/create result.
 	 */
-	public function postEdit() {
+	public function postEditTarget() {
 		// validate
 		$validator = ConferenceEdition::validate(Input::all());
 		if ($validator->fails()) {
-			return Redirect::action('ConferenceEditionController@getEdit')->withErrors($validator)->withInput();
+			return Redirect::action('ConferenceEditionController@anyEdit')->withErrors($validator)->withInput();
 		}
 
 		$edition = null;
@@ -66,7 +71,13 @@ class ConferenceEditionController extends BaseController {
 
 		// check for success
 		if (!$success) {
-			return Redirect::action('ConferenceEditionController@getEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+			return Redirect::action('ConferenceEditionController@anyEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+		}
+
+		if (Session::has('conference-edition-create-return')) {
+			$input = Session::get('conference-edition-create-return');
+			Session::forget('conference-edition-create-return');
+			return Redirect::to($input['conference-edition-create-return-url'])->withInput($input)->with('conference_edition_id', $edition->id);
 		}
 
 		return View::make('conference/event_edited')->with('type', 'Conference Edition')->with('action', 'ConferenceEditionController@getDetails')->with('id', $edition->id)->with('edited', $edit);
