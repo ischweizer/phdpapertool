@@ -13,6 +13,14 @@ class Workshop extends Eloquent {
 		return $this->morphOne('EventModel', 'detail');
 	}
 
+	public function isWorkshop() {
+		return true;
+	}
+
+	public function isConferenceEdition() {
+		return false;
+	}
+
 	/**
 	 * Validate the given input.
 	 *

@@ -56,39 +56,141 @@
 					},
 					live: 'enabled'
 				});
+
+				// submission toggle
+				$('[name=submissionKind]').change(function() {
+					$('.submissionToggle').hide();
+					$('#' + $(this).val()).show();
+				});
+
+				// initialize submission toggle
+				$('.submissionToggle').hide();
+				$('#{{ $submission['kind'] }}').show();
+
+				// install conference typeahead
+				var conferences = new Bloodhound({
+					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+					queryTokenizer: Bloodhound.tokenizers.whitespace,
+					remote: {
+						url: "{{ URL::action('ConferenceController@getAutocomplete', array('QUERY')) }}",
+						replace: function (url, query) {
+							// double encode query as it gets decoded -> splitted, which would destroy queries containing '/'
+							return url.replace('QUERY', encodeURIComponent(encodeURIComponent(query)));
+						}
+					}
+				});
+				conferences.initialize();
+				$('#conference_name').typeahead({
+					highlight: true
+				}, {
+					name: 'conferences',
+					displayKey: 'name',
+					source: conferences.ttAdapter(),
+					templates: {
+						suggestion: function (obj) {
+							if (obj.acronym) {
+								return '<i>' + obj.acronym + '</i> - ' + obj.name;
+							} else {
+								return obj.name;
+							}
+						}
+					}
+				}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
+					$('#paper-form')
+						.data('bootstrapValidator')
+						.updateStatus('conference_name', 'NOT_VALIDATED', null)
+						.validateField('conference_name');
+					conferenceNameChange();
+				});
+				$('#conference_name').on('input', conferenceNameChange);
+				function conferenceNameChange() {
+					$.ajax({
+						url: "{{ URL::action('ConferenceController@anyEditions') }}",
+						data: {'name': $('#conference_name').val()},
+						dataType: 'json',
+						success: function(data) {
+							var select = $('#conference_edition_id');
+							var oldVal = select.val();
+							var foundOldVal = false;
+							select.empty();
+							select.append(new Option('', ''));
+							for (var i = 0; i < data.length; i++) {
+								select.append(new Option(data[i].edition, data[i].id));
+								if (data[i].id == oldVal) {
+									foundOldVal = true;
+								}
+							}
+							if (foundOldVal) {
+								select.val(oldVal);
+							}
+						}
+					});
+				}
+
+				// install workshop typeahead
+				var workshops = new Bloodhound({
+					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+					queryTokenizer: Bloodhound.tokenizers.whitespace,
+					remote: {
+						url: "{{ URL::action('WorkshopController@getAutocomplete', array('QUERY')) }}",
+						replace: function (url, query) {
+							// double encode query as it gets decoded -> splitted, which would destroy queries containing '/'
+							return url.replace('QUERY', encodeURIComponent(encodeURIComponent(query)));
+						}
+					}
+				});
+				workshops.initialize();
+				$('#workshop_name').typeahead({
+					highlight: true
+				}, {
+					name: 'workshops',
+					displayKey: 'name',
+					source: workshops.ttAdapter()
+				}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
+					$('#paper-form')
+						.data('bootstrapValidator')
+						.updateStatus('workshop_name', 'NOT_VALIDATED', null)
+						.validateField('workshop_name');
+					workshopNameChange();
+				});
+				$('#workshop_name').on('input', workshopNameChange);
+				function workshopNameChange() {
+					$.ajax({
+						url: "{{ URL::action('WorkshopController@anyId') }}",
+						data: {'name': $('#workshop_name').val()},
+						dataType: 'text',
+						success: function(data) {
+							$('#workshop_id').val(data);
+						}
+					});
+				}
 			});
-			
-			var checkform = function(){
-				$('#selected_authors option').prop('selected', true);
-				
-				/*if ($('#titlefield').val() == '') {
-					alert("You have to define a title!");
-					return false;
-				}*/
-				
-				return true;
-			}
 		</script>
 @stop
 
 @section('content')
-
-	<div id='main'>
-
 		<div class="page-header">
-   			<h1>Papers</h1>
-			{{ HTML::linkAction('PaperController@getIndex', 'Back') }}
+   			<h1>@if($model) Edit @else Create @endif Paper</h1>
+			@if ( $errors->count() > 0 )
+			<p>The following errors have occurred:</p>
+			<ul>
+			@foreach( $errors->all() as $message )
+				<li>{{{ $message }}}</li>
+			@endforeach
+			</ul>
+		@endif
 		</div>
 
-		<h3 class="cat-title">Create Paper</h3>
-		{{ Form::open(array('action' => array('PaperController@postCreate', $paper->id), 'id' => 'paper-form')) }}
-		    <!-- title -->
-			{{ Form::label('title', 'Title') }}<br>
-			{{ Form::text('title', $paper->title, array('placeholder' => 'Title', 'class' => 'form-control', 'id' => 'titlefield', 'required')) }}<br>
-			
-			<!-- repository -->
-			{{ Form::label('repository_url', 'Repository') }}<br>
-			{{ Form::text('repository_url', $paper->repository_url, array('placeholder' => 'Repository', 'class' => 'form-control')) }}<br>
+		{{ Form::model($model, array('action' => 'PaperController@postEdit', 'id' => 'paper-form')) }}
+			{{ Form::hidden('id') }}
+			<div class="form-group">
+				{{ Form::label('title', 'Title') }}
+				{{ Form::text('title', null, array('placeholder' => 'Title', 'class' => 'form-control', 'id' => 'titlefield', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div>
+			<div class="form-group">
+				{{ Form::label('repository_url', 'Repository') }}
+				{{ Form::url('repository_url', null, array('placeholder' => 'Repository', 'class' => 'form-control', 'data-bv-uri-message' => 'Has to be a valid URI')) }}
+			</div>
 			
 			<!-- authors -->
 			{{ Form::label('authors', 'Authors') }}<br>
@@ -117,19 +219,47 @@
 					{{ Form::button('Add', array('id' => 'new_author', 'class' => 'btn btn-sm btn-primary')) }}<br><br>
 				</div>
 			</div>
-			{{ Form::label('selectedauthors', 'Selected Authors') }}<br>
-			{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
+			<div class="form-group">
+				{{ Form::label('selectedauthors', 'Selected Authors') }}
+				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}
+			</div>
 			
-			<!-- submiaaion -->
-			{{ Form::label('submission', 'Submission') }}<br>
-			{{ Form::select('submissions', $submissions, null, array('id' => 'submissionlist')) }}<br><br>
-			
-			<!-- abstract -->
-			{{ Form::label('abstract', 'Abstract') }}<br>
-			{{ Form::textarea('abstract', $paper->abstract, array('placeholder' => 'Abstract', 'class' => 'form-control')) }}<br>
-			
-			<!-- submit -->
-			{{ Form::submit('Create new paper', array('class' => 'btn btn-lg btn-primary')) }}<br>
+			<div class="form-group">
+				{{ Form::label('abstract', 'Abstract') }}
+				{{ Form::textarea('abstract', null, array('placeholder' => 'Abstract', 'class' => 'form-control')) }}
+			</div>
+
+			<div class="form-group">
+				{{ Form::label('submissionKind', 'Submission') }}
+				<div class="form-control">
+					<label class="radio-inline">
+						{{ Form::radio('submissionKind', 'ConferenceEdition', $submission['kind'] == 'ConferenceEdition', array()) }} Conference Edition
+					</label>
+					<label class="radio-inline">
+						{{ Form::radio('submissionKind', 'Workshop', $submission['kind'] == 'Workshop', array()) }} Workshop
+					</label>
+					<label class="radio-inline">
+						{{ Form::radio('submissionKind', 'none', $submission['kind'] == 'none', array()) }} none
+					</label>
+				</div>
+			</div>
+			<div id="ConferenceEdition" class="well submissionToggle">
+				<div class="container-fluid"><div class="row"><div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
+					{{ Form::label('conference_name', 'Conference') }}
+					{{ Form::text('conference_name', $submission['conferenceName'], array('class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
+				</div><div class="form-group col-md-4" style="padding:0">
+					{{ Form::label('conference_edition_id', 'Edition') }}
+					{{ Form::select('conference_edition_id', $submission['editionOption'], $submission['activeDetailID'], array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+				</div></div></div>
+			</div>
+			<div id="Workshop" class="well submissionToggle">
+				<div class="form-group">
+					{{ Form::hidden('workshop_id', $submission['activeDetailID'], array('id' => 'workshop_id')) }}
+					{{ Form::label('workshop_name', 'Workshop') }}
+					{{ Form::text('workshop_name', $submission['workshopName'], array('class' => 'form-control', 'placeholder' => 'Workshop', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing workshop', 'data-bv-remote-url' => URL::action('WorkshopController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
+				</div>
+			</div>
+
+			{{ Form::submit('Submit', array('class' => 'btn btn-lg btn-primary')) }}
 		{{ Form::close() }}
-	</div>
 @stop

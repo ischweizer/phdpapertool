@@ -18,6 +18,14 @@ class ConferenceEdition extends Eloquent {
 		return $this->hasMany('Workshop');
 	}
 
+	public function isWorkshop() {
+		return false;
+	}
+
+	public function isConferenceEdition() {
+		return true;
+	}
+
 	/**
 	 * Validate the given input.
 	 *

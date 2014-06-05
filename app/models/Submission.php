@@ -8,6 +8,6 @@ class Submission extends Eloquent {
 
 	public function event()
 	{
-		return $this->belongsTo('Event');
+		return $this->belongsTo('EventModel', 'event_id');
 	}
 }

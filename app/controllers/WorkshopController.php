@@ -5,7 +5,7 @@ use Illuminate\Support\MessageBag;
 class WorkshopController extends BaseController {
 	
 	public function __construct() {
-		$this->beforeFilter('csrf', array('on' => 'post'));
+		$this->beforeFilter('csrf', array('only' => array('postEdit')));
 	}
 
 	/**
@@ -75,4 +75,53 @@ class WorkshopController extends BaseController {
 
 		return View::make('conference/event_edited')->with('type', 'Workshop')->with('action', 'WorkshopController@getDetails')->with('id', $workshop->id)->with('edited', $edit);
     }
+
+	/**
+	 * Autocomplete for workshops.
+	 */
+    public function getAutocomplete($query) {
+        if(Request::ajax()) {
+			// order for consistent results
+			$search = '%'.$query.'%';
+			return Workshop::select(array('id', 'name'))->where('name', 'LIKE', $search)->orderBy('id', 'ASC')->take(5)->get()->toJson();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Check the given workshop name for existence.
+	 */
+    public function anyCheck($name = null) {
+        if(Request::ajax()) {
+			if (is_null($name)) {
+				$name = Input::get('name');
+			}
+			$exists = Workshop::where('name', '=', $name)->first();
+			return json_encode(array(
+				'valid' => (bool) $exists,
+			));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Return the id of the workshop with the given name or nothing if it doesn't exist.
+	 */
+    public function anyId($name = null) {
+		if (Request::ajax()) {
+			if (is_null($name)) {
+				$name = Input::get('name');
+			}
+			$result = Workshop::where('name', '=', $name)->first();
+			if ($result) {
+				return $result->id;
+			} else {
+				return '';
+			}
+		} else {
+			return null;
+		}
+	}
 }

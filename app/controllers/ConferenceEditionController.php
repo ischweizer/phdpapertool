@@ -5,7 +5,7 @@ use Illuminate\Support\MessageBag;
 class ConferenceEditionController extends BaseController {
 	
 	public function __construct() {
-		$this->beforeFilter('csrf', array('on' => 'post'));
+		$this->beforeFilter('csrf', array('only' => array('postEdit')));
 	}
 
 	/**

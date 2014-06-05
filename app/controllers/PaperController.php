@@ -3,15 +3,24 @@
 class PaperController extends BaseController {
 	
 	public function getIndex($id = null) {
-		$papers = Auth::user()->author->papers;//Paper::all();
+		$papers = Auth::user()->author->papers;
 		return View::make('paper/index', array('papers' => $papers));
 	}
 	
-	public function getCreate($id = null) {
+	public function getEdit($id = null) {
 		$autorList = Author::all();
 		$authors = array();
 		$selectedauthors = array();
-		$paper = new Paper();
+		$paper = null;
+
+		// active submission information
+		$submission = array();
+		$submission['kind'] = 'none';
+		$submission['active'] = null;
+		$submission['activeDetailID'] = null;
+		$submission['conferenceName'] = null;
+		$submission['editionOption'] = array();
+		$submission['workshopName'] = null;
 		
 		foreach ($autorList as $author) {
 			if($author->id != Auth::user()->author->id)
@@ -20,61 +29,54 @@ class PaperController extends BaseController {
 		
 		// Edit Paper
 		if (!is_null($id)) {
-			$paper = Paper::with('authors')->find($id);
+			$paper = Paper::with('authors', 'submissions', 'submissions.event', 'submissions.event.detail')->find($id);
 			if (!is_null($paper)) {
-				
 				foreach ($paper->authors as $author) {
 					if (array_key_exists($author->id, $authors)) {
 						$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 						unset($authors[$author->id]);
 					}
 				}
+				if (!$paper->submissions->isEmpty()) {
+					$activeSubmission = $paper->submissions->first();
+					$submission['active'] = $activeSubmission;
+					$submission['kind'] = $activeSubmission->event->detail_type;
+					$detail = $activeSubmission->event->detail;
+					$submission['activeDetailID'] = $detail->id;
+					if ($detail->isWorkshop()) {
+						$submission['workshopName'] = $detail->name;
+					} else if ($detail->isConferenceEdition()) {
+						$submission['conferenceName'] = $detail->conference->name;
+						$submission['editionOption'] = array($detail->id => 'Dummy');
+					}
+				}
 			}
 		}
-		
-		$submissions = array('0' => '');
-		
-		$workshops = Workshop::all();
-		foreach ($workshops as $workshop) {
-			$submissions[$workshop->event->id] = $workshop->name;
-		}
-		
-		$conferenceEditions = ConferenceEdition::all();
-		foreach ($conferenceEditions as $editions) {
-			$event =  $editions->event;
-			if($event) 
-				$submissions[$event->id] = $editions->conference->name." - ".$editions->edition;
-		}
-		
+
 		// New Paper
-		return View::make('paper/create', array('authors' => $authors, 'paper' => $paper, 'selectedauthors' => $selectedauthors, 'submissions' => $submissions));
+		return View::make('paper/create', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission));
 	}
 
-	public function postCreate($id = null)
-	{
-		$input = Input::all();
-		
-		$validation = Paper::validate();
-		
-		if ($validation->fails())
-	    {
-	    	return "Validation Failed";
-	        //return Redirect::to('register')->with_input()->with_errors($validation);
-	    }
-		
-		if (!is_null($id)) {
-			$paper = Paper::find($id);
-			$paper->title = $input['title'];
-			$paper->abstract = $input['abstract'];
-			$paper->repository_url = $input['repository_url'];
+	public function postEdit() {
+		$validation = Paper::validate(Input::all());
+
+		if ($validation->fails()) {
+			return Redirect::action('PaperController@getEdit')->withErrors($validator)->withInput();
+		}
+
+		$edit = (bool) Input::get('id');
+		if ($edit) {
+			$paper = Paper::find(Input::get('id'));
+			$paper->fill(Input::all());
 			
 			if(!$paper->save()) {
 				return "Problem with updating paper!";
 			}
 		} else {
-			$paper = Paper::create( $input );
+			$paper = Paper::create(Input::all());
 		}
 		
+		$input = Input::all();
 		$paper->authors()->detach();
 		if (isset($input['selectedauthors'])) {
 			$authors = $input['selectedauthors'];
@@ -86,12 +88,21 @@ class PaperController extends BaseController {
 		}
 		
 		$paper->authors()->attach(Auth::user()->author->id);
-		
-		if($input['submissions'] != 0) {
-			$submission = new Submission();
-			$submission->paper_id = $paper->id;
-			$submission->event_id = $input['submissions'];
-			$submission->save();
+
+		$submissionKind = Input::get('submissionKind');
+		if($submissionKind != 'none') {
+			$detail = null;
+			if ($submissionKind == 'ConferenceEdition') {
+				$detail = ConferenceEdition::with('event')->find(Input::get('conference_edition_id'));
+			} else if ($submissionKind == 'Workshop') {
+				$detail = Workshop::with('event')->find(Input::get('workshop_id'));
+			}
+			if ($detail) {
+				$submission = new Submission();
+				$submission->paper_id = $paper->id;
+				$submission->event_id = $detail->event->id;
+				$submission->save();
+			}
 		}
 		
 		return Redirect::to('paper/index');	

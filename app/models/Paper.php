@@ -8,6 +8,11 @@ class Paper extends Eloquent {
 	{
 		return $this->belongsToMany('Author');
 	}
+
+	public function submissions()
+	{
+		return $this->hasMany('Submission');
+	}
 	
 	/**
 	 * Validate the given input.
