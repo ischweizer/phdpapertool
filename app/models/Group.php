@@ -44,5 +44,6 @@ class Group extends Eloquent {
                         $result[] = $group;
                 }
             }
+            return $result;
         }
 }
