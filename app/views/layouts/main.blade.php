@@ -40,7 +40,8 @@
 			if (!isset($conf['currentPage'])) {
 				$conf['currentPage'] = '';
 			}
-		?>		
+		?>
+		@if (Auth::check())
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
@@ -55,8 +56,7 @@
 				</div>
 			</div>
 		</div>
-
-		@if (Auth::guest())
+		@else
 		<div class="jumbotron">
 		  <h1>Welcome to PhD Paper Tool!</h1>
 		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
