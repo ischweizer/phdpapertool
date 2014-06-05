@@ -31,6 +31,7 @@
 					@if (Auth::guest())
 						{{ HTML::link('', 'Login', array('class' => 'btn btn-info')) }}
 					@else		
+						{{{ Auth::user()->email }}}
 						{{ HTML::link('logout', 'Logout', array('class' => 'btn btn-warning')) }}
 					@endif
 				</div>

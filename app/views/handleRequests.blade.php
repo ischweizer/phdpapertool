@@ -1,33 +1,15 @@
 @extends('layouts/main')
-@section('head')
-<?php
-/*function getGroup($user, $groups) {
-    foreach($groups as $group) {
-        if($user->group_id == $group->id)
-            return $group;
-    }
-    return null;
-}
-
-function getLab($group, $labs) {
-    foreach($labs as $lab) {
-        if($group->lab_id == $lab->id)
-            return $lab;
-    }
-    return null;
-}*/
-?>
-@stop
 
 @section('content')
+    <h1>
+        New Requests
+    </h1>
     <ul class="list-group">
         @foreach($users as $user)
             <li class="list-group-item">
                 <?php
                     $group = $groups[$user->group_id];
-                    //$group = getGroup($user, $groups);
                     $lab = $labs[$group->lab_id];
-                    //$lab = getLab($group, $labs);
                     if($group->active == 1) {
                         $text = $user->email." would like to join group '".$group->name."' in lab '".$lab->name."'";
                         $var = "userId=".$user->id;
@@ -39,11 +21,12 @@ function getLab($group, $labs) {
                         $var = "labId=".$lab->id;
                     }
                 ?>                
-                <div align="right"><a href="confirm?<?php echo $var; ?>"><span class="glyphicon glyphicon-ok"></a></span>
-                    <a href="refuse?<?php echo $var; ?>"><span class="glyphicon glyphicon-remove"></span></a></div> 
-                <div algin="left"><?php echo $text; ?></div>
+                <div align="right"><a href="confirm?{{{ $var }}}"><span class="glyphicon glyphicon-ok"></a></span>
+                    <a href="refuse?{{{ $var }}}"><span class="glyphicon glyphicon-remove"></span></a></div> 
+                <div algin="left">{{{ $text }}}</div>
             </li>
         @endforeach
     </ul>
+
 @stop
     
