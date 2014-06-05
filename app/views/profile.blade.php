@@ -9,6 +9,8 @@
    		<h1>Your Profile</h1>
 		</div>
 
+        <a href="/enroll">Enroll in a group</a><br><br>
+
 		<div class="row">
         <div class="col-xs-8">
         	@if (isset($msg))

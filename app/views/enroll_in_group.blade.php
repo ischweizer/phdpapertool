@@ -10,14 +10,13 @@
 			lab_id = {{{ Auth::user()->group->lab_id }}};
 		@endif
 
+		var labName;
+		var groupName;
+
 		function createNewLab(){
-			var newLabName = prompt('Enter new lab name');
-			if(newLabName) {
-				var newGroupName = prompt('Enter group name for first group in the new lab: '+newLabName);
-				if(newGroupName){
 					$.ajax({
 						url: "create",
-						data: {'groupName':newGroupName, "labName":newLabName},
+						data: {'groupName':labName, "labName":groupName},
 						success: function(data){
 							if(data != "true")
 								alert(data);
@@ -25,16 +24,12 @@
 						}
 						//TODO no success
 					});
-				}
-			}
 		}
 
 		function createNewGroup(){
-			var newGroupName = prompt('Enter new group name');
-			if(newGroupName){
 				$.ajax({
 					url: "create",
-					data: {'groupName':newGroupName, "labId":lab_id},
+					data: {'groupName':groupName, "labId":lab_id},
 					success: function(data){
 						if(data != "true")
 							alert(data);
@@ -42,7 +37,6 @@
 					}
 					//TODO no success
 				});
-			}
 		}
 
 		$(document).ready(function() {
@@ -57,7 +51,7 @@
 				group_id = undefined;
 
 				if ($(this).val() == 'new') {
-					createNewLab();
+					$('#labCreationModal').modal('show');
 				} else if($(this).val() == ''){
 
 				} else {
@@ -87,7 +81,7 @@
 				group_id = undefined;
 					
 				if ($(this).val() == 'new') {
-					createNewGroup();
+					$('#groupCreationModal').modal('show');
 				} else if($(this).val() == ''){
 
 				} else {
@@ -118,6 +112,26 @@
 					});
 			});
 			
+			$('#labCreationSave').click(function(){
+				labName = $('#lab_name').val();
+				if(labName) {
+					$('#labCreationModal').modal('hide');
+					$('#groupCreationModal').modal('show');
+				}
+			});
+
+			$('#groupCreationSave').click(function(){
+				groupName = $('#group_name').val();
+					if(groupName){
+						$('#groupCreationModal').modal('hide');
+						if(labName) {
+							createNewLab();
+						} else {
+							createNewGroup();
+						}
+
+					}
+			});
 
 		});
 		
@@ -197,7 +211,53 @@
 			</div>
 
 		@endif
-		
+
+		<div class="modal fade" id="labCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		        <h4 class="modal-title" id="myModalLabel">Create a Lab</h4>
+		      </div>
+		      <div class="modal-body">
+		       <div class="form-group">
+			    <label for="lab_name" class="sr-only">Lab name</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="lab_name" placeholder="Lab name">
+			    </div>
+			  </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary" id="labCreationSave">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="modal fade" id="groupCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		        <h4 class="modal-title" id="myModalLabel">Create a Group</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class="form-group">
+			    <label for="group_name" class="sr-only">Group name</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="group_name" placeholder="Group name">
+			    </div>
+			    </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary" id="groupCreationSave">Save changes</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
 		<div id="infotext" class="alert" style="display:none"></div>
 		<button id="submit" class="btn btn-primary btn-lg" disabled>request group access</button>
 
