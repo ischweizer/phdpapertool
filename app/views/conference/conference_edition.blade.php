@@ -17,7 +17,7 @@
 @section('content')
 		<div class="page-header">
 			<h1>{{{ $edition->conference->name }}}<br>Edition {{{ $edition->edition }}}</h1>
-			{{ HTML::linkAction('ConferenceEditionController@getEdit', 'edit', array('id' => $edition->id)) }}
+			{{ HTML::linkAction('ConferenceEditionController@anyEdit', 'edit', array('id' => $edition->id)) }}
 		</div>
 
    		<h3>Conference Edition Information</h3>
@@ -79,7 +79,7 @@
 				<tr>
 					<td>{{{ $workshop->name }}}</td>
 					<td>{{{ $workshop->event->start->format('M d, Y') }}} - {{{ $workshop->event->end->format('M d, Y') }}}</td>
-					<td>{{ HTML::linkAction('WorkshopController@getDetails', 'details', array('id' => $workshop->id)) }} {{ HTML::linkAction('WorkshopController@getEdit', 'edit', array('id' => $workshop->id)) }}</td>
+					<td>{{ HTML::linkAction('WorkshopController@getDetails', 'details', array('id' => $workshop->id)) }} {{ HTML::linkAction('WorkshopController@anyEdit', 'edit', array('id' => $workshop->id)) }}</td>
 				</tr>
 			@endforeach
 			</tbody>

@@ -126,6 +126,7 @@
 						}
 					});
 				}
+				conferenceNameChange();
 
 				// install workshop typeahead
 				var workshops = new Bloodhound({
@@ -164,6 +165,21 @@
 						}
 					});
 				}
+				workshopNameChange();
+
+				// create new conference edition button
+				$('#conference_create').click(function() {
+					$('<input type="hidden">').attr({
+						name: 'conference-edition-create-return-url',
+						value: '{{ URL::action('PaperController@anyEdit') }}'
+					}).appendTo('#paper-form');
+					$('<input type="hidden">').attr({
+						name: 'conference[name]',
+						value: $('#conference_name').val()
+					}).appendTo('#paper-form');
+					$('#paper-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
+					$('#paper-form').bootstrapValidator('defaultSubmit');
+				});
 			});
 		</script>
 @stop
@@ -181,7 +197,7 @@
 		@endif
 		</div>
 
-		{{ Form::model($model, array('action' => 'PaperController@postEdit', 'id' => 'paper-form')) }}
+		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('title', 'Title') }}
@@ -229,7 +245,7 @@
 				{{ Form::textarea('abstract', null, array('placeholder' => 'Abstract', 'class' => 'form-control')) }}
 			</div>
 
-			@if ($submission['active'] != null)
+			@if ($submission['kind'] != 'none' && $model)
 			<input type="hidden" name="submissionKind" value="none">
 				@if ($submission['kind'] == 'ConferenceEdition')
 					Conference: {{{ $submission['conferenceName'] }}}<br>
@@ -242,7 +258,7 @@
 				{{ Form::label('submissionKind', 'Submission') }}
 				<div class="form-control">
 					<label class="radio-inline">
-						{{ Form::radio('submissionKind', 'ConferenceEdition', $submission['kind'] == 'ConferenceEdition', array()) }} Conference Edition
+						{{ Form::radio('submissionKind', 'ConferenceEdition', $submission['kind'] == 'ConferenceEdition', array()) }} Conference
 					</label>
 					<label class="radio-inline">
 						{{ Form::radio('submissionKind', 'Workshop', $submission['kind'] == 'Workshop', array()) }} Workshop
@@ -256,9 +272,12 @@
 				<div class="container-fluid"><div class="row"><div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
 					{{ Form::label('conference_name', 'Conference') }}
 					{{ Form::text('conference_name', $submission['conferenceName'], array('class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
-				</div><div class="form-group col-md-4" style="padding:0">
+				</div><div class="form-group col-md-3" style="padding-left:0;padding-right:5px">
 					{{ Form::label('conference_edition_id', 'Edition') }}
 					{{ Form::select('conference_edition_id', $submission['editionOption'], $submission['activeDetailID'], array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+				</div><div class="form-group col-md-1" style="padding:1px 0 0 0">
+					<label>&nbsp;</label>
+					<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 				</div></div></div>
 			</div>
 			<div id="Workshop" class="well submissionToggle">
