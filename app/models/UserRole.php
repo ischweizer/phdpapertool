@@ -40,7 +40,6 @@ class UserRole extends Eloquent {
             $newRole->user_id = $user->id;
             $newRole->role_id = $roleId;
             $newRole->active = $isActive;
-            $newRole->role_type = 'default';
             $newRole->save();     
             return $newRole;
         }
