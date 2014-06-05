@@ -20,6 +20,7 @@ class PaperController extends BaseController {
 		$submission['activeDetailID'] = null;
 		$submission['conferenceName'] = null;
 		$submission['editionOption'] = array();
+		$submission['editionName'] = null;
 		$submission['workshopName'] = null;
 		
 		foreach ($autorList as $author) {
@@ -48,6 +49,7 @@ class PaperController extends BaseController {
 					} else if ($detail->isConferenceEdition()) {
 						$submission['conferenceName'] = $detail->conference->name;
 						$submission['editionOption'] = array($detail->id => 'Dummy');
+						$submission['editionName'] = $detail->edition;
 					}
 				}
 			}
