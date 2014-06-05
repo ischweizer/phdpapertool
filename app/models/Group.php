@@ -24,8 +24,8 @@ class Group extends Eloquent {
             if($users == null)
                 return $groups;
             $result = array();
-            foreach($users as $user) {
-                foreach($groups as $group) {
+            foreach($groups as $group) {
+                foreach($users as $user) {
                     if($group->id == $user->group_id)
                         $result[$group->id] = $group;
                 }
@@ -38,8 +38,8 @@ class Group extends Eloquent {
             if($labs == null)
                 return array();
             $result = array();
-            foreach($labs as $lab) {
-                foreach($groups as $group) {
+            foreach($groups as $group) {
+                foreach($labs as $lab) {
                     if($group->lab_id == $lab->id)
                         $result[$group->id] = $group;
                 }

@@ -16,7 +16,7 @@ class RequestDomainController extends BaseController {
         }
         $roleLabLeader = UserRole::getUserRole(UserRole::LAB_LEADER);
         $userGroup = Group::find(Auth::user()->group_id);
-        $labs = array(Lab::find($userGroup->lab_id));
+        $labs[$userGroup->lab_id] = Lab::find($userGroup->lab_id);
         if($roleLabLeader !=  null && $roleLabLeader->active == 1) {
             $groups = Group::getGroupsFromLabs($labs);
             $users = User::getUnconfirmedUsers($groups);
@@ -24,7 +24,7 @@ class RequestDomainController extends BaseController {
         }
         $roleGroupLeader = UserRole::getUserRole(UserRole::GROUP_LEADER);
         if($roleGroupLeader != null && $roleGroupLeader->active == 1) {
-            $groups = array($userGroup);
+            $groups[$userGroup->id] = $userGroup;
             $users = User::getUnconfirmedUsers($groups);
             return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
@@ -179,7 +179,7 @@ class RequestDomainController extends BaseController {
         $roleLab = UserRole::getUserRole(UserRole::LAB_LEADER);
         if($roleLab == null || $roleLab->active != 1)
             return false;
-        return $confirmedGroup->lab_id != Group::find(Auth::user()->group_id)->lab_id;
+        return $confirmedGroup->lab_id == Group::find(Auth::user()->group_id)->lab_id;
     }
     
     private function isAble2DecideAboutLab($confirmedLab) {

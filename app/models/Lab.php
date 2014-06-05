@@ -21,8 +21,8 @@ class Lab extends Eloquent {
             if($groups == null)
                 return $labs;
             $result = array();
-            foreach($groups as $group) {
-                foreach($labs as $lab) {
+            foreach($labs as $lab) {
+                foreach($groups as $group) {
                     if($lab->id == $group->lab_id)
                         $result[$lab->id] = $lab;
                 }     
