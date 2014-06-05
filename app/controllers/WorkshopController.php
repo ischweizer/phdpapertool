@@ -23,7 +23,12 @@ class WorkshopController extends BaseController {
 	/**
 	 * Edit or create a workshop.
 	 */
-    public function getEdit($id = null) {
+    public function anyEdit($id = null) {
+		if (Input::get('workshop-create-return-url')) {
+			Session::set('workshop-create-return', Input::all());
+			// flash given workshop name
+			Session::flashInput(Input::only('name'));
+		}
 		$workshop = null;
 		if ($id != null) {
 			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
@@ -71,6 +76,12 @@ class WorkshopController extends BaseController {
 		// check for success
 		if (!$success) {
 			return Redirect::action('WorkshopController@anyEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+		}
+
+		if (Session::has('workshop-create-return')) {
+			$input = Session::get('workshop-create-return');
+			Session::forget('workshop-create-return');
+			return Redirect::to($input['workshop-create-return-url'])->withInput($input)->with('workshop_id', $workshop->id);
 		}
 
 		return View::make('conference/event_edited')->with('type', 'Workshop')->with('action', 'WorkshopController@getDetails')->with('id', $workshop->id)->with('edited', $edit);

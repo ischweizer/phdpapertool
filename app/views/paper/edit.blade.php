@@ -180,6 +180,20 @@
 					$('#paper-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
 					$('#paper-form').bootstrapValidator('defaultSubmit');
 				});
+
+				// create new workshop button
+				$('#workshop_create').click(function() {
+					$('<input type="hidden">').attr({
+						name: 'workshop-create-return-url',
+						value: '{{ URL::action('PaperController@anyEdit') }}'
+					}).appendTo('#paper-form');
+					$('<input type="hidden">').attr({
+						name: 'name',
+						value: $('#workshop_name').val()
+					}).appendTo('#paper-form');
+					$('#paper-form').attr('action', '{{URL::action('WorkshopController@anyEdit')}}');
+					$('#paper-form').bootstrapValidator('defaultSubmit');
+				});
 			});
 		</script>
 @stop
@@ -281,11 +295,14 @@
 				</div></div></div>
 			</div>
 			<div id="Workshop" class="well submissionToggle">
-				<div class="form-group">
+				<div class="container-fluid"><div class="row"><div class="form-group col-md-11" style="padding-left:0;padding-right:5px">
 					{{ Form::hidden('workshop_id', $submission['activeDetailID'], array('id' => 'workshop_id')) }}
 					{{ Form::label('workshop_name', 'Workshop') }}
 					{{ Form::text('workshop_name', $submission['workshopName'], array('class' => 'form-control', 'placeholder' => 'Workshop', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing workshop', 'data-bv-remote-url' => URL::action('WorkshopController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
-				</div>
+				</div><div class="form-group col-md-1" style="padding:1px 0 0 0">
+					<label>&nbsp;</label>
+					<input id="workshop_create" type="button" class="btn btn-sm btn-primary" value="Create New">
+				</div></div></div>
 			</div>
 			@endif
 
