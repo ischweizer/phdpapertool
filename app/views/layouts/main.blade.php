@@ -28,7 +28,7 @@
 					<button type="submit" class="btn btn-default">Search</button>
 				</form>
 				<div class="header_link">
-					@if (isset($conf['loggedIn']) && !$conf['loggedIn'])
+					@if (Auth::guest())
 						{{ HTML::link('', 'Login', array('class' => 'btn btn-info')) }}
 					@else		
 						{{ HTML::link('logout', 'Logout', array('class' => 'btn btn-warning')) }}
