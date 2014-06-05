@@ -20,7 +20,7 @@
 	@yield('conf')
 	<body>
 		<div id="top_toolbar">
-				<a class="navbar-brand" href="#">PhD Paper Tool</a>
+				<a class="navbar-brand" href="/">PhD Paper Tool</a>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
 						<input type="text" id='search-bar' class="form-control" placeholder="Search">
