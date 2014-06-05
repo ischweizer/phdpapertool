@@ -16,7 +16,7 @@
 		function createNewLab(){
 					$.ajax({
 						url: "create",
-						data: {'groupName':labName, "labName":groupName},
+						data: {'groupName':groupName, "labName":labName},
 						success: function(data){
 							if(data != "true")
 								alert(data);
