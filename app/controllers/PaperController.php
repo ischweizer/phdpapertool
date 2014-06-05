@@ -32,19 +32,33 @@ class PaperController extends BaseController {
 			}
 		}
 		
+		$submissions = array('0' => '');
+		
+		$workshops = Workshop::all();
+		foreach ($workshops as $workshop) {
+			$submissions[$workshop->event->id] = $workshop->name;
+		}
+		
+		$conferenceEditions = ConferenceEdition::all();
+		foreach ($conferenceEditions as $editions) {
+			$event =  $editions->event;
+			if($event) 
+				$submissions[$event->id] = $editions->conference->name." - ".$editions->edition;
+		}
+		
 		// New Paper
-		return View::make('paper/create', array('authors' => $authors, 'paper' => $paper, 'selectedauthors' => $selectedauthors));
+		return View::make('paper/create', array('authors' => $authors, 'paper' => $paper, 'selectedauthors' => $selectedauthors, 'submissions' => $submissions));
 	}
 
 	public function postCreate($id = null)
 	{
 		$input = Input::all();
-	
-	    $validation = Paper::validate();
+		
+		$validation = Paper::validate();
 		
 		if ($validation->fails())
 	    {
-	    	return $validator->messages()->toJson();//"Validation Failed";
+	    	return "Validation Failed";
 	        //return Redirect::to('register')->with_input()->with_errors($validation);
 	    }
 		
@@ -62,13 +76,23 @@ class PaperController extends BaseController {
 		}
 		
 		$paper->authors()->detach();
-		$authors = $input['selectedauthors'];
-		if($authors != null) {
-			foreach ($authors as $author) {
-				$paper->authors()->attach($author);
+		if (isset($input['selectedauthors'])) {
+			$authors = $input['selectedauthors'];
+			if($authors != null) {
+				foreach ($authors as $author) {
+					$paper->authors()->attach($author);
+				}
 			}
 		}
+		
 		$paper->authors()->attach(Auth::user()->author->id);
+		
+		if($input['submissions'] != 0) {
+			$submission = new Submission();
+			$submission->paper_id = $paper->id;
+			$submission->event_id = $input['submissions'];
+			$submission->save();
+		}
 		
 		return Redirect::to('paper/index');	
 	}

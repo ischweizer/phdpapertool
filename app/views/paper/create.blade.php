@@ -2,6 +2,8 @@
 
 @section('head')
 		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
+		{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
+		{{ HTML::style('stylesheets/bootstrapValidator.min.css'); }}
 
 		<script>
 			$(document).ready(function() {
@@ -44,15 +46,25 @@
 						});
 					}
 				});
+				
+				// enable form validation
+				$('#paper-form').bootstrapValidator({
+					feedbackIcons: {
+						valid: 'glyphicon glyphicon-ok',
+						invalid: 'glyphicon glyphicon-remove',
+						validating: 'glyphicon glyphicon-refresh'
+					},
+					live: 'enabled'
+				});
 			});
 			
 			var checkform = function(){
 				$('#selected_authors option').prop('selected', true);
 				
-				if ($('#titlefield').val() == '') {
+				/*if ($('#titlefield').val() == '') {
 					alert("You have to define a title!");
-					//return false;
-				}
+					return false;
+				}*/
 				
 				return true;
 			}
@@ -69,10 +81,10 @@
 		</div>
 
 		<h3 class="cat-title">Create Paper</h3>
-		{{ Form::open(array('action' => array('PaperController@postCreate', $paper->id), 'onsubmit' => ' return checkform();')) }}
+		{{ Form::open(array('action' => array('PaperController@postCreate', $paper->id), 'id' => 'paper-form')) }}
 		    <!-- title -->
 			{{ Form::label('title', 'Title') }}<br>
-			{{ Form::text('title', $paper->title, array('placeholder' => 'Title', 'class' => 'form-control', 'id' => 'titlefield')) }}<br>
+			{{ Form::text('title', $paper->title, array('placeholder' => 'Title', 'class' => 'form-control', 'id' => 'titlefield', 'required')) }}<br>
 			
 			<!-- repository -->
 			{{ Form::label('repository_url', 'Repository') }}<br>
@@ -107,6 +119,10 @@
 			</div>
 			{{ Form::label('selectedauthors', 'Selected Authors') }}<br>
 			{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
+			
+			<!-- submiaaion -->
+			{{ Form::label('submission', 'Submission') }}<br>
+			{{ Form::select('submissions', $submissions, null, array('id' => 'submissionlist')) }}<br><br>
 			
 			<!-- abstract -->
 			{{ Form::label('abstract', 'Abstract') }}<br>
