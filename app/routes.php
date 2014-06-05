@@ -11,7 +11,10 @@
 |
 */
 
-Route::post('create', 'CreateDomainController@index');
+Route::get('refuse', 'RequestDomainController@refuse');
+Route::get('confirm', 'RequestDomainController@confirm');
+Route::get('handle', 'RequestDomainController@index');
+Route::get('create', 'CreateDomainController@index');
 Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
 Route::get('enroll', 'EnrollInGroupController@index');
 

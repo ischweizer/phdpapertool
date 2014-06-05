@@ -34,7 +34,8 @@ class RegistrationController extends BaseController {
             $user->password = Hash::make(Input::get('password'));
             $user->email = Input::get('email');
             $user->author_id = $author->id;
-            $user->active = 1;
+            $user->group_confirmed = 0;
+            $user->email_confirmed = 1; //TODO nur zum testen, später false
             
             $user->save();
             
