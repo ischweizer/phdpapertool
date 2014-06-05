@@ -11,13 +11,6 @@
 |
 */
 
-Route::get('refuse', 'RequestDomainController@refuse');
-Route::get('confirm', 'RequestDomainController@confirm');
-Route::get('handle', 'RequestDomainController@index');
-Route::get('create', 'CreateDomainController@index');
-Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
-Route::get('enroll', 'EnrollInGroupController@index');
-
 // Sites which should be accessible in both states
 // / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
 // either way it should become our "welcome" page.
@@ -62,5 +55,12 @@ Route::group(array('before' => 'auth'), function()
 
 	// again, filter is "before" so logout belongs into this section
 	Route::get('logout', 'LoginController@logout');
+
+	Route::get('refuse', 'RequestDomainController@refuse');
+	Route::get('confirm', 'RequestDomainController@confirm');
+	Route::get('handle', 'RequestDomainController@index');
+	Route::get('create', 'CreateDomainController@index');
+	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
+	Route::get('enroll', 'EnrollInGroupController@index');
 });
 
