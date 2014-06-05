@@ -45,12 +45,15 @@
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:500px" class="pull-right">        
+					<div style="width:600px" class="pull-right">        
 						<ul >
 							<li {{ ($conf['currentPage'] == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
 							<li {{ ($conf['currentPage'] == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
 							<li {{ ($conf['currentPage'] == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
 							<li {{ ($conf['currentPage'] == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
+							@if (Auth::user()->isAdmin())
+								<li {{($conf['currentPage'] == 'handle') ? 'class="active"' : '' }}>{{ HTML::link('handle', 'Admin')}}</li>
+							@endif
 						</ul>
 					</div>
 				</div>
