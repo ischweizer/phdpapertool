@@ -13,6 +13,11 @@ class Paper extends Eloquent {
 	{
 		return $this->hasMany('Submission');
 	}
+
+	public function activeSubmission()
+	{
+		return $this->hasOne('Submission')->where('active', '=', 1);
+	}
 	
 	/**
 	 * Validate the given input.
