@@ -6,7 +6,6 @@
 			{{ HTML::linkAction('WorkshopController@anyEdit', 'edit', array('id' => $workshop->id)) }}
 		</div>
 
-   		<h3>Workshop Information</h3>
 		<table class="table" cellspacing="0" width="100%">
 			<thead>
 				<tr>

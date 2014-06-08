@@ -270,16 +270,23 @@
 			</div>
 
 			@if ($submission['kind'] != 'none' && $model)
-			<input type="hidden" name="submissionKind" value="none">
+			<div class="form-group">
+				{{ Form::label('submissionKind', 'Current Submission Target') }}
+				{{ Form::hidden('submissionKind', 'none') }}
+				<div class="form-control-static-bordered">
 				@if ($submission['kind'] == 'ConferenceEdition')
-					Conference: {{{ $submission['conferenceName'] }}}<br>
-					Edition: {{{ $submission['editionName'] }}}
+					<b>Conference</b> {{{ $submission['conferenceName'] }}}<br>
+					<b>Edition</b> {{{ $submission['editionName'] }}}<br>
+					{{ HTML::linkAction('ConferenceEditionController@getDetails', 'details', array('id' => $submission['activeDetailID'])) }}
 				@elseif ($submission['kind'] == 'Workshop')
-					Workshop: {{{ $submission['workshopName'] }}}
-				@endif <br><br>
+					<b>Workshop</b><br>
+					{{{ $submission['workshopName'] }}} {{ HTML::linkAction('WorkshopController@getDetails', 'details', array('id' => $submission['activeDetailID'])) }}
+				@endif
+				</div>
+			</div>
 			@else
 			<div class="form-group">
-				{{ Form::label('submissionKind', 'Submission') }}
+				{{ Form::label('submissionKind', 'Current Submission Target') }}
 				<div class="form-control">
 					<label class="radio-inline">
 						{{ Form::radio('submissionKind', 'ConferenceEdition', $submission['kind'] == 'ConferenceEdition', array()) }} Conference

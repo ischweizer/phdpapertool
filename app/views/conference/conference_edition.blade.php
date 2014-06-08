@@ -20,7 +20,6 @@
 			{{ HTML::linkAction('ConferenceEditionController@anyEdit', 'edit', array('id' => $edition->id)) }}
 		</div>
 
-   		<h3>Conference Edition Information</h3>
 		<table class="table" cellspacing="0" width="100%">
 			<thead>
 				<tr>
