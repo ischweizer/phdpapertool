@@ -92,7 +92,7 @@ class ConferenceController extends BaseController {
 			}
 			$result = Conference::where('name', '=', $name)->first();
 			if ($result) {
-				return $result->editions()->get(array('id', 'edition'))->toJson();
+				return $result->editions()->orderBy('created_at', 'DESC')->get(array('id', 'edition'))->toJson();
 			} else {
 				return '[]';
 			}
