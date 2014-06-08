@@ -19,24 +19,13 @@ class PaperController extends BaseController {
 		$paper = null;
 		$submissionEvent = null;
 
-		if (Session::has('conference_edition_id')) {
-			$edition = ConferenceEdition::with('event')->find(Session::get('conference_edition_id'));
-			if ($edition) {
-				$submissionEvent = $edition->event;
-			}
-		} else if (Session::has('workshop_id')) {
-			$workshop = Workshop::with('event')->find(Session::get('workshop_id'));
-			if ($workshop) {
-				$submissionEvent = $workshop->event;
-			}
-		}
-		
+		// get authors
 		foreach ($autorList as $author) {
 			if($author->id != Auth::user()->author->id)
 				$authors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 		}
-		
-		// edit?
+
+		// get edit model
 		if (!is_null($id)) {
 			$paper = Paper::with('authors', 'submissions', 'submissions.event', 'submissions.event.detail')->find($id);
 			if (!is_null($paper)) {
@@ -49,6 +38,19 @@ class PaperController extends BaseController {
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
+			}
+		}
+
+		// get created event
+		if (Session::has('conference_edition_id')) {
+			$edition = ConferenceEdition::with('event')->find(Session::get('conference_edition_id'));
+			if ($edition) {
+				$submissionEvent = $edition->event;
+			}
+		} else if (Session::has('workshop_id')) {
+			$workshop = Workshop::with('event')->find(Session::get('workshop_id'));
+			if ($workshop) {
+				$submissionEvent = $workshop->event;
 			}
 		}
 

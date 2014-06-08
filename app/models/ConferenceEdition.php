@@ -36,10 +36,17 @@ class ConferenceEdition extends Eloquent {
 		if (is_null($input)) {
 			$input = Input::all();
 		}
-		
+
+		$uniqueIgnore = '';
+		if (isset($input['id'])) {
+			$id = (int) $input['id'];
+			if ($id > 0) {
+				$uniqueIgnore = ',' . $id;
+			}
+		}
 		$rules = array(
 				'id'			=> 'Exists:conference_editions,id',
-				'conference_id'	=> 'Required|Exists:conferences,id',
+				'conference_id'	=> 'Required|Exists:conferences,id|Unique_with:conference_editions,edition' . $uniqueIgnore,
 				'location'		=> 'Required',
 				'edition'		=> 'Required'
 		);

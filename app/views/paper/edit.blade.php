@@ -3,7 +3,7 @@
 @section('head')
 		<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 		{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
-		{{ HTML::style('stylesheets/bootstrapValidator.min.css'); }}
+		{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
 
 		<script>
 			$(document).ready(function() {
@@ -168,14 +168,14 @@
 				workshopNameChange();
 
 				// create new conference edition button
-				$('#conference_create').click(function() {
+				$('#conference_edition_create').click(function() {
 					// add return information and current name
 					$('<input type="hidden">').attr({
 						name: 'conference-edition-create-return-url',
-						value: '{{ URL::action('PaperController@anyEdit') }}'
+						value: '{{ Request::url() }}'
 					}).appendTo('#paper-form');
 					$('<input type="hidden">').attr({
-						name: 'conference[name]',
+						name: 'conference-edition-create-name',
 						value: $('#conference_name').val()
 					}).appendTo('#paper-form');
 					// forget current conference name/editionid
@@ -191,10 +191,10 @@
 					// add return information and current name
 					$('<input type="hidden">').attr({
 						name: 'workshop-create-return-url',
-						value: '{{ URL::action('PaperController@anyEdit') }}'
+						value: '{{ Request::url() }}'
 					}).appendTo('#paper-form');
 					$('<input type="hidden">').attr({
-						name: 'name',
+						name: 'workshop-create-name',
 						value: $('#workshop_name').val()
 					}).appendTo('#paper-form');
 					// forget current workshop name/id
@@ -308,7 +308,7 @@
 					{{ Form::select('conference_edition_id', $submission['editionOption'], $submission['activeDetailID'], array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 				</div><div class="form-group col-md-1" style="padding:1px 0 0 0">
 					<label>&nbsp;</label>
-					<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
+					<input id="conference_edition_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 				</div></div></div>
 			</div>
 			<div id="Workshop" class="well submissionToggle">

@@ -127,14 +127,14 @@
 
 				@if ($type == 'Workshop')
 				// create new conference edition button
-				$('#conference_create').click(function() {
+				$('#conference_edition_create').click(function() {
 					// add return information and current name
 					$('<input type="hidden">').attr({
 						name: 'conference-edition-create-return-url',
-						value: '{{ URL::action('WorkshopController@anyEdit') }}'
+						value: '{{ Request::url() }}'
 					}).appendTo('#event-form');
 					$('<input type="hidden">').attr({
-						name: 'conference[name]',
+						name: 'conference-edition-create-name',
 						value: $('#conference_name').val()
 					}).appendTo('#event-form');
 					// forget current conference name/editionid
@@ -142,6 +142,25 @@
 					$('#conference_edition_id').remove();
 					// submit form to alternative target
 					$('#event-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
+					$('#event-form').bootstrapValidator('defaultSubmit');
+				});
+				@elseif ($type == 'Conference Edition')
+				// create new conference button
+				$('#conference_create').click(function() {
+					// add return information and current name
+					$('<input type="hidden">').attr({
+						name: 'conference-create-return-url',
+						value: '{{ Request::url() }}'
+					}).appendTo('#event-form');
+					$('<input type="hidden">').attr({
+						name: 'conference-create-name',
+						value: $('#conference_name').val()
+					}).appendTo('#event-form');
+					// forget current conference name/editionid
+					$('#conference_name').remove();
+					$('#conference_id').remove();
+					// submit form to alternative target
+					$('#event-form').attr('action', '{{URL::action('ConferenceController@anyEdit')}}');
 					$('#event-form').bootstrapValidator('defaultSubmit');
 				});
 				@endif
@@ -239,26 +258,32 @@
 		</div>
 		{{ Form::model($model, array('action' => $action, 'id' => 'event-form', 'role' => 'form')) }}
 			{{ Form::hidden('id') }}
+			<div class="container-fluid"><div class="row">
 		@if ($type == 'Conference Edition')
-			<div class="form-group">
+			<div class="form-group col-md-11" style="padding-left:0;padding-right:5px">
 				{{ Form::label($conferenceName, 'Conference') }}
 		@elseif ($type == 'Workshop')
-			<div class="container-fluid"><div class="row"><div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
+			<div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
 				{{ Form::label($conferenceName, 'Co-located Conference') }}
 		@endif
-				{{ Form::text($conferenceName, null, array('id' => 'conference_name', 'class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
-		
-		@if ($type == 'Conference Edition')
+				{{ Form::text($conferenceName, $initialConferenceName, array('id' => 'conference_name', 'class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
 			</div>
-		@elseif ($type == 'Workshop')
-			</div><div class="form-group col-md-3" style="padding-left:0;padding-right:5px">
-				{{ Form::label('conference_edition_id', 'Edition') }}
-				{{ Form::select('conference_edition_id', $editionOption, null, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
-			</div><div class="form-group col-md-1" style="padding:1px 0 0 0">
+		@if ($type == 'Conference Edition')
+			<div class="form-group col-md-1" style="padding:1px 0 0 0">
 				<label>&nbsp;</label>
 				<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
-			</div></div></div>
+			</div>
+		@elseif ($type == 'Workshop')
+			<div class="form-group col-md-3" style="padding-left:0;padding-right:5px">
+				{{ Form::label('conference_edition_id', 'Edition') }}
+				{{ Form::select('conference_edition_id', $editionOption, $initialConferenceEditionId, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div>
+			<div class="form-group col-md-1" style="padding:1px 0 0 0">
+				<label>&nbsp;</label>
+				<input id="conference_edition_create" type="button" class="btn btn-sm btn-primary" value="Create New">
+			</div>
 		@endif
+			</div></div>
 		@if ($type == 'Conference Edition')
 			{{ Form::hidden('conference_id', null, array('id' => 'conference_id')) }}
 			<div class="form-group">
@@ -272,7 +297,7 @@
 		@elseif ($type == 'Workshop')
 			<div class="form-group">
 				{{ Form::label('name', 'Workshop Name') }}
-				{{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+				{{ Form::text('name', $initialName, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 		@endif
 			<div class="form-group single-date">
@@ -314,5 +339,3 @@
 			<button type="submit" class="btn btn-default btn-primary">Submit</button>
 		{{ Form::close() }}
 @stop
-
-
