@@ -23,18 +23,11 @@ class PaperController extends BaseController {
 			$edition = ConferenceEdition::with('event')->find(Session::get('conference_edition_id'));
 			if ($edition) {
 				$submissionEvent = $edition->event;
-				// forget old conference input as we use the created one
-				// (laravel does not really support modifying old input, hence I'm using the hardcoded "_old_input")
-				Session::forget('_old_input.conference_name');
-				Session::forget('_old_input.conference_edition_id');
 			}
 		} else if (Session::has('workshop_id')) {
 			$workshop = Workshop::with('event')->find(Session::get('workshop_id'));
 			if ($workshop) {
 				$submissionEvent = $workshop->event;
-				// forget old workshop input as we use the created one
-				Session::forget('_old_input.workshop_name');
-				Session::forget('_old_input.workshop_id');
 			}
 		}
 		
@@ -158,10 +151,4 @@ class PaperController extends BaseController {
 		
 		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));
 	}
-	
-	/*public function missingMethod($parameters = array())
-	{
-	    var_dump($parameters);
-	}*/
-
 }

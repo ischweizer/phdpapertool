@@ -29,6 +29,7 @@ class WorkshopController extends BaseController {
 			// flash given workshop name
 			Session::flashInput(Input::only('name'));
 		}
+
 		$workshop = null;
 		if ($id != null) {
 			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
@@ -36,6 +37,19 @@ class WorkshopController extends BaseController {
 		$editionOption = array();
 		if ($workshop) {
 			$editionOption = array($workshop->conference_edition_id => 'Dummy');
+		}
+
+		if (Session::has('conference_edition_id')) {
+			$edition = ConferenceEdition::with('conference')->find(Session::get('conference_edition_id'));
+			if ($edition) {
+				// create dummy workshop
+				$workshop = array(
+					'conference_edition_id' => $edition->id, 
+					'conferenceEdition' => array(
+						'conference' => array(
+							'name' => $edition->conference->name)));
+				$editionOption = array($edition->id => 'Dummy');
+			}
 		}
 		return View::make('conference/event_edit')->with('model', $workshop)->with('type', 'Workshop')->with('action', 'WorkshopController@postEditTarget')->with('conferenceName', 'conferenceEdition[conference][name]')->with('editionOption', $editionOption);
     }

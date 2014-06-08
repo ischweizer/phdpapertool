@@ -169,6 +169,7 @@
 
 				// create new conference edition button
 				$('#conference_create').click(function() {
+					// add return information and current name
 					$('<input type="hidden">').attr({
 						name: 'conference-edition-create-return-url',
 						value: '{{ URL::action('PaperController@anyEdit') }}'
@@ -177,12 +178,17 @@
 						name: 'conference[name]',
 						value: $('#conference_name').val()
 					}).appendTo('#paper-form');
+					// forget current conference name/editionid
+					$('#conference_name').remove();
+					$('#conference_edition_id').remove();
+					// submit form to alternative target
 					$('#paper-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
 					$('#paper-form').bootstrapValidator('defaultSubmit');
 				});
 
 				// create new workshop button
 				$('#workshop_create').click(function() {
+					// add return information and current name
 					$('<input type="hidden">').attr({
 						name: 'workshop-create-return-url',
 						value: '{{ URL::action('PaperController@anyEdit') }}'
@@ -191,6 +197,10 @@
 						name: 'name',
 						value: $('#workshop_name').val()
 					}).appendTo('#paper-form');
+					// forget current workshop name/id
+					$('#workshop_name').remove();
+					$('#workshop_id').remove();
+					// submit form to alternative target
 					$('#paper-form').attr('action', '{{URL::action('WorkshopController@anyEdit')}}');
 					$('#paper-form').bootstrapValidator('defaultSubmit');
 				});

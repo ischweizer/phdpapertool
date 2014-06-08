@@ -124,8 +124,30 @@
 
 				// in case an initial value is set
 				conferenceNameChange();
+
+				@if ($type == 'Workshop')
+				// create new conference edition button
+				$('#conference_create').click(function() {
+					// add return information and current name
+					$('<input type="hidden">').attr({
+						name: 'conference-edition-create-return-url',
+						value: '{{ URL::action('WorkshopController@anyEdit') }}'
+					}).appendTo('#event-form');
+					$('<input type="hidden">').attr({
+						name: 'conference[name]',
+						value: $('#conference_name').val()
+					}).appendTo('#event-form');
+					// forget current conference name/editionid
+					$('#conference_name').remove();
+					$('#conference_edition_id').remove();
+					// submit form to alternative target
+					$('#event-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
+					$('#event-form').bootstrapValidator('defaultSubmit');
+				});
+				@endif
 			});
 
+			// date validator with before/after options
 			(function($) {
 				$.fn.bootstrapValidator.validators.confDate = {
 					html5Attributes: {
@@ -142,6 +164,7 @@
 						if (isNaN(date.getTime())) {
 							return false;
 						}
+						// datepicker.getDate() does allow many formats, we want to force ours
 						if (!value.match(/[A-Z][a-z]+ \d{2}, \d{4}/)) {
 							return false;
 						}
@@ -228,9 +251,12 @@
 		@if ($type == 'Conference Edition')
 			</div>
 		@elseif ($type == 'Workshop')
-			</div><div class="form-group col-md-4" style="padding:0">
+			</div><div class="form-group col-md-3" style="padding-left:0;padding-right:5px">
 				{{ Form::label('conference_edition_id', 'Edition') }}
 				{{ Form::select('conference_edition_id', $editionOption, null, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div><div class="form-group col-md-1" style="padding:1px 0 0 0">
+				<label>&nbsp;</label>
+				<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 			</div></div></div>
 		@endif
 		@if ($type == 'Conference Edition')
