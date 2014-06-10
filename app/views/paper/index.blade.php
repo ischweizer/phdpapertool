@@ -18,7 +18,7 @@
 	<div id='main'>
 
 		<div class="page-header">
-			{{ Form::open(array('action' => 'PaperController@anyEdit')) }}
+			{{ Form::open(array('action' => 'PaperController@anyEdit', 'method' => 'GET')) }}
 				<h1>Papers <button type="submit" class="btn btn-xs btn-primary">Create New</button></h1>
 			{{ Form::close() }}
 		</div>

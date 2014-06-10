@@ -21,19 +21,29 @@ class PaperController extends BaseController {
 
 		// get authors
 		foreach ($autorList as $author) {
-			if($author->id != Auth::user()->author->id)
+			if (Auth::user()->author->id != $author->id) {
 				$authors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			} else {
+				$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			}
 		}
 
 		// get edit model
 		if (!is_null($id)) {
 			$paper = Paper::with('authors', 'submissions', 'submissions.event', 'submissions.event.detail')->find($id);
 			if (!is_null($paper)) {
+				$allowed = false;
 				foreach ($paper->authors as $author) {
+					if ($author->id == Auth::user()->author->id) {
+						$allowed = true;
+					}
 					if (array_key_exists($author->id, $authors)) {
 						$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 						unset($authors[$author->id]);
 					}
+				}
+				if (!$allowed) {
+					App::abort(404);
 				}
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;

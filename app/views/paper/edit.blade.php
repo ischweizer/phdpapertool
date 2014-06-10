@@ -210,7 +210,9 @@
 
 @section('content')
 		<div class="page-header">
-   			<h1>@if($model) Edit @else Create @endif Paper</h1>
+			{{ Form::open(array('action' => 'PaperController@getIndex', 'method' => 'GET')) }}
+				<h1>@if($model) Edit @else Create @endif Paper <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+			{{ Form::close() }}
 			@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>
