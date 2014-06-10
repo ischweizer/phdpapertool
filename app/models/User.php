@@ -125,12 +125,26 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if($groups == null)
 			return $unconfirmedUsers;
 		$result = array();
-		foreach($groups as $group) {
-			foreach($unconfirmedUsers as $user) {
-				if($user->group_id == $group->id)
-					$result[] = $user;
-			}
+                foreach($unconfirmedUsers as $user) {
+                    foreach($groups as $group) {
+                        if($user->group_id == $group->id && $user->id != 1)
+                            $result[] = $user;
+                    }
 		}
 		return $result;
 	}
+        
+        public static function getUsers($groups) {
+            if($groups == null)
+                return null;
+            $users = User::all();
+            $result = array();
+            foreach($users as $user) {
+                foreach($groups as $group) {
+                    if($user->group_id == $group->id && $user->id != 1)
+                        $result[] = $user;
+                }
+            }
+            return $result;
+        }
 }
