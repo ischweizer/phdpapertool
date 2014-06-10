@@ -4,7 +4,7 @@
  *
  * @author jost
  */
-class RequestDomainController extends BaseController {
+class AdminController extends BaseController {
    
     public function index() {
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
@@ -12,7 +12,7 @@ class RequestDomainController extends BaseController {
             $users = User::getUnconfirmedUsers(null);
             $groups = Group::getGroups($users);
             $labs = Lab::getLabs($groups);
-            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
+            return View::make('admin')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
         $roleLabLeader = UserRole::getUserRole(UserRole::LAB_LEADER);
         $userGroup = Group::find(Auth::user()->group_id);
@@ -20,15 +20,15 @@ class RequestDomainController extends BaseController {
         if($roleLabLeader !=  null && $roleLabLeader->active == 1) {
             $groups = Group::getGroupsFromLabs($labs);
             $users = User::getUnconfirmedUsers($groups);
-            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
+            return View::make('admin')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
         $roleGroupLeader = UserRole::getUserRole(UserRole::GROUP_LEADER);
         if($roleGroupLeader != null && $roleGroupLeader->active == 1) {
             $groups[$userGroup->id] = $userGroup;
             $users = User::getUnconfirmedUsers($groups);
-            return View::make('handleRequests')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
+            return View::make('admin')->with('users', $users)->with('groups', $groups)->with('labs', $labs);
         }
-        return View::make('handleRequests')->with('users', array())->with('groups', array())->with('labs', array());
+        return View::make('admin')->with('users', array())->with('groups', array())->with('labs', array());
     }
     
     public function confirm() {

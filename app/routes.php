@@ -53,9 +53,9 @@ Route::group(array('before' => 'auth'), function()
 	// again, filter is "before" so logout belongs into this section
 	Route::get('logout', 'LoginController@logout');
 
-	Route::get('refuse', 'RequestDomainController@refuse');
-	Route::get('confirm', 'RequestDomainController@confirm');
-	Route::get('handle', 'RequestDomainController@index');
+	Route::get('refuse', 'AdminController@refuse');
+	Route::get('confirm', 'AdminController@confirm');
+	Route::get('handle', 'AdminController@index');
 	Route::get('create', 'CreateDomainController@index');
 	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
 	Route::get('enroll', 'EnrollInGroupController@index');

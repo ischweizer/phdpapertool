@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d3299ee36272f56a487f120242a5157a",
+    "hash": "0ced2a88267b059785bd7720ca6457c7",
     "packages": [
         {
             "name": "bllim/datatables",
