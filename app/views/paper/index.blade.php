@@ -19,7 +19,7 @@
 
 		<div class="page-header">
    			<h1>Papers</h1>
-			{{ HTML::linkAction('PaperController@getCreate', 'Create') }}
+			{{ HTML::linkAction('PaperController@anyEdit', 'Create') }}
 		</div>
 
 		<h3 class="cat-title">Paper Table</h3>
@@ -35,10 +35,10 @@
 			<tbody>
 				@foreach ($papers as $paper)
 					<tr>
-						<td>{{ $paper->title }}</td>
-						<td>{{ Str::limit($paper->abstract, 90) }}</td>
-						<td>{{ $paper->repository_url }}</td>
-						<td>{{ HTML::linkAction('PaperController@getCreate', 'Edit', array('id' => $paper->id)) }}</td>
+						<td>{{{ $paper->title }}}</td>
+						<td>{{{ Str::limit($paper->abstract, 90) }}}</td>
+						<td>{{{ $paper->repository_url }}}</td>
+						<td>{{ HTML::linkAction('PaperController@anyEdit', 'Edit', array('id' => $paper->id)) }}</td>
 					</tr>
 				@endforeach
 			</tbody>

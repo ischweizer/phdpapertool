@@ -8,4 +8,30 @@ class Paper extends Eloquent {
 	{
 		return $this->belongsToMany('Author');
 	}
+
+	public function submissions()
+	{
+		return $this->hasMany('Submission');
+	}
+
+	public function activeSubmission()
+	{
+		return $this->hasOne('Submission')->where('active', '=', 1);
+	}
+	
+	/**
+	 * Validate the given input.
+	 *
+	 * @param  array
+	 * @return \Illuminate\Validation\Validator
+	 */
+	public static function validate($input = null) {
+		if (is_null($input)) {
+			$input = Input::all();
+		}
+		$rules = array(
+				'title'	=> 'Required'
+		);
+		return Validator::make($input, $rules);
+	}
 }

@@ -31,6 +31,7 @@
 
 						<div class="uiButton">
 							<input type="submit" class="btn btn-primary btn-lg" value="Login">
+							{{ HTML::link('registration', 'Registration', array('class' => 'btn btn-default btn-lg')) }}
 						</div>
 					</form>
 				@else
@@ -40,8 +41,10 @@
 					@else
 						alert-danger
 					@endif
-					">{{ $msg['content'] }}</div>				
-				@endif
+					">{{ $msg['content'] }}</div>	
+					<br>
+					<p class="text-center">{{ HTML::link('', 'Login again', array('class' => 'btn btn-info')) }}</p>
+				@endif	
 			</div>    
         </div>
 @stop

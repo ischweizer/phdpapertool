@@ -13,4 +13,22 @@ class Author extends Eloquent {
 	{
 		return $this->belongsToMany('Paper');
 	}
+	
+	/**
+	 * Validate the given input.
+	 *
+	 * @param  array
+	 * @return \Illuminate\Validation\Validator
+	 */
+	public static function validate($input = null) {
+		if (is_null($input)) {
+			$input = Input::all();
+		}
+		$rules = array(
+				'email'				=> 'required|email',
+				'first_name'		=> 'Required',
+				'last_name'			=> 'Required'
+		);
+		return Validator::make($input, $rules);
+	}
 }

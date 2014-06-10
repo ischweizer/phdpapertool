@@ -11,13 +11,6 @@
 |
 */
 
-Route::get('refuse', 'RequestDomainController@refuse');
-Route::get('confirm', 'RequestDomainController@confirm');
-Route::get('handle', 'RequestDomainController@index');
-Route::get('create', 'CreateDomainController@index');
-Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
-Route::get('enroll', 'EnrollInGroupController@index');
-
 // Sites which should be accessible in both states
 // / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
 // either way it should become our "welcome" page.
@@ -38,15 +31,7 @@ Route::group(array('before' => 'auth'), function()
 {
 	Route::controller('paper', 'PaperController');
 
-	Route::get('timeline', function() 
-	{
-		return View::make('timeline');
-	});
-
-	Route::get('profile', function() 
-	{
-		return View::make('profile');
-	});
+	Route::controller('timeline', 'TimelineController');
 
 	Route::get('overview', function() 
 	{
@@ -57,12 +42,22 @@ Route::group(array('before' => 'auth'), function()
 	{
 		return View::make('data');
 	});
+	
+	Route::controller('profile', 'ProfileController');
+	Route::post('profile', 'ProfileController@save');
 
 	Route::controller('conferences', 'ConferenceController');
-
 	Route::controller('conference-editions', 'ConferenceEditionController');
+	Route::controller('workshops', 'WorkshopController');
 
 	// again, filter is "before" so logout belongs into this section
 	Route::get('logout', 'LoginController@logout');
+
+	Route::get('refuse', 'AdminController@refuse');
+	Route::get('confirm', 'AdminController@confirm');
+	Route::get('handle', 'AdminController@index');
+	Route::get('create', 'CreateDomainController@index');
+	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
+	Route::get('enroll', 'EnrollInGroupController@index');
 });
 

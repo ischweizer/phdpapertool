@@ -1,6 +1,7 @@
 <?php
 
-class CustomValidator extends Illuminate\Validation\Validator {
+// extend felixkiss/uniquewith-validator's Validator for unique_with filter
+class CustomValidator extends Felixkiss\UniqueWithValidator\ValidatorExtension {
 	/**
 	 * The original date_format validator does not support ',' signs in the format string
 	 */

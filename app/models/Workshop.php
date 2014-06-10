@@ -1,11 +1,11 @@
 <?php
 
-class ConferenceEdition extends Eloquent {
-	protected $fillable = array('conference_id', 'location', 'edition');
+class Workshop extends Eloquent {
+	protected $fillable = array('name', 'conference_edition_id');
 
-	public function conference()
+	public function conferenceEdition()
 	{
-		return $this->belongsTo('Conference');
+		return $this->belongsTo('ConferenceEdition');
 	}
 
 	public function event()
@@ -13,17 +13,12 @@ class ConferenceEdition extends Eloquent {
 		return $this->morphOne('EventModel', 'detail');
 	}
 
-	public function workshops()
-	{
-		return $this->hasMany('Workshop');
-	}
-
 	public function isWorkshop() {
-		return false;
+		return true;
 	}
 
 	public function isConferenceEdition() {
-		return true;
+		return false;
 	}
 
 	/**
@@ -45,10 +40,9 @@ class ConferenceEdition extends Eloquent {
 			}
 		}
 		$rules = array(
-				'id'			=> 'Exists:conference_editions,id',
-				'conference_id'	=> 'Required|Exists:conferences,id|Unique_with:conference_editions,edition' . $uniqueIgnore,
-				'location'		=> 'Required',
-				'edition'		=> 'Required'
+				'id'					=> 'Exists:workshops,id',
+				'conference_edition_id'	=> 'Required|Exists:conference_editions,id',
+				'name'					=> 'Required|Unique:workshops,name' . $uniqueIgnore
 		);
 		$rules = array_merge($rules, EventModel::getValidateRules());
 		return Validator::make($input, $rules);

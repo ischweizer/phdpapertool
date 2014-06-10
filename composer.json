@@ -6,7 +6,8 @@
 	"require": {
 		"laravel/framework": "4.1.*",
 		"bllim/datatables": "*",
-		"doctrine/dbal": "2.5.*@dev"
+		"doctrine/dbal": "2.5.*@dev",
+		"felixkiss/uniquewith-validator": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

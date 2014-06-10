@@ -53,7 +53,7 @@ class CreateDomainController extends BaseController {
         $user->group_id = $group->id;
         $user->save();
         //$this::updateRole(UserRole::GROUP_LEADER, $isGroupActive);
-        return true;
+        return "true";
     }
     
     private function createLab($name) {//, $departmentId) {

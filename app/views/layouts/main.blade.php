@@ -17,9 +17,10 @@
 		@yield('head')
 	</head>
 	
+	@yield('conf')
 	<body>
 		<div id="top_toolbar">
-				<a class="navbar-brand" href="#">PhD Paper Tool</a>
+				<a class="navbar-brand" href="/">PhD Paper Tool</a>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
 						<input type="text" id='search-bar' class="form-control" placeholder="Search">
@@ -27,30 +28,44 @@
 					<button type="submit" class="btn btn-default">Search</button>
 				</form>
 				<div class="header_link">
-					<a class="btn btn-warning" href="/logout">Log out</a>
+					@if (Auth::guest())
+						{{ HTML::link('', 'Login', array('class' => 'btn btn-info')) }}
+					@else		
+						{{{ Auth::user()->email }}}
+						{{ HTML::link('logout', 'Logout', array('class' => 'btn btn-warning')) }}
+					@endif
 				</div>
 		</div>
-		
-		@yield('menu')
+				
+		<?php
+			if (!isset($conf['currentPage'])) {
+				$conf['currentPage'] = '';
+			}
+		?>
+		@if (Auth::check())
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
 				<div id="main">
-					<div style="width:500px" class="pull-right">        
+					<div style="width:600px" class="pull-right">        
 						<ul >
-							<li>{{ HTML::link('timeline', 'Timeline') }}</li>
-							<li>{{ HTML::link('paper', 'My Paper') }}</li>
-							<li>{{ HTML::link('data', 'My Review') }}</li>
-							<li>{{ HTML::link('profile', 'My Profile') }}</li>
+							<li {{ ($conf['currentPage'] == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
+							<li {{ ($conf['currentPage'] == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
+							<li {{ ($conf['currentPage'] == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
+							<li {{ ($conf['currentPage'] == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
+							@if (Auth::user()->isAdmin())
+								<li {{($conf['currentPage'] == 'handle') ? 'class="active"' : '' }}>{{ HTML::link('handle', 'Admin')}}</li>
+							@endif
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-		
+		@else
 		<div class="jumbotron">
 		  <h1>Welcome to PhD Paper Tool!</h1>
 		  <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
 		</div>
+		@endif
 
 
 		<div id='main'>

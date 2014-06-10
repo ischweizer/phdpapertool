@@ -17,7 +17,7 @@
 						"searchable": false,
 						"orderable": false,
 						"render": function ( data, type, full, meta ) {
-							return '<a href="{{URL::action('ConferenceController@getIndex', array('id' => 'data-id-ph'))}}">details</a>'.replace('data-id-ph', data);
+							return '<a href="{{URL::action('ConferenceController@getDetails', array('id' => 'data-id-ph'))}}">details</a>'.replace('data-id-ph', data);
 						}
 					}]
 				});
@@ -26,9 +26,6 @@
 @stop
 
 @section('content')
-
-		<div id='main'>
-
 		<div class="page-header">
    		<h1>Conferences</h1>
 		</div>
@@ -54,6 +51,4 @@
 				 </tr>
 			</tfoot>
 	 	</table>
-
-		</div>
 @stop
