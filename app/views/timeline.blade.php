@@ -87,10 +87,14 @@
 				@foreach ($papers as $paper)
 				<tr>
 					<td>{{{ $paper->title }}}</td>
+					@if ($paper->activeSubmission)
 					<td align='center'>{{{ $paper->activeSubmission->event->abstract_due->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->paper_due->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->notification_date->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->camera_ready_due->format('d.m.Y') }}}</td>
+					@else
+					<td></td><td></td><td></td><td></td>
+					@endif
 				</tr>
 				@endforeach
 				</tbody>
