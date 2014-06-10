@@ -56,6 +56,8 @@ Route::group(array('before' => 'auth'), function()
 	Route::get('refuse', 'AdminController@refuse');
 	Route::get('confirm', 'AdminController@confirm');
 	Route::get('handle', 'AdminController@index');
+	Route::get('giveRole', 'AdminController@giveUserRole');
+	Route::get('removeRole', 'AdminController@deleteUserRole');
 	Route::get('create', 'CreateDomainController@index');
 	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
 	Route::get('enroll', 'EnrollInGroupController@index');
