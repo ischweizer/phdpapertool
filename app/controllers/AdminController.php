@@ -107,13 +107,18 @@ class AdminController extends BaseController {
     public function refuseUser() {
         if(!Input::has('userId'))
             return Response::json(false);
+        //entnehme rechte -> es muss noch boolean übergeben werden, ob ganze gruppe gelöscht wird
         return $this::refuseUserId(User::find(Input::get('userId')));        
     }
     
-    private function refuseUserId($refusedUser) {
+    private function refuseUserId($refusedUser, $isDeletingWholeGroup = false) {
         if(!$this::isAbleToDecideAboutUser($refusedUser))
            return Response::json(false);
-        //$refusedUser = User::find($userId);
+        if(!$isDeletingWholeGroup) {
+            $roles = UserRole::where('user_id', '=', $refusedUser->id);
+            foreach($roles as $role)
+                $role->delete();
+        }
         $refusedUser->group_id = null;
         $refusedUser->group_confirmed = 0;
         $refusedUser->save();
@@ -135,7 +140,7 @@ class AdminController extends BaseController {
         if(!$isDeletingWholeLab && UserRole::hasAUserRole($refusedUsers, UserRole::LAB_LEADER))
             return Response::json(false);
         foreach($refusedUsers as $refusedUser) {
-            $this::refuseUserId($refusedUser);
+            $this::refuseUserId($refusedUser, true);
         }
         $roles = UserRole::getUsersRoles($refusedUsers, UserRole::GROUP_LEADER);
         foreach($roles as $role) {
@@ -185,7 +190,7 @@ class AdminController extends BaseController {
         }
         /*$roleLab = UserRole::getUserRole(UserRole::LAB_LEADER);
         if($roleLab == null || $roleLab->active != 1)*/
-        if(UserRole::hasUserRole(Auth::user(), UserRole::LAB_LEADER))    
+        if(!UserRole::hasUserRole(Auth::user(), UserRole::LAB_LEADER))    
             return false;
         $confirmedUserGroup = Group::find($confirmedUser->group_id);
         $userGroup = Group::find(Auth::user()->group_id);
@@ -212,36 +217,39 @@ class AdminController extends BaseController {
         return $roleAdmin != null && $roleAdmin->active;
     }
     
-    
+       
     public function giveUserRole() {
         if(!Input::has('userId') || !Input::has('roleId'))
+            return $this::index();
+        $this::giveUserRoleId(Input::get('userId'), Input::get('roleId'));
+        return $this::index();
+    }
+    
+    private function giveUserRoleId($userId, $roleId) {
+        if(!UserRole::isGreaterThan(Auth::user(), $roleId))
             return false;
-        
-        if(!UserRole::isGreaterThan(Auth::user(), Input::get('roleId')))
-            return false;
-        $user = User::find(Input::get('userId'));
-        if($user == null)
-            return false;
+        $user = User::find($userId);
         if(!$this::isAbleToDecideAboutUser($user))
             return false;
-        $roleId = Input::get('roleId');
         UserRole::updateRole($user, $roleId, true);
-        return true;
+        return true;       
     }
     
     public function deleteUserRole() {
-         if(!Input::has('userId') || !Input::has('roleId'))
-            return false;
-        
-        $user = User::find(Input::get('userId'));
-        if($user == null)
-            return false;
+        if(!Input::has('userId') || !Input::has('roleId'))
+            return $this::index();
+        $this::deleteUserRoleId(Input::get('userId'), Input::get('roleId'));
+        return $this::index();
+    }
+    
+    private function deleteUserRoleId($userId, $roleId) {
+        $user = User::find($userId);
         if(!$this::isAbleToDecideAboutUser($user))
             return false;
         
-        $role = UserRole::getRoleFromUser($user, Input::get('roleId'));
+        $role = UserRole::getRoleFromUser($user, $roleId);
         if($role != null)
             $role->delete();
-        return false;
+        return false;       
     }
 }

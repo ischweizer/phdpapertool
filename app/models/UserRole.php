@@ -26,9 +26,11 @@ class UserRole extends Eloquent {
         }
         
         public static function updateRole($user, $roleId, $isActive) {
-            $role = UserRole::getRoleFromUser($user, $roleId);
+            //$role = UserRole::getRoleFromUser($user, $roleId);
+            $role = UserRole::where('user_id', '=', $user->id)->first();
             if($role != null) {
                 $role->active = $isActive;
+                $role->role_id = $roleId;
                 return $role;
             }
             $newRole = new UserRole;
