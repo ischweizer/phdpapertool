@@ -236,7 +236,7 @@ class AdminController extends BaseController {
         $user = User::find(Input::get('userId'));
         if($user == null)
             return false;
-        if(!isAble2DecideAboutUser($user))
+        if(!isAbleToDecideAboutUser($user))
             return false;
         
         $role = UserRole::getRoleFromUser($user, Input::get('roleId'));
