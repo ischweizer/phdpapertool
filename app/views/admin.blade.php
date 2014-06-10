@@ -40,23 +40,30 @@
 	@elseif ($roleId == UserRole::LAB_LEADER)
 		<?php print_r($users)?>
 	@elseif ($roleId == UserRole::GROUP_LEADER) 
-		<h1>Group</h1>
+		<h1>
+			{{{reset($groups)->name}}}
+		</h1>
+		<h3>
+			Member
+		</h3>
 		<ul class="list-group">
 			@foreach ($users as $user)
-				<li class="list-group-item">
-					<span>
-						{{{$user->formatName()}}} 
-					</span>
-					<span style="float:right">
-						@if ($user->isLabLeader())
-							Lab Leader
-						@elseif ($user->isGroupLeader()) 
-							Group Leader
-						@else
-							<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-ban-circle"></span></a>
-						@endif
-					</span>
-				</li>
+				@if ($user->group_confirmed)
+					<li class="list-group-item">
+						<span>
+							{{{$user->formatName()}}} 
+						</span>
+						<span style="float:right">
+							@if ($user->isLabLeader())
+								Lab Leader
+							@elseif ($user->isGroupLeader()) 
+								Group Leader
+							@else
+								<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-ban-circle" title="remove from group"></span></a>
+							@endif
+						</span>
+					</li>
+				@endif
 			@endforeach
 		</ul>
 	@endif
