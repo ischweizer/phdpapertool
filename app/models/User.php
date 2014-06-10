@@ -128,31 +128,63 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return (count($this->userRoles) > 0);
 	}
 
+	/**
+	 * return the name of this as a readable String
+	 */
+	public function formatName()
+	{
+		return $this->author->first_name." ".$this->author->last_name." (".$this->email.")";
+	}
+
+	/**
+	 * returns true iff this is a lab leader
+	 */
+	public function isLabLeader()
+	{
+		foreach ($this->userRoles as $userRole) {
+			if($userRole->role_id == UserRole::LAB_LEADER)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * return true iff this is a group leader
+	 */
+	public function isGroupLeader()
+	{
+		foreach ($this->userRoles as $userRole) {
+			if($userRole->role_id == UserRole::GROUP_LEADER)
+				return true;
+		}
+		return false;
+	}
+
 	public static function getUnconfirmedUsers($groups) {
 		$unconfirmedUsers = User::where('id', '!=', 1)->where('group_confirmed', '=', 0)->where('group_id', '!=', 'null')->get();
 		if($groups == null)
 			return $unconfirmedUsers;
 		$result = array();
-                foreach($unconfirmedUsers as $user) {
-                    foreach($groups as $group) {
-                        if($user->group_id == $group->id && $user->id != 1)
-                            $result[] = $user;
-                    }
+				foreach($unconfirmedUsers as $user) {
+					foreach($groups as $group) {
+						if($user->group_id == $group->id && $user->id != 1)
+							$result[] = $user;
+					}
 		}
 		return $result;
 	}
-        
-        public static function getUsers($groups) {
-            if($groups == null)
-                return null;
-            $users = User::all();
-            $result = array();
-            foreach($users as $user) {
-                foreach($groups as $group) {
-                    if($user->group_id == $group->id && $user->id != 1)
-                        $result[] = $user;
-                }
-            }
-            return $result;
-        }
+		
+		public static function getUsers($groups) {
+			if($groups == null)
+				return null;
+			$users = User::all();
+			$result = array();
+			foreach($users as $user) {
+				foreach($groups as $group) {
+					if($user->group_id == $group->id && $user->id != 1)
+						$result[] = $user;
+				}
+			}
+			return $result;
+		}
 }
