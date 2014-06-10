@@ -44,7 +44,18 @@
 		</ul>
 	</div>
 	@if ($roleId == UserRole::SUPER_ADMIN)
-		admin
+		<h1>
+			Labs
+		</h1>
+		@foreach ($labs as $lab)
+			<h2>
+				Lab: {{{$lab->name}}}
+			</h2>
+			<h3>
+				Admins
+			</h3>
+
+		@endforeach
 	@elseif ($roleId == UserRole::LAB_LEADER)
 		<h1>
 			Lab: {{{reset($labs)->name}}}
@@ -63,7 +74,7 @@
 							@if ($user->isLabLeader())
 								Lab Leader
 							@elseif ($user->isGroupLeader())
-								<a href=""><span class="glyphicon glyphicon-ban-circle" title="remove admin rights"></span></a> 
+								<a href="removeRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-ban-circle" title="remove admin rights"></span></a> 
 							@endif
 						</span>
 					</li>
@@ -93,8 +104,8 @@
 								@elseif ($user->isGroupLeader())
 									Group Leader
 								@else
-									<a href=""><span class="glyphicon glyphicon-plus-sign"title="give admin rights"></span></a>
-									<a href=""><span class="glyphicon glyphicon-ban-circle" title="remove from group"></span></a>
+									<a href="giveRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-plus-sign"title="give admin rights"></span></a>
+									<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-ban-circle" title="remove from group"></span></a>
 								@endif
 							</span>
 						</li>
