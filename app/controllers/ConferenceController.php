@@ -100,7 +100,7 @@ class ConferenceController extends BaseController {
 			Session::forget('conference-create-return');
 			return Redirect::to($input['conference-create-return-url'])->withInput($input);
 		} else {
-			return Redirect::action('ConferenceController@getIndex');
+			return Redirect::to(Input::get('conferenceBackTarget'));
 		}
 	}
 

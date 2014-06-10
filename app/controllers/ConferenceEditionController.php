@@ -125,7 +125,7 @@ class ConferenceEditionController extends BaseController {
 			Session::forget('conference-edition-create-return');
 			return Redirect::to($input['conference-edition-create-return-url'])->withInput($input);
 		} else {
-			return Redirect::action('ConferenceController@getDetails', array('id' => Input::get('conference_id')));
+			return Redirect::to(Input::get('conferenceEditionBackTarget'));
 		}
 	}
 }
