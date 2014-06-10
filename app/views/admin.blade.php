@@ -1,5 +1,13 @@
 @extends('layouts/main')
 
+@section('head')
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$('.glyphicon').tooltip();
+	});
+	</script>
+@stop
+
 @section('content')
 	<div>
 		<h1>
@@ -27,8 +35,8 @@
 							{{{ $text }}}
 						</span>              
 						<span style="float:right">
-							<a href="confirm?{{{ $var }}}"><span class="glyphicon glyphicon-ok"></span></a>
-							<a href="refuse?{{{ $var }}}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href="confirm?{{{ $var }}}"><span class="glyphicon glyphicon-ok" title="confirm"></span></a>
+							<a href="refuse?{{{ $var }}}"><span class="glyphicon glyphicon-remove" title="deny"></span></a>
 						</span> 
 					</li>
 				@endif
@@ -85,7 +93,8 @@
 								@elseif ($user->isGroupLeader())
 									Group Leader
 								@else
-									<a href=""><span class="glyphicon glyphicon-ban-circle"></span></a>
+									<a href=""><span class="glyphicon glyphicon-plus-sign"title="give admin rights"></span></a>
+									<a href=""><span class="glyphicon glyphicon-ban-circle" title="remove from group"></span></a>
 								@endif
 							</span>
 						</li>
