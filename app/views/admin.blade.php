@@ -38,13 +38,67 @@
 	@if ($roleId == UserRole::SUPER_ADMIN)
 		admin
 	@elseif ($roleId == UserRole::LAB_LEADER)
-		<?php print_r($users)?>
-	@elseif ($roleId == UserRole::GROUP_LEADER) 
 		<h1>
-			{{{reset($groups)->name}}}
+			Lab: {{{reset($labs)->name}}}
 		</h1>
 		<h3>
-			Member
+			Admins
+		</h3>
+		<ul class="list-group">
+			@foreach ($users as $user)
+				@if ($user->isAdmin())
+					<li class="list-group-item">
+						<span>
+							{{{$user->formatName()}}}
+						</span>
+						<span style="float:right">
+							@if ($user->isLabLeader())
+								Lab Leader
+							@elseif ($user->isGroupLeader())
+								<a href=""><span class="glyphicon glyphicon-ban-circle" title="remove admin rights"></span></a> 
+							@endif
+						</span>
+					</li>
+				@endif
+			@endforeach
+		</ul>
+		<h1>
+			Groups
+		</h1>
+		@foreach ($groups as $group)
+			<h2>
+				Group: {{{$group->name}}}
+			</h2>
+			<h3>
+				Members
+			</h3>
+			<ul class="list-group">
+				@foreach ($users as $user)
+					@if ($user->group_confirmed && $user->group_id == $group->id)
+						<li class="list-group-item">
+							<span>
+								{{{$user->formatName()}}}
+							</span>
+							<span style="float:right">
+								@if ($user->isLabLeader())
+									Lab Leader
+								@elseif ($user->isGroupLeader())
+									Group Leader
+								@else
+									<a href=""><span class="glyphicon glyphicon-ban-circle"></span></a>
+								@endif
+							</span>
+						</li>
+					@endif
+				@endforeach
+			</ul>
+		@endforeach
+	@elseif ($roleId == UserRole::GROUP_LEADER) 
+		<h1>
+			Group: {{{reset($groups)->name}}}
+		</h1>
+		<h3>
+			Members
 		</h3>
 		<ul class="list-group">
 			@foreach ($users as $user)
