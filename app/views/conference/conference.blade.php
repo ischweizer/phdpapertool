@@ -16,7 +16,10 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>{{{ $conference->name }}}</h1>
+			{{ Form::open(array('action' => array('ConferenceController@anyEdit', 'id' => $conference->id))) }}
+				<h1>{{{ $conference->name }}} <button type="submit" class="btn btn-xs btn-primary">Edit</button></h1>
+				{{ Form::hidden('conferenceBackTarget', URL::action('ConferenceController@getDetails', array('id' => $conference->id))) }}
+			{{ Form::close() }}
 		</div>
 		
 		<table class="table" cellspacing="0" width="100%">
@@ -36,7 +39,11 @@
 			</tbody>
 		</table>
 
-   		<h3>Conference Editions</h3>
+		{{ Form::open(array('action' => 'ConferenceEditionController@anyEdit')) }}
+			<h3>Conference Editions <button type="submit" class="btn btn-xs btn-primary">Create New</button></h3>
+			{{ Form::hidden('conferenceEditionBackTarget', URL::action('ConferenceController@getDetails', array('id' => $conference->id))) }}
+			{{ Form::hidden('conference_id', $conference->id) }}
+		{{ Form::close() }}
 		<table id="conference-editions" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -52,7 +59,15 @@
 					<td>{{{ $edition->location }}}</td>
 					<td>{{{ $edition->edition }}}</td>
 					<td>{{{ $edition->event->start->format('M d, Y') }}} - {{{ $edition->event->end->format('M d, Y') }}}</td>
-					<td>{{ HTML::linkAction('ConferenceEditionController@getDetails', 'details', array('id' => $edition->id)) }} {{ HTML::linkAction('ConferenceEditionController@anyEdit', 'edit', array('id' => $edition->id)) }}</td>
+					<td>
+						{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $edition->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+							<button type="submit" class="btn btn-xs btn-primary">Details</button>
+						{{ Form::close() }}
+						{{ Form::open(array('action' => array('ConferenceEditionController@anyEdit', 'id' => $edition->id), 'style' => 'display:inline')) }}
+							{{ Form::hidden('conferenceEditionBackTarget', URL::action('ConferenceController@getDetails', array('id' => $conference->id))) }}
+							<button type="submit" class="btn btn-xs btn-primary">Edit</button>
+						{{ Form::close() }}
+					</td>
 				</tr>
 			@endforeach
 			</tbody>

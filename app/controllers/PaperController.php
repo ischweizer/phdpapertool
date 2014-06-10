@@ -21,19 +21,33 @@ class PaperController extends BaseController {
 
 		// get authors
 		foreach ($autorList as $author) {
-			if($author->id != Auth::user()->author->id)
+			if (Auth::user()->author->id != $author->id) {
 				$authors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			}
 		}
+		// User has to be the author
+		$selectedauthors[Auth::user()->author->id] = Auth::user()->author->last_name . " " . Auth::user()->author->first_name . " (" . Auth::user()->author->email . ")";
 
 		// get edit model
 		if (!is_null($id)) {
 			$paper = Paper::with('authors', 'submissions', 'submissions.event', 'submissions.event.detail')->find($id);
 			if (!is_null($paper)) {
-				foreach ($paper->authors as $author) {
+				$allowed = false;
+				$paperAuthors = $paper->authors;
+				foreach ($paperAuthors as $author) {
+					if ($author->id == Auth::user()->author->id) {
+						$allowed = true;
+					}
+					if (array_key_exists($author->id, $selectedauthors)) {
+						unset($selectedauthors[$author->id]);
+					}
+					$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 					if (array_key_exists($author->id, $authors)) {
-						$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 						unset($authors[$author->id]);
 					}
+				}
+				if (!$allowed) {
+					App::abort(404);
 				}
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
@@ -110,16 +124,21 @@ class PaperController extends BaseController {
 		
 		$input = Input::all();
 		$paper->authors()->detach();
+		// User has to be author
+		//$paper->authors()->attach(Auth::user()->author->id);
+		
 		if (isset($input['selectedauthors'])) {
+			$currentPosition = 1;
 			$authors = $input['selectedauthors'];
 			if($authors != null) {
 				foreach ($authors as $author) {
-					$paper->authors()->attach($author);
+					//if (Auth::user()->author->id != $author) {
+						$paper->authors()->attach($author, array('order_position' => $currentPosition));
+						$currentPosition++;
+					//}
 				}
 			}
 		}
-		
-		$paper->authors()->attach(Auth::user()->author->id);
 
 		$submissionKind = Input::get('submissionKind');
 		if($submissionKind != 'none') {

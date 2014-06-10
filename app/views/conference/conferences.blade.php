@@ -17,7 +17,15 @@
 						"searchable": false,
 						"orderable": false,
 						"render": function ( data, type, full, meta ) {
-							return '<a href="{{URL::action('ConferenceController@getDetails', array('id' => 'data-id-ph'))}}">details</a>'.replace('data-id-ph', data);
+							var actions = '';
+							actions += '{{ Form::open(array('action' => array('ConferenceController@getDetails', 'id' => 'data-id-ph'), 'method' => 'GET', 'style' => 'display:inline')) }}'.replace('data-id-ph', data);
+							actions += '<button type="submit" class="btn btn-xs btn-primary">Details</button>';
+							actions += '{{ Form::close() }} ';
+							actions += '{{ Form::open(array('action' => array('ConferenceController@anyEdit', 'id' => 'data-id-ph'), 'style' => 'display:inline')) }}'.replace('data-id-ph', data);
+							actions += '{{ Form::hidden('conferenceBackTarget', URL::action('ConferenceController@getIndex')) }}';
+							actions += '<button type="submit" class="btn btn-xs btn-primary">Edit</button>';
+							actions += '{{ Form::close() }}';
+							return actions;
 						}
 					}]
 				});
@@ -27,7 +35,10 @@
 
 @section('content')
 		<div class="page-header">
-   		<h1>Conferences</h1>
+			{{ Form::open(array('action' => 'ConferenceController@anyEdit')) }}
+				<h1>Conferences <button type="submit" class="btn btn-xs btn-primary">Create New</button></h1>
+				{{ Form::hidden('conferenceBackTarget', URL::action('ConferenceController@getIndex')) }}
+			{{ Form::close() }}
 		</div>
 
 		<table id="conferences" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
@@ -37,7 +48,7 @@
 					<th>Acronym</th>
 					<th>CORE 2013 Ranking</th>
 					<th>Field of Research</th>
-					<th>Action</th>
+					<th>Action &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>{{-- preserve space for both buttons to fit beside each other --}}
 				</tr>
 			</thead>
 	 

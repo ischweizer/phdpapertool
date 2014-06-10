@@ -22,19 +22,29 @@ class ConferenceEditionController extends BaseController {
 
 	/**
 	 * Edit or create a conference edition.
+	 *
+	 * @param $id the id to edit
 	 */
     public function anyEdit($id = null) {
 		$initialConferenceName = null;
 		// save requested return information
 		if (Input::get('conference-edition-create-return-url')) {
 			Session::set('conference-edition-create-return', Input::all());
-			$initialConferenceName = Input::get('conference-edition-create-name');
 		}
+		$initialConferenceName = Input::get('conference-edition-create-name');
 
 		// get edit model
 		$edition = null;
 		if ($id != null) {
 			$edition = ConferenceEdition::with('conference', 'event')->find($id);
+		} else if (Input::has('conference_id')) {
+			$conference = Conference::find(Input::get('conference_id'));
+			if ($conference) {
+				$edition = array(
+					'conference_id' => $conference->id,
+					'conference' => $conference->toArray()
+				);
+			}
 		}
 
 		// get created conference
@@ -48,6 +58,7 @@ class ConferenceEditionController extends BaseController {
 			with('model', $edition)->
 			with('type', 'Conference Edition')->
 			with('action', 'ConferenceEditionController@postEditTarget')->
+			with('backAction', 'ConferenceEditionController@postBack')->
 			with('conferenceName', 'conference[name]')->
 			with('initialConferenceName', $initialConferenceName);
     }
@@ -104,4 +115,17 @@ class ConferenceEditionController extends BaseController {
 			with('id', $edition->id)->
 			with('edited', $edit);
     }
+	
+	/**
+	 * Handle back button.
+	 */
+	public function postBack() {
+		if (Session::has('conference-edition-create-return')) {
+			$input = Session::get('conference-edition-create-return');
+			Session::forget('conference-edition-create-return');
+			return Redirect::to($input['conference-edition-create-return-url'])->withInput($input);
+		} else {
+			return Redirect::to(Input::get('conferenceEditionBackTarget'));
+		}
+	}
 }

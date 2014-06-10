@@ -16,8 +16,10 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>{{{ $edition->conference->name }}}<br>Edition {{{ $edition->edition }}}</h1>
-			{{ HTML::linkAction('ConferenceEditionController@anyEdit', 'edit', array('id' => $edition->id)) }}
+			{{ Form::open(array('action' => array('ConferenceEditionController@anyEdit', 'id' => $edition->id))) }}
+				<h1>{{{ $edition->conference->name }}}<br>Edition {{{ $edition->edition }}} <button type="submit" class="btn btn-xs btn-primary">Edit</button></h1>
+				{{ Form::hidden('conferenceEditionBackTarget', URL::action('ConferenceEditionController@getDetails', array('id' => $edition->id))) }}
+			{{ Form::close() }}
 		</div>
 
 		<table class="table" cellspacing="0" width="100%">
@@ -45,8 +47,10 @@
 			</tbody>
 		</table>
 
-   		<h3>Conference Information</h3>
-		{{ HTML::linkAction('ConferenceController@getDetails', 'details', array('id' => $edition->conference->id)) }}
+		{{ Form::open(array('action' => array('ConferenceController@getDetails', 'id' => $edition->conference->id), 'method' => 'GET')) }}				
+			<h3>Conference Information <button type="submit" class="btn btn-xs btn-primary">Details</button></h3>
+		{{ Form::close() }}
+
 		<table class="table" cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -64,7 +68,10 @@
 			</tbody>
 		</table>
 
-   		<h3>Co-located Workshops</h3>
+		{{ Form::open(array('action' => 'WorkshopController@anyEdit')) }}
+			<h3>Co-located Workshops <button type="submit" class="btn btn-xs btn-primary">Create New</button></h3>
+			{{ Form::hidden('conference_edition_id', $edition->id) }}
+		{{ Form::close() }}
 		<table id="workshops" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -78,7 +85,15 @@
 				<tr>
 					<td>{{{ $workshop->name }}}</td>
 					<td>{{{ $workshop->event->start->format('M d, Y') }}} - {{{ $workshop->event->end->format('M d, Y') }}}</td>
-					<td>{{ HTML::linkAction('WorkshopController@getDetails', 'details', array('id' => $workshop->id)) }} {{ HTML::linkAction('WorkshopController@anyEdit', 'edit', array('id' => $workshop->id)) }}</td>
+					<td>
+						{{ Form::open(array('action' => array('WorkshopController@getDetails', 'id' => $workshop->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+							<button type="submit" class="btn btn-xs btn-primary">Details</button>
+						{{ Form::close() }}
+						{{ Form::open(array('action' => array('WorkshopController@anyEdit', 'id' => $workshop->id), 'style' => 'display:inline')) }}
+							{{ Form::hidden('workshopBackTarget', URL::action('ConferenceEditionController@getDetails', array('id' => $edition->id))) }}
+							<button type="submit" class="btn btn-xs btn-primary">Edit</button>
+						{{ Form::close() }}
+					</td>
 				</tr>
 			@endforeach
 			</tbody>

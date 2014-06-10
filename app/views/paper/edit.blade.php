@@ -6,6 +6,11 @@
 		{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
 
 		<script>
+			var onformsubmit = function() {
+				// Since only selected properties are sent
+				$('#selected_authors option').prop('selected', true);
+			}
+			
 			$(document).ready(function() {
 				$('#add_author').click(function(){
 					var selection = $("#authorlist").children("option").filter(":selected");
@@ -45,6 +50,39 @@
 							}
 						});
 					}
+				});
+				
+				$('#remove_author').click(function(){
+					var selection = $("#selected_authors").children("option").filter(":selected");
+					$.each(selection, function( index, author ) {
+						var authorId = author.value;
+						if ({{{ Auth::user()->author->id }}} == authorId) {
+							alert("You cannot remove yourself!");
+						} else {
+							$("#selected_authors option[value='"+authorId+"']").remove();
+						}
+					});
+				});
+				
+				$('#author_up').click(function(){
+					$('#selected_authors option:selected').each( function() {
+			            var newPos = $('#selected_authors option').index(this) - 1;
+			            if (newPos > -1) {
+			                $('#selected_authors option').eq(newPos).before("<option value='"+$(this).val()+"' selected='selected'>"+$(this).text()+"</option>");
+			                $(this).remove();
+			            }
+			        });
+				});
+				
+				$('#author_down').click(function(){
+					var countOptions = $('#selected_authors option').size();
+			        $('#selected_authors option:selected').each( function() {
+			            var newPos = $('#selected_authors option').index(this) + 1;
+			            if (newPos < countOptions) {
+			                $('#selected_authors option').eq(newPos).after("<option value='"+$(this).val()+"' selected='selected'>"+$(this).text()+"</option>");
+			                $(this).remove();
+			            }
+			        });
 				});
 				
 				// enable form validation
@@ -210,7 +248,9 @@
 
 @section('content')
 		<div class="page-header">
-   			<h1>@if($model) Edit @else Create @endif Paper</h1>
+			{{ Form::open(array('action' => 'PaperController@getIndex', 'method' => 'GET')) }}
+				<h1>@if($model) Edit @else Create @endif Paper <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+			{{ Form::close() }}
 			@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>
@@ -221,7 +261,7 @@
 		@endif
 		</div>
 
-		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form')) }}
+		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('title', 'Title') }}
@@ -261,7 +301,10 @@
 			</div>
 			<div class="form-group">
 				{{ Form::label('selectedauthors', 'Selected Authors') }}
-				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}
+				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
+				{{ Form::button('Up', array('id' => 'author_up', 'class' => 'btn btn-sm btn-primary')) }}
+				{{ Form::button('Down', array('id' => 'author_down', 'class' => 'btn btn-sm btn-primary')) }}
+				{{ Form::button('Remove', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-primary')) }}<br>
 			</div>
 			
 			<div class="form-group">

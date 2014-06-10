@@ -246,7 +246,16 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>@if($model) Edit @else Create @endif {{ $type }}</h1>
+			{{ Form::model($model, array('action' => $backAction)) }}
+				<h1>@if($model) Edit @else Create @endif {{ $type }} <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+				@if ($type == 'Conference Edition')
+					{{ Form::hidden('conferenceEditionBackTarget', Input::get('conferenceEditionBackTarget')) }}
+					{{ Form::hidden('conference_id') }}
+				@elseif ($type == 'Workshop')
+					{{ Form::hidden('workshopBackTarget', Input::get('workshopBackTarget')) }}
+					{{ Form::hidden('conference_edition_id') }}
+				@endif
+			{{ Form::close() }}
 		@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>
@@ -285,6 +294,7 @@
 		@endif
 			</div></div>
 		@if ($type == 'Conference Edition')
+			{{ Form::hidden('conferenceEditionBackTarget', Input::get('conferenceEditionBackTarget')) }}
 			{{ Form::hidden('conference_id', null, array('id' => 'conference_id')) }}
 			<div class="form-group">
 				{{ Form::label('location', 'Location') }}
@@ -295,6 +305,7 @@
 				{{ Form::text('edition', null, array('class' => 'form-control', 'placeholder' => 'Edition / Year', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 		@elseif ($type == 'Workshop')
+			{{ Form::hidden('workshopBackTarget', Input::get('workshopBackTarget')) }}
 			<div class="form-group">
 				{{ Form::label('name', 'Workshop Name') }}
 				{{ Form::text('name', $initialName, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}

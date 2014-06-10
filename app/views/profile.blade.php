@@ -1,9 +1,5 @@
 @extends('layouts/main')
 
-@section('conf')
-	<?php $conf['currentPage'] = 'profile'; ?>
-@stop
-
 @section('content')
 		<div class="page-header">
    		<h1>Your Profile</h1>

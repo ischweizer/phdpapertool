@@ -1,6 +1,5 @@
 @extends('layouts/main')
 
-
 @section('content')
 			<div class="page-header">
 				<h1>Data Manager</h1>

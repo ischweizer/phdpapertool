@@ -92,6 +92,19 @@ class ConferenceController extends BaseController {
     }
 
 	/**
+	 * Handle back button.
+	 */
+	public function postBack() {
+		if (Session::has('conference-create-return')) {
+			$input = Session::get('conference-create-return');
+			Session::forget('conference-create-return');
+			return Redirect::to($input['conference-create-return-url'])->withInput($input);
+		} else {
+			return Redirect::to(Input::get('conferenceBackTarget'));
+		}
+	}
+
+	/**
 	 * Asynchronous loading of conference list.
 	 */
     public function getData() {

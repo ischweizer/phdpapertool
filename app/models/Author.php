@@ -11,7 +11,7 @@ class Author extends Eloquent {
 
 	public function papers()
 	{
-		return $this->belongsToMany('Paper');
+		return $this->belongsToMany('Paper')->withPivot('order_position');
 	}
 	
 	/**

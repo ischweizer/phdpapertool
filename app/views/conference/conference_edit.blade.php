@@ -21,7 +21,10 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>@if($model) Edit @else Create @endif Conference</h1>
+			{{ Form::open(array('action' => 'ConferenceController@postBack')) }}
+				<h1>@if($model) Edit @else Create @endif Conference <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+				{{ Form::hidden('conferenceBackTarget', Input::get('conferenceBackTarget')) }}
+			{{ Form::close() }}
 		@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>
@@ -32,6 +35,7 @@
 		@endif
 		</div>
 		{{ Form::model($model, array('action' => 'ConferenceController@postEditTarget', 'id' => 'conference-form', 'role' => 'form')) }}
+			{{ Form::hidden('conferenceBackTarget', Input::get('conferenceBackTarget')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('name', 'Name') }}
