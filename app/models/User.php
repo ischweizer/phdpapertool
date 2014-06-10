@@ -149,12 +149,24 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
-	 * return true iff this is a group leader
+	 * returns true iff this is a group leader
 	 */
 	public function isGroupLeader()
 	{
 		foreach ($this->userRoles as $userRole) {
 			if($userRole->role_id == UserRole::GROUP_LEADER)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * returns true iff this is a Super Admin
+	 */
+	public function isSuperAdmin()
+	{
+		foreach ($this->userRoles as $userRole) {
+			if($userRole->role_id == UserRole::SUPER_ADMIN)
 				return true;
 		}
 		return false;
