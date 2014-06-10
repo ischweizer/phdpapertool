@@ -44,18 +44,25 @@ class WorkshopController extends BaseController {
 		// get created conference edition
 		$initialConferenceEditionId = null;
 		$initialConferenceName = null;
-		if (Session::has('conference_edition_id')) {
-			$edition = ConferenceEdition::with('conference')->find(Session::get('conference_edition_id'));
+		if (Session::has('conference_edition_id') || (Input::has('conference_edition_id') && $workshop == null)) {
+			$edition = ConferenceEdition::with('conference')->find(Session::get('conference_edition_id') ?: Input::get('conference_edition_id'));
 			if ($edition) {
 				$initialConferenceId = $edition->id;
 				$initialConferenceName = $edition->conference->name;
 				$editionOption = array($edition->id => 'Dummy');
+				if ($workshop == null) {
+					$workshop = array(
+						'conference_edition_id' => $edition->id,
+						'conferenceEdition' => $edition->toArray()
+					);
+				}
 			}
 		}
 		return View::make('conference/event_edit')->
 			with('model', $workshop)->
 			with('type', 'Workshop')->
 			with('action', 'WorkshopController@postEditTarget')->
+			with('backAction', 'WorkshopController@postBack')->
 			with('conferenceName', 'conferenceEdition[conference][name]')->
 			with('editionOption', $editionOption)->
 			with('initialConferenceEditionId', $initialConferenceEditionId)->
@@ -115,6 +122,19 @@ class WorkshopController extends BaseController {
 			with('id', $workshop->id)->
 			with('edited', $edit);
     }
+
+	/**
+	 * Handle back button.
+	 */
+	public function postBack() {
+		if (Session::has('workshop-create-return')) {
+			$input = Session::get('workshop-create-return');
+			Session::forget('workshop-create-return');
+			return Redirect::to($input['workshop-create-return-url'])->withInput($input);
+		} else {
+			return Redirect::action('ConferenceEditionController@getDetails', array('id' => Input::get('conference_edition_id')));
+		}
+	}
 
 	/**
 	 * Autocomplete for workshops.

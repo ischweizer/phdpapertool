@@ -17,7 +17,9 @@
 						"searchable": false,
 						"orderable": false,
 						"render": function ( data, type, full, meta ) {
-							return '<a href="{{URL::action('ConferenceController@getDetails', array('id' => 'data-id-ph'))}}">details</a>'.replace('data-id-ph', data);
+							var actions = '<a href="{{URL::action('ConferenceController@getDetails', array('id' => 'data-id-ph'))}}">details</a>'.replace('data-id-ph', data);
+							actions += ' <a href="{{URL::action('ConferenceController@anyEdit', array('id' => 'data-id-ph'))}}">edit</a>'.replace('data-id-ph', data);
+							return actions;
 						}
 					}]
 				});
@@ -27,7 +29,9 @@
 
 @section('content')
 		<div class="page-header">
-   		<h1>Conferences</h1>
+			{{ Form::open(array('action' => 'ConferenceController@anyEdit')) }}
+				<h1>Conferences <button type="submit" class="btn btn-xs btn-primary">Create New</button></h1>
+			{{ Form::close() }}
 		</div>
 
 		<table id="conferences" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">

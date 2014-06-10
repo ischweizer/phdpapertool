@@ -36,7 +36,10 @@
 			</tbody>
 		</table>
 
-   		<h3>Conference Editions</h3>
+		{{ Form::open(array('action' => 'ConferenceEditionController@anyEdit')) }}
+			<h3>Conference Editions <button type="submit" class="btn btn-xs btn-primary">Create New</button></h3>
+			{{ Form::hidden('conference_id', $conference->id) }}
+		{{ Form::close() }}
 		<table id="conference-editions" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 			<thead>
 				<tr>

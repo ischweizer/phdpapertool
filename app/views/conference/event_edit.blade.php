@@ -246,7 +246,14 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>@if($model) Edit @else Create @endif {{ $type }}</h1>
+			{{ Form::model($model, array('action' => $backAction)) }}
+				<h1>@if($model) Edit @else Create @endif {{ $type }} <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+				@if ($type == 'Conference Edition')
+					{{ Form::hidden('conference_id') }}
+				@elseif ($type == 'Workshop')
+					{{ Form::hidden('conference_edition_id') }}
+				@endif
+			{{ Form::close() }}
 		@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>

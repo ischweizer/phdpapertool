@@ -21,7 +21,9 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>@if($model) Edit @else Create @endif Conference</h1>
+			{{ Form::open(array('action' => 'ConferenceController@postBack')) }}
+				<h1>@if($model) Edit @else Create @endif Conference <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+			{{ Form::close() }}
 		@if ( $errors->count() > 0 )
 			<p>The following errors have occurred:</p>
 			<ul>

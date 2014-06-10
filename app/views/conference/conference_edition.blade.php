@@ -64,7 +64,10 @@
 			</tbody>
 		</table>
 
-   		<h3>Co-located Workshops</h3>
+		{{ Form::open(array('action' => 'WorkshopController@anyEdit')) }}
+			<h3>Co-located Workshops <button type="submit" class="btn btn-xs btn-primary">Create New</button></h3>
+			{{ Form::hidden('conference_edition_id', $edition->id) }}
+		{{ Form::close() }}
 		<table id="workshops" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 			<thead>
 				<tr>
