@@ -22,12 +22,7 @@ class UserRole extends Eloquent {
         }    
         
         public static function getRoleFromUser($user, $roleId) {
-            $roles = UserRole::where('user_id', '=', $user->id)->get();
-            foreach($roles as $role) {
-                if($role->role_id == $roleId) 
-                    return $role;
-            }      
-            return null;            
+            return UserRole::where('user_id', '=', $user->id)->where('role_id', '=', $roleId)->first();         
         }
         
         public static function updateRole($user, $roleId, $isActive) {
@@ -42,5 +37,37 @@ class UserRole extends Eloquent {
             $newRole->active = $isActive;
             $newRole->save();     
             return $newRole;
+        }
+        
+        public static function getUsersRoles($users, $roleId) {
+            $roles = UserRole::where('user_id', '!=', 1)->where('role_id', '=', $roleId)->get();
+            $result = array();
+            foreach($roles as $role) {
+                foreach($users as $user) {
+                    if($role->user_id == $user->id) {
+                        $result[] = $role;
+                        continue 2;
+                    }
+                }
+            }
+            return $roles;
+        }
+        
+        public static function hasAUserRole($users, $roleId) {
+            $roles = UserRole::where('user_id', '!=', 1)->where('user_id', '!=', Auth::user()->id)->where('role_id', '=', $roleId)->get();
+            foreach($roles as $role) {
+                foreach($users as $user) {
+                    if($role->user_id == $user->id)
+                        return true;
+                }
+            }
+            return false;
+        }
+        
+        public static function hasUserRole($user, $roleId) {
+            $numberOfRoles = UserRole::where('user_id', '=', $user->id)->where('role_id', '=', $roleId)->count();
+            if($numberOfRoles == 0)
+                return false;
+            return true;
         }
 }

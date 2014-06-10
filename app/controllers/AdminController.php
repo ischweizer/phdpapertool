@@ -9,7 +9,7 @@ class AdminController extends BaseController {
     public function index() {
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active == 1) {
-            $users = User::all();//getUnconfirmedUsers(null);
+            $users = User::getUsers(null);
             $groups = Group::getGroups($users);
             $labs = Lab::getLabs($groups);
             return View::make('admin')->with('users', $users)->with('groups', $groups)->with('labs', $labs)->with('roleId', UserRole::SUPER_ADMIN);
@@ -58,7 +58,7 @@ class AdminController extends BaseController {
     }
     
     private function confirmUserId($confirmedUser) {
-        if(!$this::isAbleToDecideAboutUser($confirmedUser))
+        if(!$this::isAbleToDecideAboutUser($confirmedUser) || $confirmedUser->group_id == null)
             return Response::json(false);
         //$confirmedUser = User::find($userId);
         $confirmedUser->group_confirmed = 1;
@@ -115,6 +115,7 @@ class AdminController extends BaseController {
            return Response::json(false);
         //$refusedUser = User::find($userId);
         $refusedUser->group_id = null;
+        $refusedUser->group_confirmed = 0;
         $refusedUser->save();
         return Response::json(true);
     }
@@ -125,12 +126,21 @@ class AdminController extends BaseController {
         return $this::refuseGroupId(Group::find(Input::get('groupId')));
     }
     
-    private function refuseGroupId($refusedGroup) {
+    private function refuseGroupId($refusedGroup, $isDeletingWholeLab = false) {
         if(!$this::isAble2DecideAboutGroup($refusedGroup))
             return Response::json(false);
-        $refusedUser = User::where('group_id', '=', $refusedGroup->id)->first();
-        $this::refuseUserId($refusedUser);
-        //$refuseGroup = Group::find($groupId);
+        //$refusedUser = User::where('group_id', '=', $refusedGroup->id)->first();
+        //$this::refuseUserId($refusedUser);   
+        $refusedUsers = User::getUsers(array($refusedGroup));
+        if(!$isDeletingWholeLab && UserRole::hasAUserRole($refusedUsers, UserRole::LAB_LEADER))
+            return Response::json(false);
+        foreach($refusedUsers as $refusedUser) {
+            $this::refuseUserId($refusedUser);
+        }
+        $roles = UserRole::getUsersRoles($refusedUsers, UserRole::GROUP_LEADER);
+        foreach($roles as $role) {
+            $role->delete();
+        }
         $refusedGroup->delete();
         return Response::json(true);
     }
@@ -144,23 +154,33 @@ class AdminController extends BaseController {
     private function refuseLabId($refusedLab) {
         if(!$this::isAble2DecideAboutLab($refusedLab))
             return Response::json(false);
-        $refusedGroup = Group::where('lab_id', '=', $refusedLab->id)->first();
-        $this::refuseGroupId($refusedGroup);
-        //$refusedLab = Lab::find($labId);
+        //$refusedGroup = Group::where('lab_id', '=', $refusedLab->id)->first();
+        //$this::refuseGroupId($refusedGroup);
+        $refusedGroups = Group::getGroupsFromLabs(array($refusedLab));
+        $users = User::getUsers($refusedGroups);
+        if(UserRole::hasAUserRole($users, UserRole::LAB_LEADER))
+           return Response::json(false); 
+        foreach($refusedGroups as $refusedGroup) {
+            $this::refusedGroupId($refusedGroup);
+        }
         $refusedLab->delete();
         return Response::json(true);
     }
     
     private function isAbleToDecideAboutUser($confirmedUser) {
         //$confirmedUser = User::find((integer)Input::get($userId));
-        if($confirmedUser == null || $confirmedUser->group_confirmed == 1 || $confiremdUser->id == 1)
+        if($confirmedUser == null || /*$confirmedUser->group_confirmed == 1 ||*/ UserRole::hasUserRole($confirmedUser, UserRole::SUPER_ADMIN))
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
             return true;
-        $roleGroup = UserRole::getUserRole(UserRole::GROUP_LEADER);
-        if($roleGroup != null && $confirmedUser->group_id == Auth::user()->group_id && $roleGroup->active == 1)
-            return true;
+        if(UserRole::hasUserRole($confirmedUser, UserRole::LAB_LEADER))
+            return false;
+        if(!UserRole::hasUserRole($confirmedUser, UserRole::GROUP_LEADER)) {
+            $roleGroup = UserRole::getUserRole(UserRole::GROUP_LEADER);
+            if($roleGroup != null && $confirmedUser->group_id == Auth::user()->group_id && $roleGroup->active == 1) 
+                return true;
+        }
         $roleLab = UserRole::getUserRole(UserRole::LAB_LEADER);
         if($roleLab == null || $roleLab->active != 1)
             return false;
@@ -171,7 +191,7 @@ class AdminController extends BaseController {
     
     private function isAble2DecideAboutGroup($confirmedGroup) {
         //$confirmedGroup = Group::find($groupId);
-        if($confirmedGroup == null || $confirmedGroup->active == 1 || $confirmedGroup->id == 1) 
+        if($confirmedGroup == null || /*$confirmedGroup->active == 1 ||*/ $confirmedGroup->id == 1) 
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         if($roleAdmin != null && $roleAdmin->active)
@@ -183,7 +203,7 @@ class AdminController extends BaseController {
     }
     
     private function isAble2DecideAboutLab($confirmedLab) {
-        if($confirmedLab == null || $confirmedLab->active == 1 || $confirmedLab->id == 1)
+        if($confirmedLab == null || /*$confirmedLab->active == 1 ||*/ $confirmedLab->id == 1)
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         return $roleAdmin != null && $roleAdmin->active;
