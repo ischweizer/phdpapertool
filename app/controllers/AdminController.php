@@ -171,18 +171,21 @@ class AdminController extends BaseController {
         //$confirmedUser = User::find((integer)Input::get($userId));
         if($confirmedUser == null || /*$confirmedUser->group_confirmed == 1 ||*/ UserRole::hasUserRole($confirmedUser, UserRole::SUPER_ADMIN))
             return false;
-        $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
-        if($roleAdmin != null && $roleAdmin->active)
+        /*$roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
+        if($roleAdmin != null && $roleAdmin->active)*/
+        if(UserRole::hasUserRole(Auth::user(), UserRole::SUPER_ADMIN))
             return true;
         if(UserRole::hasUserRole($confirmedUser, UserRole::LAB_LEADER))
             return false;
         if(!UserRole::hasUserRole($confirmedUser, UserRole::GROUP_LEADER)) {
-            $roleGroup = UserRole::getUserRole(UserRole::GROUP_LEADER);
-            if($roleGroup != null && $confirmedUser->group_id == Auth::user()->group_id && $roleGroup->active == 1) 
+            /*$roleGroup = UserRole::getUserRole(UserRole::GROUP_LEADER);
+            if($roleGroup != null && $confirmedUser->group_id == Auth::user()->group_id && $roleGroup->active == 1) */
+            if($confirmedUser->group_id == Auth::user()->group_id && UserRole::hasUserRole(Auth::user(), UserRole::GROUP_LEADER))    
                 return true;
         }
-        $roleLab = UserRole::getUserRole(UserRole::LAB_LEADER);
-        if($roleLab == null || $roleLab->active != 1)
+        /*$roleLab = UserRole::getUserRole(UserRole::LAB_LEADER);
+        if($roleLab == null || $roleLab->active != 1)*/
+        if(UserRole::hasUserRole(Auth::user(), UserRole::LAB_LEADER))    
             return false;
         $confirmedUserGroup = Group::find($confirmedUser->group_id);
         $userGroup = Group::find(Auth::user()->group_id);
@@ -207,5 +210,38 @@ class AdminController extends BaseController {
             return false;
         $roleAdmin = UserRole::getUserRole(UserRole::SUPER_ADMIN);
         return $roleAdmin != null && $roleAdmin->active;
+    }
+    
+    
+    public function giveUserRole() {
+        if(!Input::has('userId') || !Input::has('roleId'))
+            return false;
+        
+        if(!UserRole::isGreaterThan(Auth::user(), Input::get('roleId')))
+            return false;
+        $user = User::find(Input::get('userId'));
+        if($user == null)
+            return false;
+        if(!isAble2DecideAboutUser($user))
+            return false;
+        $roleId = Input::get('roleId');
+        UserRole::updateRole($user, $roleId, true);
+        return true;
+    }
+    
+    public function deleteUserRole() {
+         if(!Input::has('userId') || !Input::has('roleId'))
+            return false;
+        
+        $user = User::find(Input::get('userId'));
+        if($user == null)
+            return false;
+        if(!isAble2DecideAboutUser($user))
+            return false;
+        
+        $role = UserRole::getRoleFromUser($user, Input::get('roleId'));
+        if($role != null)
+            $role->delete();
+        return false;
     }
 }
