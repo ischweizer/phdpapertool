@@ -6,6 +6,10 @@
 		{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
 
 		<script>
+			var onformsubmit = function() {
+				$('#selected_authors option').prop('selected', true);
+			}
+			
 			$(document).ready(function() {
 				$('#add_author').click(function(){
 					var selection = $("#authorlist").children("option").filter(":selected");
@@ -45,6 +49,18 @@
 							}
 						});
 					}
+				});
+				
+				$('#remove_author').click(function(){
+					var selection = $("#selected_authors").children("option").filter(":selected");
+					$.each(selection, function( index, author ) {
+						var authorId = author.value;
+						if ({{{ Auth::user()->author->id }}} == authorId) {
+							alert("You cannot remove yourself!");
+						} else {
+							$("#selected_authors option[value='"+authorId+"']").remove();
+						}
+					});
 				});
 				
 				// enable form validation
@@ -223,7 +239,7 @@
 		@endif
 		</div>
 
-		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form')) }}
+		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('title', 'Title') }}
@@ -263,7 +279,8 @@
 			</div>
 			<div class="form-group">
 				{{ Form::label('selectedauthors', 'Selected Authors') }}
-				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}
+				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
+				{{ Form::button('Remove', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-primary')) }}<br>
 			</div>
 			
 			<div class="form-group">

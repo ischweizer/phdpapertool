@@ -120,16 +120,18 @@ class PaperController extends BaseController {
 		
 		$input = Input::all();
 		$paper->authors()->detach();
+		// User has to be author
+		$paper->authors()->attach(Auth::user()->author->id);
+		
 		if (isset($input['selectedauthors'])) {
 			$authors = $input['selectedauthors'];
 			if($authors != null) {
 				foreach ($authors as $author) {
-					$paper->authors()->attach($author);
+					if (Auth::user()->author->id != $author)
+						$paper->authors()->attach($author);
 				}
 			}
 		}
-		
-		$paper->authors()->attach(Auth::user()->author->id);
 
 		$submissionKind = Input::get('submissionKind');
 		if($submissionKind != 'none') {
