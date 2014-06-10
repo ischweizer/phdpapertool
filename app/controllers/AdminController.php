@@ -222,7 +222,7 @@ class AdminController extends BaseController {
         $user = User::find(Input::get('userId'));
         if($user == null)
             return false;
-        if(!isAble2DecideAboutUser($user))
+        if(!$this::isAbleToDecideAboutUser($user))
             return false;
         $roleId = Input::get('roleId');
         UserRole::updateRole($user, $roleId, true);
@@ -236,7 +236,7 @@ class AdminController extends BaseController {
         $user = User::find(Input::get('userId'));
         if($user == null)
             return false;
-        if(!isAbleToDecideAboutUser($user))
+        if(!$this::isAbleToDecideAboutUser($user))
             return false;
         
         $role = UserRole::getRoleFromUser($user, Input::get('roleId'));
