@@ -68,6 +68,9 @@
 						if ({{{ Auth::user()->author->id }}} == authorId) {
 							alert("You cannot remove yourself!");
 						} else {
+							$('#authorlist').append(
+						        $('<option></option>').val(authorId).html(author.text)
+						    );
 							$("#selected_authors option[value='"+authorId+"']").remove();
 						}
 					});
@@ -292,7 +295,6 @@
 			{{ Form::label('authors', 'Authors') }}<br>
 			<div class="form-group">
 				<!-- add author -->
-				{{ Form::label('select', 'Select Author') }}<br>
 				{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist', 'class' => 'form-control')) }}<br>
 				{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}
 				{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}<br><br>
