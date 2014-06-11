@@ -43,7 +43,7 @@
 					<ul class="pull-right nav nav-pills">
 						<li {{ (Route::current()->uri() == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
 						<li {{ (Route::current()->uri() == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
-						<li {{ (Route::current()->uri() == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
+						{{--<li {{ (Route::current()->uri() == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>--}}
 						<li {{ (Route::current()->uri() == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
 						<li {{ (Route::current()->uri() == 'conferences') ? 'class="active"' : '' }}>{{ HTML::link('conferences', 'Conferences') }}</li>
 						@if (Auth::user()->isAdmin())
