@@ -45,70 +45,75 @@
 	</div>
 
 	<div>
-		@foreach ($labs as $lab)
-			<h1>
-				Lab: {{{$lab->name}}}
-			</h1>
-			@foreach ($groups as $group)
-				<h2>
-					Group: {{{$group->name}}}
-				</h2>
-				<h3>
-					Member
-				</h3>
-				<table class="table">
-					<tr>
-						<th>Name</th>
-						<th>Lab Leader</th>
-						<th>Group Leader</th>
-						<th>Remove</th>
-					</tr>
+		<ul class="list-group">
+			@foreach ($labs as $lab)
+				<li class="list-group-item">
+					<h1>
+						Lab: {{{$lab->name}}}
+					</h1>
+					@foreach ($groups as $group)
+						@if ($group->lab_id == $lab->id)
+							<li class="list-group-item">
+								<h2>
+									Group: {{{$group->name}}}
+								</h2>
+								<table class="table table-bordered table-hover">
+									<tr>
+										<th style="width:100%">Name</th>
+										<th style="white-space: nowrap">Lab Leader</th>
+										<th style="white-space: nowrap">Group Leader</th>
+										<th style="white-space: nowrap">Remove</th>
+									</tr>
 
-					@foreach ($users as $user)
-						@if ($user->group_confirmed && $user->group->lab_id == $lab->id && $user->group_id == $group->id)
-							<tr>
-								<td>
-									{{{$user->formatName()}}}
-								</td>
-								<td>
-									@if ($roleId == UserRole::SUPER_ADMIN)
-										@if ($user->isLabLeader())
-											<a href="removeRole?userId={{{$user->id}}}&roleId={{{UserRole::LAB_LEADER}}}"><span class="glyphicon glyphicon-ban-circle" title="remove lab leader rights"></span></a> 
-										@else
-											<a href="giveRole?userId={{{$user->id}}}&roleId={{{UserRole::LAB_LEADER}}}"><span class="glyphicon glyphicon-plus-sign" title="give lab leader rights"></span></a> 
+									@foreach ($users as $user)
+										@if ($user->group_confirmed && $user->group->lab_id == $lab->id && $user->group_id == $group->id)
+											<tr>
+												<td>
+													{{{$user->formatName()}}}
+												</td>
+												<td>
+													@if ($roleId == UserRole::SUPER_ADMIN)
+														@if ($user->isLabLeader())
+															<a href="removeRole?userId={{{$user->id}}}&roleId={{{UserRole::LAB_LEADER}}}"><span class="glyphicon glyphicon-ban-circle" title="remove lab leader rights"></span></a> 
+														@else
+															<a href="giveRole?userId={{{$user->id}}}&roleId={{{UserRole::LAB_LEADER}}}"><span class="glyphicon glyphicon-plus-sign" title="give lab leader rights"></span></a> 
+														@endif
+													@else
+														 @if ($user->isLabLeader())
+														 	<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
+														 @endif
+													@endif
+												</td>
+												<td>
+													@if ($roleId == UserRole::SUPER_ADMIN || ($roleId == UserRole::LAB_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader()))
+														@if ($user->isGroupLeader())
+															<a href="removeRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-ban-circle" title="remove group leader rights"></span></a> 
+														@elseif (!$user->isLabLeader())
+															<a href="giveRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-plus-sign" title="give group leader rights"></span></a>
+														@endif
+													@else
+														@if ($user->isGroupLeader())
+															<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
+														@endif
+													@endif
+												</td>
+												<td>
+													@if ($roleId == UserRole::SUPER_ADMIN || ($roleId == UserRole::LAB_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader()) || ($roleId == UserRole::GROUP_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader() && !$user->isGroupLeader()))
+														<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-remove" title="remove from group"></span></a>
+													@else
+														<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
+													@endif
+												</td>
+											</tr>
 										@endif
-									@else
-										 @if ($user->isLabLeader())
-										 	<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
-										 @endif
-									@endif
-								</td>
-								<td>
-									@if ($roleId == UserRole::SUPER_ADMIN || ($roleId == UserRole::LAB_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader()))
-										@if ($user->isGroupLeader())
-											<a href="removeRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-ban-circle" title="remove group leader rights"></span></a> 
-										@elseif (!$user->isLabLeader())
-											<a href="giveRole?userId={{{$user->id}}}&roleId={{{UserRole::GROUP_LEADER}}}"><span class="glyphicon glyphicon-plus-sign" title="give group leader rights"></span></a>
-										@endif
-									@else
-										@if ($user->isGroupLeader())
-											<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
-										@endif
-									@endif
-								</td>
-								<td>
-									@if ($roleId == UserRole::SUPER_ADMIN || ($roleId == UserRole::LAB_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader()) || ($roleId == UserRole::GROUP_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader() && !$user->isGroupLeader()))
-										<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-remove" title="remove from group"></span></a>
-									@else
-										<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
-									@endif
-								</td>
-							</tr>
+									@endforeach
+								</table>
+							</li>
 						@endif
-					@endforeach
-				</table>
-			@endforeach	
-		@endforeach
+					@endforeach	
+				</li>
+			@endforeach
+		</ul>
 	</div>
 @stop
 	
