@@ -70,12 +70,13 @@ class PaperController extends BaseController {
 		$submissionEvent = null;
 
 		// get event of old input (overwrites model event)
-		if (!empty(Session::getOldInput('conference_edition_id'))) {
+		// cannot use hasOldInput as it returns true for empty strings
+		if (Session::getOldInput('conference_edition_id')) {
 			$edition = ConferenceEdition::with('event')->find(Session::getOldInput('conference_edition_id'));
 			if ($edition) {
 				$submissionEvent = $edition->event;
 			}
-		} else if (!empty(Session::getOldInput('workshop_id'))) {
+		} else if (Session::getOldInput('workshop_id')) {
 			$workshop = Workshop::with('event')->find(Session::getOldInput('workshop_id'));
 			if ($workshop) {
 				$submissionEvent = $workshop->event;
@@ -111,7 +112,7 @@ class PaperController extends BaseController {
 		$submission['editionOption'] = array();
 		$submission['editionName'] = null;
 		$submission['workshopName'] = null;
-		if ($defaultToOldInput && !empty(Input::old('submissionKind'))) {
+		if ($defaultToOldInput && Input::old('submissionKind')) {
 			$submission['kind'] = Input::old('submissionKind');
 		}
 
