@@ -41,7 +41,10 @@
 						<td>{{{ Str::limit($paper->abstract, 90) }}}</td>
 						<td>{{{ $paper->repository_url }}}</td>
 						<td>
-							{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $paper->id))) }}
+							{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">Details</button>
+							{{ Form::close() }}
+							{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $paper->id), 'style' => 'display:inline')) }}
 								<button type="submit" class="btn btn-xs btn-primary">Edit</button>
 								{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
 							{{ Form::close() }}

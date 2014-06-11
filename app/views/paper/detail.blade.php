@@ -6,11 +6,6 @@
 				background-color:#fff;
 			}
 		</style>
-		<script>			
-			$(document).ready(function() {
-				
-			});
-		</script>
 @stop
 
 @section('content')
@@ -28,7 +23,7 @@
 
 		<div class="form-group">
 			{{ Form::label('authors', 'Authors') }}
-			{{ Form::select('authors', $selectedauthors, null, array('size' => count($selectedauthors), 'class' => 'form-control', 'readonly')) }}
+			{{ Form::select('authors', $selectedauthors, null, array('size' => count($selectedauthors)+1, 'class' => 'form-control', 'readonly')) }}
 		</div>
 
 		<div class="form-group">
@@ -58,5 +53,7 @@
 			@endif
 			</div>
 		</div>
+
+		{{-- TODO show submission history --}}
 		
 @stop
