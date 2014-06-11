@@ -164,6 +164,8 @@
 					$('#event-form').bootstrapValidator('defaultSubmit');
 				});
 				@endif
+
+				$(".alert").alert();
 			});
 
 			// date validator with before/after options
@@ -250,21 +252,24 @@
 				<h1>@if($model) Edit @else Create @endif {{ $type }} <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 				@if ($type == 'Conference Edition')
 					{{ Form::hidden('conferenceEditionBackTarget', Input::get('conferenceEditionBackTarget')) }}
-					{{ Form::hidden('conference_id') }}
 				@elseif ($type == 'Workshop')
 					{{ Form::hidden('workshopBackTarget', Input::get('workshopBackTarget')) }}
-					{{ Form::hidden('conference_edition_id') }}
 				@endif
 			{{ Form::close() }}
+		</div>
+
 		@if ( $errors->count() > 0 )
+		<div class="alert alert-danger fade in">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>The following errors have occurred:</p>
 			<ul>
 			@foreach( $errors->all() as $message )
 				<li>{{{ $message }}}</li>
 			@endforeach
 			</ul>
-		@endif
 		</div>
+		@endif
+
 		{{ Form::model($model, array('action' => $action, 'id' => 'event-form', 'role' => 'form')) }}
 			{{ Form::hidden('id') }}
 			<div class="container-fluid"><div class="row">

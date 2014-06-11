@@ -242,26 +242,33 @@
 					$('#paper-form').attr('action', '{{URL::action('WorkshopController@anyEdit')}}');
 					$('#paper-form').bootstrapValidator('defaultSubmit');
 				});
+
+				$(".alert").alert();
 			});
 		</script>
 @stop
 
 @section('content')
 		<div class="page-header">
-			{{ Form::open(array('action' => 'PaperController@getIndex', 'method' => 'GET')) }}
+			{{ Form::open(array('url' => Input::get('paperBackTarget'), 'method' => 'GET')) }}
 				<h1>@if($model) Edit @else Create @endif Paper <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 			{{ Form::close() }}
-			@if ( $errors->count() > 0 )
+		</div>
+
+		@if ( $errors->count() > 0 )
+		<div class="alert alert-danger fade in">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>The following errors have occurred:</p>
 			<ul>
 			@foreach( $errors->all() as $message )
 				<li>{{{ $message }}}</li>
 			@endforeach
 			</ul>
-		@endif
 		</div>
+		@endif
 
 		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
+			{{ Form::hidden('paperBackTarget', Input::get('paperBackTarget')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('title', 'Title') }}

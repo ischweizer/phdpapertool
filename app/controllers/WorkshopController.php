@@ -132,7 +132,7 @@ class WorkshopController extends BaseController {
 			Session::forget('workshop-create-return');
 			return Redirect::to($input['workshop-create-return-url'])->withInput($input);
 		} else {
-			return Redirect::action('ConferenceEditionController@getDetails', array('id' => Input::get('conference_edition_id')));
+			return Redirect::to(Input::get('workshopBackTarget'));
 		}
 	}
 

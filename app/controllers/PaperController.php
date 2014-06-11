@@ -30,7 +30,7 @@ class PaperController extends BaseController {
 
 		// get edit model
 		if (!is_null($id)) {
-			$paper = Paper::with('authors', 'submissions', 'submissions.event', 'submissions.event.detail')->find($id);
+			$paper = Paper::with('authors', 'activeSubmission', 'activeSubmission.event', 'activeSubmission.event.detail')->find($id);
 			if (!is_null($paper)) {
 				$allowed = false;
 				$paperAuthors = $paper->authors;
@@ -158,7 +158,38 @@ class PaperController extends BaseController {
 		
 		return Redirect::action('PaperController@getIndex');	
 	}
-	
+
+	/**
+	 * Show paper information.
+	 */
+	public function getDetails($id) {
+		$paper = Paper::with('authors', 'activeSubmission', 'activeSubmission.event', 'activeSubmission.event.detail')->find($id);
+		$selectedauthors = array();
+		if (!is_null($paper)) {
+			$allowed = false;
+			foreach ($paper->authors as $author) {
+				if ($author->id == Auth::user()->author->id) {
+					$allowed = true;
+				}
+				$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			}
+			$submissionEvent = null;
+			if ($paper->activeSubmission) {
+				$submissionEvent = $paper->activeSubmission->event;
+			}
+			$submission = $this->getSubmissionArray($submissionEvent);
+			if (!$allowed) {
+				App::abort(404);
+			}
+			return View::make('paper/detail')->with('paper', $paper)->with('selectedauthors', $selectedauthors)->with('submission', $submission);
+		} else {
+			App::abort(404);
+		}
+	}
+
+	/**
+	 * Create a requested author.
+	 */
 	public function postCreateAuthor() {
 		$input = Input::all();
 		
@@ -171,5 +202,9 @@ class PaperController extends BaseController {
 		$author = Author::create( $input );
 		
 		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));
+	}
+
+	public function anyRetarget() {
+		return "Retarget not implemented yet!";
 	}
 }

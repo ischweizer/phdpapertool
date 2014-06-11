@@ -15,6 +15,7 @@
 					},
 					live: 'enabled'
 				});
+				$(".alert").alert();
 			});
 		</script>
 @stop
@@ -25,15 +26,20 @@
 				<h1>@if($model) Edit @else Create @endif Conference <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 				{{ Form::hidden('conferenceBackTarget', Input::get('conferenceBackTarget')) }}
 			{{ Form::close() }}
+		</div>
+
 		@if ( $errors->count() > 0 )
+		<div class="alert alert-danger fade in">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>The following errors have occurred:</p>
 			<ul>
 			@foreach( $errors->all() as $message )
 				<li>{{{ $message }}}</li>
 			@endforeach
 			</ul>
-		@endif
 		</div>
+		@endif
+
 		{{ Form::model($model, array('action' => 'ConferenceController@postEditTarget', 'id' => 'conference-form', 'role' => 'form')) }}
 			{{ Form::hidden('conferenceBackTarget', Input::get('conferenceBackTarget')) }}
 			{{ Form::hidden('id') }}
