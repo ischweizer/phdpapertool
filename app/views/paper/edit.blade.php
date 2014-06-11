@@ -12,6 +12,10 @@
 			}
 			
 			$(document).ready(function() {
+				$('#selected_authors').change(function(){
+					$('#side-buttons').removeAttr("disabled");
+				});
+				
 				$('#add_author').click(function(){
 					var selection = $("#authorlist").children("option").filter(":selected");
 					var authorId = selection.val();
@@ -308,10 +312,20 @@
 			</div>
 			<div class="form-group">
 				{{ Form::label('selectedauthors', 'Selected Authors') }}
-				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
-				{{ Form::button('Up', array('id' => 'author_up', 'class' => 'btn btn-sm btn-primary')) }}
-				{{ Form::button('Down', array('id' => 'author_down', 'class' => 'btn btn-sm btn-primary')) }}
-				{{ Form::button('Remove', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-primary')) }}<br>
+				<div class="row">
+					<div class="col-xs-11">
+						{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}
+					</div>
+					<div class="col-xs-1">
+						<fieldset id="side-buttons" disabled>
+							<div class="btn-group-vertical">
+								{{ Form::button('<span class="glyphicon glyphicon-chevron-up"></span>', array('id' => 'author_up', 'class' => 'btn btn-sm btn-default')) }}
+								{{ Form::button('<span class="glyphicon glyphicon-chevron-down"></span>', array('id' => 'author_down', 'class' => 'btn btn-sm btn-default')) }}
+								{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-default')) }}
+							</div>
+						</fieldset>
+					</div>
+				</div>
 			</div>
 			
 			<div class="form-group">
