@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class PaperController extends BaseController {
 	/**
 	 * List of papers.
@@ -32,12 +34,11 @@ class PaperController extends BaseController {
 		if (!is_null($id)) {
 			$paper = Paper::with('authors', 'activeSubmission', 'activeSubmission.event', 'activeSubmission.event.detail')->find($id);
 			if (!is_null($paper)) {
-				$allowed = false;
+				if (!$this->checkAccess($paper)) {
+					App::abort(404);
+				}
 				$paperAuthors = $paper->authors;
 				foreach ($paperAuthors as $author) {
-					if ($author->id == Auth::user()->author->id) {
-						$allowed = true;
-					}
 					if (array_key_exists($author->id, $selectedauthors)) {
 						unset($selectedauthors[$author->id]);
 					}
@@ -46,16 +47,42 @@ class PaperController extends BaseController {
 						unset($authors[$author->id]);
 					}
 				}
-				if (!$allowed) {
-					App::abort(404);
-				}
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
 			}
 		}
 
-		// get created event
+		$sessionEvent = $this->getSessionEvent();
+		if ($sessionEvent) {
+			$submissionEvent = $sessionEvent;
+		}
+
+		$submission = $this->getSubmissionArray($submissionEvent);
+
+		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission));
+	}
+
+	/**
+	 * Returns an event object which was stored in the session or null.
+	 */
+	private function getSessionEvent() {
+		$submissionEvent = null;
+
+		// get event of old input (overwrites model event)
+		if (!empty(Session::getOldInput('conference_edition_id'))) {
+			$edition = ConferenceEdition::with('event')->find(Session::getOldInput('conference_edition_id'));
+			if ($edition) {
+				$submissionEvent = $edition->event;
+			}
+		} else if (!empty(Session::getOldInput('workshop_id'))) {
+			$workshop = Workshop::with('event')->find(Session::getOldInput('workshop_id'));
+			if ($workshop) {
+				$submissionEvent = $workshop->event;
+			}
+		}
+
+		// get created event (overwrites old input event)
 		if (Session::has('conference_edition_id')) {
 			$edition = ConferenceEdition::with('event')->find(Session::get('conference_edition_id'));
 			if ($edition) {
@@ -68,15 +95,15 @@ class PaperController extends BaseController {
 			}
 		}
 
-		$submission = $this->getSubmissionArray($submissionEvent);
-
-		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission));
+		return $submissionEvent;
 	}
 
 	/**
-	 * Returns the submission array used by the paper/edit view
+	 * Returns the submission array used by the paper/edit view.
+	 *
+	 * @param boolean $defaultToOldInput whether the 'kind' field is defaulted to old input if existing
 	 */
-	private function getSubmissionArray($event) {
+	private function getSubmissionArray($event, $defaultToOldInput = true) {
 		$submission = array();
 		$submission['kind'] = 'none';
 		$submission['activeDetailID'] = null;
@@ -84,6 +111,9 @@ class PaperController extends BaseController {
 		$submission['editionOption'] = array();
 		$submission['editionName'] = null;
 		$submission['workshopName'] = null;
+		if ($defaultToOldInput && !empty(Input::old('submissionKind'))) {
+			$submission['kind'] = Input::old('submissionKind');
+		}
 
 		if ($event) {
 			$submission['kind'] = $event->detail_type;
@@ -104,24 +134,34 @@ class PaperController extends BaseController {
 	 * Handle edit/create result.
 	 */
 	public function postEditTarget() {
-		$validation = Paper::validate(Input::all());
+		$validator = Paper::validate(Input::all());
 
-		if ($validation->fails()) {
+		if ($validator->fails()) {
 			return Redirect::action('PaperController@anyEdit')->withErrors($validator)->withInput();
 		}
 
 		$edit = (bool) Input::get('id');
+		$success = false;
+		$paper = null;
 		if ($edit) {
 			$paper = Paper::find(Input::get('id'));
-			$paper->fill(Input::all());
-			
-			if(!$paper->save()) {
-				return "Problem with updating paper!";
+			if (!$paper || !$this->checkAccess($paper)) {
+				App::abort(404);
 			}
+			$paper->fill(Input::all());
 		} else {
-			$paper = Paper::create(Input::all());
+			$paper = new Paper(Input::all());
 		}
+
+		$success = $paper->save();
 		
+		// check for success
+		if (!$success) {
+			return Redirect::action('PaperController@anyEdit')->
+				withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->
+				withInput();
+		}
+
 		$input = Input::all();
 		$paper->authors()->detach();
 		// User has to be author
@@ -155,8 +195,12 @@ class PaperController extends BaseController {
 				$submission->save();
 			}
 		}
-		
-		return Redirect::action('PaperController@getIndex');	
+
+		return View::make('common/edit_successful')->
+			with('type', 'Paper')->
+			with('action', 'PaperController@getDetails')->
+			with('id', $paper->id)->
+			with('edited', $edit);
 	}
 
 	/**
@@ -204,7 +248,96 @@ class PaperController extends BaseController {
 		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));
 	}
 
-	public function anyRetarget() {
-		return "Retarget not implemented yet!";
+	/**
+	 * Retarget submission.
+	 *
+	 * @param int $id a paper id
+	 */
+	public function anyRetarget($id) {
+		$paper = Paper::with('activeSubmission', 'activeSubmission.event', 'activeSubmission.event.detail')->find($id);
+
+		if (!$paper || !$this->checkAccess($paper)) {
+			App::abort(404);
+		}
+
+		$currentSubmissionEvent = null;
+		if ($paper->activeSubmission) {
+			$currentSubmissionEvent = $paper->activeSubmission->event;
+		}
+		$newSubmissionEvent = $this->getSessionEvent();
+
+		$currentSubmission = $this->getSubmissionArray($currentSubmissionEvent, false);
+		$newSubmission = $this->getSubmissionArray($newSubmissionEvent);
+
+		return View::make('paper/retarget')->with('paper', $paper)->with('submission', $currentSubmission)->with('newSubmission', $newSubmission);
+	}
+
+	/**
+	 * Handle retarget submission result.
+	 */
+	public function postRetargetTarget() {
+		$paper = Paper::find(Input::get('id'));
+		if (!$paper || !$this->checkAccess($paper)) {
+			App::abort(404);
+		}
+		$oldActiveSubmission = $paper->activeSubmission;
+		$submission = null;
+		$submissionKind = Input::get('submissionKind');
+		if($submissionKind != 'none') {
+			$detail = null;
+			if ($submissionKind == 'ConferenceEdition') {
+				$detail = ConferenceEdition::with('event')->find(Input::get('conference_edition_id'));
+			} else if ($submissionKind == 'Workshop') {
+				$detail = Workshop::with('event')->find(Input::get('workshop_id'));
+			}
+			if ($detail) {
+				$submission = new Submission();
+				$submission->paper_id = $paper->id;
+				$submission->event_id = $detail->event->id;
+				if (!$submission->save()) {
+					return Redirect::action('PaperController@anyRetarget')->
+						withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->
+						withInput();
+				}
+			} else {
+				return Redirect::action('PaperController@anyRetarget')->
+					withErrors(new MessageBag(array('Sorry, couldn\'t find selected event.')))->
+					withInput();
+			}
+		}
+		if ($oldActiveSubmission) {
+			$oldActiveSubmission->active = 0;
+			$oldActiveSubmission->finished_at = new Carbon;
+			// could create new submission? but not update old?
+			if (!$oldActiveSubmission->save()) {
+				// try deleting new and return error
+				if ($submission) {
+					$submission->delete();
+				}
+				return Redirect::action('PaperController@anyRetarget')->
+						withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->
+						withInput();
+			}
+		}
+
+		return View::make('common/edit_successful')->
+			with('type', 'Paper Submission Target')->
+			with('action', 'PaperController@getDetails')->
+			with('id', $paper->id)->
+			with('edited', true);
+	}
+
+	/**
+	 * Checks whether the currently authed user is an author of the given paper
+	 *
+	 * @param $paper the paper model
+	 */
+	private function checkAccess($paper) {
+		foreach ($paper->authors as $author) {
+			if ($author->id == Auth::user()->author->id) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

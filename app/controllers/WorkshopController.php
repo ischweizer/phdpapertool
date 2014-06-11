@@ -36,9 +36,10 @@ class WorkshopController extends BaseController {
 		$editionOption = array();
 		if ($id != null) {
 			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
-			if ($workshop) {
-				$editionOption = array($workshop->conference_edition_id => 'Dummy');
+			if (!$workshop) {
+				App::abort(404);
 			}
+			$editionOption = array($workshop->conference_edition_id => 'Dummy');
 		}
 
 		// get created conference edition
@@ -87,6 +88,9 @@ class WorkshopController extends BaseController {
 		$edit = (bool) Input::get('id');
 		if ($edit) {
 			$workshop = Workshop::with('event')->find(Input::get('id'));
+			if (!$workshop) {
+				App::abort(404);
+			}
 			$workshop->fill(Input::all());
 			$workshop->event->fill(Input::get('event'));
 			$success = $workshop->push();
@@ -116,7 +120,7 @@ class WorkshopController extends BaseController {
 			return Redirect::to($input['workshop-create-return-url'])->withInput($input)->with('workshop_id', $workshop->id);
 		}
 
-		return View::make('conference/edit_successful')->
+		return View::make('common/edit_successful')->
 			with('type', 'Workshop')->
 			with('action', 'WorkshopController@getDetails')->
 			with('id', $workshop->id)->

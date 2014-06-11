@@ -6,11 +6,6 @@
 				background-color:#fff;
 			}
 		</style>
-		<script>			
-			$(document).ready(function() {
-				
-			});
-		</script>
 @stop
 
 @section('content')
@@ -58,5 +53,7 @@
 			@endif
 			</div>
 		</div>
+
+		{{-- TODO show submission history --}}
 		
 @stop

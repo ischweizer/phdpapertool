@@ -37,6 +37,9 @@ class ConferenceEditionController extends BaseController {
 		$edition = null;
 		if ($id != null) {
 			$edition = ConferenceEdition::with('conference', 'event')->find($id);
+			if (!$edition) {
+				App::abort(404);
+			}
 		} else if (Input::has('conference_id')) {
 			$conference = Conference::find(Input::get('conference_id'));
 			if ($conference) {
@@ -80,6 +83,9 @@ class ConferenceEditionController extends BaseController {
 		$edit = (bool) Input::get('id');
 		if ($edit) {
 			$edition = ConferenceEdition::with('event')->find(Input::get('id'));
+			if (!$edition) {
+				App::abort(404);
+			}
 			$edition->fill(Input::all());
 			$edition->event->fill(Input::get('event'));
 			$success = $edition->push();
@@ -109,7 +115,7 @@ class ConferenceEditionController extends BaseController {
 			return Redirect::to($input['conference-edition-create-return-url'])->withInput($input)->with('conference_edition_id', $edition->id);
 		}
 
-		return View::make('conference/edit_successful')->
+		return View::make('common/edit_successful')->
 			with('type', 'Conference Edition')->
 			with('action', 'ConferenceEditionController@getDetails')->
 			with('id', $edition->id)->

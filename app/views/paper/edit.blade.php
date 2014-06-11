@@ -250,7 +250,7 @@
 
 @section('content')
 		<div class="page-header">
-			{{ Form::open(array('url' => Input::get('paperBackTarget'), 'method' => 'GET')) }}
+			{{ Form::open(array('url' => Input::get('paperBackTarget') ?: Input::old('paperBackTarget'), 'method' => 'GET')) }}
 				<h1>@if($model) Edit @else Create @endif Paper <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 			{{ Form::close() }}
 		</div>
@@ -323,7 +323,7 @@
 			<div class="form-group">
 				{{ Form::label('submissionKind', 'Current Submission Target') }}
 				{{ Form::hidden('submissionKind', 'none') }}
-				<div class="form-control-static-bordered">
+				<div class="form-control-static-bordered" style="background-color:#eee">
 				@if ($submission['kind'] == 'ConferenceEdition')
 					<b>Conference</b> {{{ $submission['conferenceName'] }}}<br>
 					<b>Edition</b> {{{ $submission['editionName'] }}}<br>
