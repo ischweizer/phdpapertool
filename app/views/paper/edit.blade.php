@@ -16,6 +16,10 @@
 					$('#side-buttons').removeAttr("disabled");
 				});
 				
+				$('#open_new_author').click(function(){
+					$('#authorCreationModal').modal('show');
+				});
+				
 				$('#add_author').click(function(){
 					var selection = $("#authorlist").children("option").filter(":selected");
 					var authorId = selection.val();
@@ -50,6 +54,7 @@
 									$('#selected_authors').append(
 								        $('<option></option>').val(key).html(value)
 								    );
+								    $('#authorCreationModal').modal('hide');
 								});
 							}
 						});
@@ -285,30 +290,12 @@
 			
 			<!-- authors -->
 			{{ Form::label('authors', 'Authors') }}<br>
-			<div class="row">
+			<div class="form-group">
 				<!-- add author -->
-				<div class="col-md-6">
-					{{ Form::label('select', 'Select Author') }}<br>
-					{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist')) }}<br><br>
-					{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}<br><br>
-				</div>
-				<!-- create author -->
-				<div class="col-md-6">
-					<div class="row">
-						<div class="col-md-6">
-							{{ Form::label('firstname', 'First name') }}<br>
-							{{ Form::text('firstname', '', array('placeholder' => 'First name', 'class' => 'form-control', 'id' => 'first_name')) }}
-						</div>
-						<div class="col-md-6">
-							{{ Form::label('lastname', 'Last name') }}<br>
-							{{ Form::text('lastname', '', array('placeholder' => 'Lastname', 'class' => 'form-control', 'id' => 'last_name')) }}
-						</div>
-					</div>
-					<br>
-					{{ Form::label('email', 'Email') }}<br>
-					{{ Form::text('email', '', array('placeholder' => 'Email', 'class' => 'form-control', 'id' => 'email')) }}<br>
-					{{ Form::button('Add', array('id' => 'new_author', 'class' => 'btn btn-sm btn-primary')) }}<br><br>
-				</div>
+				{{ Form::label('select', 'Select Author') }}<br>
+				{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist', 'class' => 'form-control')) }}<br>
+				{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}
+				{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}<br><br>
 			</div>
 			<div class="form-group">
 				{{ Form::label('selectedauthors', 'Selected Authors') }}
@@ -389,4 +376,38 @@
 
 			{{ Form::submit('Submit', array('class' => 'btn btn-lg btn-primary')) }}
 		{{ Form::close() }}
+		
+		<div class="modal fade" id="authorCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Create an Author</h4>
+					</div>
+					<div class="modal-body">
+						
+						<div class="row">
+							<div class="col-md-6">
+								<label for="first_name" class="sr-only">First name</label>
+								<input type="text" class="form-control" id="first_name" placeholder="First name">
+							</div>
+							<div class="col-md-6">
+								<label for="last_name" class="sr-only">Last name</label>
+								<input type="text" class="form-control" id="last_name" placeholder="Last name">
+							</div>
+						</div>
+						<br>
+						<div class="form-group">
+							<label for="email" class="sr-only">Group name</label>
+							<input type="text" class="form-control" id="email" placeholder="Email">
+							
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="new_author">Save author</button>
+					</div>
+				</div>
+			</div>
+		</div>
 @stop
