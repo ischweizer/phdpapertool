@@ -23,7 +23,7 @@
 
 		<div class="form-group">
 			{{ Form::label('authors', 'Authors') }}
-			{{ Form::select('authors', $selectedauthors, null, array('size' => count($selectedauthors), 'class' => 'form-control', 'readonly')) }}
+			{{ Form::select('authors', $selectedauthors, null, array('size' => count($selectedauthors)+1, 'class' => 'form-control', 'readonly')) }}
 		</div>
 
 		<div class="form-group">
