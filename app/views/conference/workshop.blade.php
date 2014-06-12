@@ -2,11 +2,12 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>{{{ $workshop->name }}}</h1>
-			{{ HTML::linkAction('WorkshopController@getEdit', 'edit', array('id' => $workshop->id)) }}
+			{{ Form::open(array('action' => array('WorkshopController@anyEdit', 'id' => $workshop->id))) }}
+			<h1>{{{ $workshop->name }}} <button type="submit" class="btn btn-xs btn-primary">Edit</button></h1>
+				{{ Form::hidden('workshopBackTarget', URL::action('WorkshopController@getDetails', array('id' => $workshop->id))) }}
+			{{ Form::close() }}
 		</div>
 
-   		<h3>Workshop Information</h3>
 		<table class="table" cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -30,8 +31,9 @@
 			</tbody>
 		</table>
 
-   		<h3>Co-located Conference Edition Information</h3>
-		{{ HTML::linkAction('ConferenceEditionController@getDetails', 'details', array('id' => $workshop->conferenceEdition->id)) }}</td>
+		{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $workshop->conferenceEdition->id), 'method' => 'GET')) }}				
+			<h3>Co-located Conference Edition Information <button type="submit" class="btn btn-xs btn-primary">Details</button></h3>
+		{{ Form::close() }}
 		<table class="table" cellspacing="0" width="100%">
 			<thead>
 				<tr>

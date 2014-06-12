@@ -15,8 +15,10 @@ class EnrollInGroupController extends BaseController {
     public function enroll() {
         if(Auth::user()->group_id == null)
             $group = null;
-        else
+        else {
             $group = Group::find(Auth::user()->group_id);
+            $oldGroupLabId = $group->lab_id;
+        }
         if(!Input::has('group') || !Auth::check()  || ($group != null && $group->active != 1))
             return Response::json(false);
         $groupId = Input::get('group');
@@ -24,8 +26,20 @@ class EnrollInGroupController extends BaseController {
         if($group == null || $group->active != 1)
             return Response::json(false);
         $user = Auth::user();
-        $user->group_id = $groupId;
         $user->group_confirmed = 0;
+        $role = UserRole::where('user_id', '=', $user->id)->first();
+        if($role != null) {
+            if($role->role_id == UserRole::GROUP_LEADER)
+                $role->delete();
+            else if($role->role_id == UserRole::LAB_LEADER) {
+                if($oldGroupLabId != $group->lab_id)
+                    $role->delete();
+                else
+                    $user->group_confirmed = 1;
+            }
+                
+        }        
+        $user->group_id = $groupId;
         $user->save();
         return Response::json(true);
     }

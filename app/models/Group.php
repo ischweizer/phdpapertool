@@ -26,8 +26,10 @@ class Group extends Eloquent {
             $result = array();
             foreach($groups as $group) {
                 foreach($users as $user) {
-                    if($group->id == $user->group_id && $group->id != 1)
+                    if($group->id == $user->group_id && $group->id != 1) {
                         $result[$group->id] = $group;
+                        continue 2;
+                    }
                 }
             }
             return $result;
@@ -40,8 +42,10 @@ class Group extends Eloquent {
             $result = array();
             foreach($groups as $group) {
                 foreach($labs as $lab) {
-                    if($group->lab_id == $lab->id && $group->id != 1)
+                    if($group->lab_id == $lab->id && $group->id != 1) {
                         $result[$group->id] = $group;
+                        continue 2;
+                    }
                 }
             }
             return $result;

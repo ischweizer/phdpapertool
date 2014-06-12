@@ -1,9 +1,5 @@
 @extends('layouts/main')
 
-@section('conf')
-	<?php $conf['currentPage'] = 'timeline'; ?>
-@stop
-
 @section('head')
 		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 		<script src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
@@ -93,10 +89,14 @@
 				@foreach ($papers as $paper)
 				<tr>
 					<td>{{{ $paper->title }}}</td>
+					@if ($paper->activeSubmission)
 					<td align='center'>{{{ $paper->activeSubmission->event->abstract_due->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->paper_due->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->notification_date->format('d.m.Y') }}}</td>
 					<td align='center'>{{{ $paper->activeSubmission->event->camera_ready_due->format('d.m.Y') }}}</td>
+					@else
+					<td></td><td></td><td></td><td></td>
+					@endif
 				</tr>
 				@endforeach
 				</tbody>

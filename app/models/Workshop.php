@@ -32,10 +32,17 @@ class Workshop extends Eloquent {
 			$input = Input::all();
 		}
 
+		$uniqueIgnore = '';
+		if (isset($input['id'])) {
+			$id = (int) $input['id'];
+			if ($id > 0) {
+				$uniqueIgnore = ',' . $id;
+			}
+		}
 		$rules = array(
 				'id'					=> 'Exists:workshops,id',
 				'conference_edition_id'	=> 'Required|Exists:conference_editions,id',
-				'name'					=> 'Required',
+				'name'					=> 'Required|Unique:workshops,name' . $uniqueIgnore
 		);
 		$rules = array_merge($rules, EventModel::getValidateRules());
 		return Validator::make($input, $rules);

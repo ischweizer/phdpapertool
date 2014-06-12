@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "f23201d487349a8b7688edc6435c3e76",
+    "hash": "0ced2a88267b059785bd7720ca6457c7",
     "packages": [
         {
             "name": "bllim/datatables",
@@ -439,12 +440,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "fcc2a3cfd69eec0734636838fbb782919a0447e9"
+                "reference": "e351fae65807ab46a10e878eddabd499b391cdc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/fcc2a3cfd69eec0734636838fbb782919a0447e9",
-                "reference": "fcc2a3cfd69eec0734636838fbb782919a0447e9",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/e351fae65807ab46a10e878eddabd499b391cdc9",
+                "reference": "e351fae65807ab46a10e878eddabd499b391cdc9",
                 "shasum": ""
             },
             "require": {
@@ -505,7 +506,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2014-05-21 17:49:35"
+            "time": "2014-06-04 00:56:03"
         },
         {
             "name": "doctrine/inflector",
@@ -622,6 +623,51 @@
                 "parser"
             ],
             "time": "2013-01-12 18:59:04"
+        },
+        {
+            "name": "felixkiss/uniquewith-validator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/felixkiss/uniquewith-validator.git",
+                "reference": "3f6cfcc4dcdfd186cdcdaf923fa4b153471f5fe5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/felixkiss/uniquewith-validator/zipball/3f6cfcc4dcdfd186cdcdaf923fa4b153471f5fe5",
+                "reference": "3f6cfcc4dcdfd186cdcdaf923fa4b153471f5fe5",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "4.x",
+                "illuminate/validation": "4.x",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Felixkiss\\UniqueWithValidator": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Felix Kiss",
+                    "email": "felix@felixkiss.com"
+                }
+            ],
+            "description": "Custom Laravel 4 Validator for combined unique indexes",
+            "homepage": "https://github.com/felixkiss/uniquewith-validator",
+            "keywords": [
+                "laravel"
+            ],
+            "time": "2014-05-25 19:53:07"
         },
         {
             "name": "filp/whoops",
@@ -880,16 +926,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.9.1",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "65026b610f8c19e61d7242f600530677b0466aac"
+                "reference": "25b16e801979098cb2f120e697bfce454b18bf23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/65026b610f8c19e61d7242f600530677b0466aac",
-                "reference": "65026b610f8c19e61d7242f600530677b0466aac",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/25b16e801979098cb2f120e697bfce454b18bf23",
+                "reference": "25b16e801979098cb2f120e697bfce454b18bf23",
                 "shasum": ""
             },
             "require": {
@@ -917,7 +963,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9.x-dev"
+                    "dev-master": "1.10.x-dev"
                 }
             },
             "autoload": {
@@ -944,7 +990,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2014-04-24 13:29:03"
+            "time": "2014-06-04 16:30:04"
         },
         {
             "name": "nesbot/carbon",
@@ -2180,7 +2226,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "doctrine/dbal": 20
+        "doctrine/dbal": 20,
+        "felixkiss/uniquewith-validator": 20
     },
     "platform": [
 

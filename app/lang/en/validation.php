@@ -71,6 +71,7 @@ return array(
 		"array"   => "The :attribute must contain :size items.",
 	),
 	"unique"               => "The :attribute has already been taken.",
+	"unique_with"          => "This combination of :fields already exists.",
 	"url"                  => "The :attribute format is invalid.",
 
 	/*

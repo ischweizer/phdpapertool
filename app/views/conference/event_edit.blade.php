@@ -124,8 +124,51 @@
 
 				// in case an initial value is set
 				conferenceNameChange();
+
+				@if ($type == 'Workshop')
+				// create new conference edition button
+				$('#conference_edition_create').click(function() {
+					// add return information and current name
+					$('<input type="hidden">').attr({
+						name: 'conference-edition-create-return-url',
+						value: '{{ Request::url() }}'
+					}).appendTo('#event-form');
+					$('<input type="hidden">').attr({
+						name: 'conference-edition-create-name',
+						value: $('#conference_name').val()
+					}).appendTo('#event-form');
+					// forget current conference name/editionid
+					$('#conference_name').remove();
+					$('#conference_edition_id').remove();
+					// submit form to alternative target
+					$('#event-form').attr('action', '{{URL::action('ConferenceEditionController@anyEdit')}}');
+					$('#event-form').bootstrapValidator('defaultSubmit');
+				});
+				@elseif ($type == 'Conference Edition')
+				// create new conference button
+				$('#conference_create').click(function() {
+					// add return information and current name
+					$('<input type="hidden">').attr({
+						name: 'conference-create-return-url',
+						value: '{{ Request::url() }}'
+					}).appendTo('#event-form');
+					$('<input type="hidden">').attr({
+						name: 'conference-create-name',
+						value: $('#conference_name').val()
+					}).appendTo('#event-form');
+					// forget current conference name/editionid
+					$('#conference_name').remove();
+					$('#conference_id').remove();
+					// submit form to alternative target
+					$('#event-form').attr('action', '{{URL::action('ConferenceController@anyEdit')}}');
+					$('#event-form').bootstrapValidator('defaultSubmit');
+				});
+				@endif
+
+				$(".alert").alert();
 			});
 
+			// date validator with before/after options
 			(function($) {
 				$.fn.bootstrapValidator.validators.confDate = {
 					html5Attributes: {
@@ -142,6 +185,7 @@
 						if (isNaN(date.getTime())) {
 							return false;
 						}
+						// datepicker.getDate() does allow many formats, we want to force ours
 						if (!value.match(/[A-Z][a-z]+ \d{2}, \d{4}/)) {
 							return false;
 						}
@@ -204,36 +248,58 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>@if($model) Edit @else Create @endif {{ $type }}</h1>
+			{{ Form::model($model, array('action' => $backAction)) }}
+				<h1>@if($model) Edit @else Create @endif {{ $type }} <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
+				@if ($type == 'Conference Edition')
+					{{ Form::hidden('conferenceEditionBackTarget', Input::get('conferenceEditionBackTarget')) }}
+				@elseif ($type == 'Workshop')
+					{{ Form::hidden('workshopBackTarget', Input::get('workshopBackTarget')) }}
+				@endif
+			{{ Form::close() }}
+		</div>
+
 		@if ( $errors->count() > 0 )
+		<div class="alert alert-danger fade in">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>The following errors have occurred:</p>
 			<ul>
 			@foreach( $errors->all() as $message )
 				<li>{{{ $message }}}</li>
 			@endforeach
 			</ul>
-		@endif
 		</div>
+		@endif
+
 		{{ Form::model($model, array('action' => $action, 'id' => 'event-form', 'role' => 'form')) }}
 			{{ Form::hidden('id') }}
+			<div class="container-fluid"><div class="row">
 		@if ($type == 'Conference Edition')
-			<div class="form-group">
+			<div class="form-group col-md-11" style="padding-left:0;padding-right:5px">
 				{{ Form::label($conferenceName, 'Conference') }}
 		@elseif ($type == 'Workshop')
-			<div class="container-fluid"><div class="row"><div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
+			<div class="form-group col-md-8" style="padding-left:0;padding-right:5px">
 				{{ Form::label($conferenceName, 'Co-located Conference') }}
 		@endif
-				{{ Form::text($conferenceName, null, array('id' => 'conference_name', 'class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
-		
+				{{ Form::text($conferenceName, $initialConferenceName, array('id' => 'conference_name', 'class' => 'form-control', 'placeholder' => 'Conference', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-remote' => 'true', 'data-bv-remote-message' => 'Must be an existing conference', 'data-bv-remote-url' => URL::action('ConferenceController@anyCheck'), 'data-bv-remote-name' => 'name')) }}
+			</div>
 		@if ($type == 'Conference Edition')
+			<div class="form-group col-md-1" style="padding:1px 0 0 0">
+				<label>&nbsp;</label>
+				<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 			</div>
 		@elseif ($type == 'Workshop')
-			</div><div class="form-group col-md-4" style="padding:0">
+			<div class="form-group col-md-3" style="padding-left:0;padding-right:5px">
 				{{ Form::label('conference_edition_id', 'Edition') }}
-				{{ Form::select('conference_edition_id', $editionOption, null, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
-			</div></div></div>
+				{{ Form::select('conference_edition_id', $editionOption, $initialConferenceEditionId, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+			</div>
+			<div class="form-group col-md-1" style="padding:1px 0 0 0">
+				<label>&nbsp;</label>
+				<input id="conference_edition_create" type="button" class="btn btn-sm btn-primary" value="Create New">
+			</div>
 		@endif
+			</div></div>
 		@if ($type == 'Conference Edition')
+			{{ Form::hidden('conferenceEditionBackTarget', Input::get('conferenceEditionBackTarget')) }}
 			{{ Form::hidden('conference_id', null, array('id' => 'conference_id')) }}
 			<div class="form-group">
 				{{ Form::label('location', 'Location') }}
@@ -244,9 +310,10 @@
 				{{ Form::text('edition', null, array('class' => 'form-control', 'placeholder' => 'Edition / Year', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 		@elseif ($type == 'Workshop')
+			{{ Form::hidden('workshopBackTarget', Input::get('workshopBackTarget')) }}
 			<div class="form-group">
 				{{ Form::label('name', 'Workshop Name') }}
-				{{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
+				{{ Form::text('name', $initialName, array('class' => 'form-control', 'placeholder' => 'Name', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 		@endif
 			<div class="form-group single-date">
@@ -285,8 +352,6 @@
 					{{ Form::text('event[end]', @date_format(Form::getValueAttribute('event[end]'), 'M d, Y'), array('class' => 'input-sm form-control', 'required', 'data-bv-notempty-message' => 'May not be empty', 'data-bv-confdate' => 'true', 'data-bv-confdate-message' => 'Must be the last date', 'data-bv-confdate-after' => 'event[abstract_due] event[paper_due] event[notification_date] event[camera_ready_due] event[start]')) }}
 				</div>
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="submit" class="btn btn-default btn-primary">Submit</button>
 		{{ Form::close() }}
 @stop
-
-

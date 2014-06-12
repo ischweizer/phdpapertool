@@ -16,17 +16,16 @@
 		{{ HTML::style('stylesheets/style.css'); }}
 		@yield('head')
 	</head>
-	
-	@yield('conf')
+
 	<body>
 		<div id="top_toolbar">
-				<a class="navbar-brand" href="#">PhD Paper Tool</a>
-				<form class="navbar-form navbar-left" role="search">
+				<a class="navbar-brand" href="/">PhD Paper Tool</a>
+				{{--<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
 						<input type="text" id='search-bar' class="form-control" placeholder="Search">
 					</div>
 					<button type="submit" class="btn btn-default">Search</button>
-				</form>
+				</form>--}}
 				<div class="header_link">
 					@if (Auth::guest())
 						{{ HTML::link('', 'Login', array('class' => 'btn btn-info')) }}
@@ -36,27 +35,21 @@
 					@endif
 				</div>
 		</div>
-				
-		<?php
-			if (!isset($conf['currentPage'])) {
-				$conf['currentPage'] = '';
-			}
-		?>
+
 		@if (Auth::check())
 		<div id="sticky_navigation_wrapper">
 			<div id="sticky_navigation">
-				<div id="main">
-					<div style="width:600px" class="pull-right">        
-						<ul >
-							<li {{ ($conf['currentPage'] == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
-							<li {{ ($conf['currentPage'] == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
-							<li {{ ($conf['currentPage'] == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>
-							<li {{ ($conf['currentPage'] == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
-							@if (Auth::user()->isAdmin())
-								<li {{($conf['currentPage'] == 'handle') ? 'class="active"' : '' }}>{{ HTML::link('handle', 'Admin')}}</li>
-							@endif
-						</ul>
-					</div>
+				<div id="main">      
+					<ul class="pull-right nav nav-pills">
+						<li {{ (Route::current()->uri() == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
+						<li {{ (Route::current()->uri() == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
+						{{--<li {{ (Route::current()->uri() == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>--}}
+						<li {{ (Route::current()->uri() == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
+						<li {{ (Route::current()->uri() == 'conferences') ? 'class="active"' : '' }}>{{ HTML::link('conferences', 'Conferences') }}</li>
+						@if (Auth::user()->isAdmin())
+							<li {{(Route::current()->uri() == 'handle') ? 'class="active"' : '' }}>{{ HTML::link('handle', 'Admin')}}</li>
+						@endif
+					</ul>
 				</div>
 			</div>
 		</div>

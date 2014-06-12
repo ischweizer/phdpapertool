@@ -6,7 +6,7 @@ class Paper extends Eloquent {
 	
 	public function authors()
 	{
-		return $this->belongsToMany('Author');
+		return $this->belongsToMany('Author')->withPivot('order_position')->orderBy('order_position', 'asc');
 	}
 
 	public function submissions()

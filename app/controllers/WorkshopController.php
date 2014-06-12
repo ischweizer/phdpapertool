@@ -5,7 +5,7 @@ use Illuminate\Support\MessageBag;
 class WorkshopController extends BaseController {
 	
 	public function __construct() {
-		$this->beforeFilter('csrf', array('only' => array('postEdit')));
+		$this->beforeFilter('csrf', array('only' => array('postEditTarget')));
 	}
 
 	/**
@@ -23,26 +23,62 @@ class WorkshopController extends BaseController {
 	/**
 	 * Edit or create a workshop.
 	 */
-    public function getEdit($id = null) {
+    public function anyEdit($id = null) {
+		$initialName = null;
+		// save requested return information
+		if (Input::get('workshop-create-return-url')) {
+			Session::set('workshop-create-return', Input::all());
+			$initialName = Input::get('workshop-create-name');
+		}
+
+		// get edit model
 		$workshop = null;
+		$editionOption = array();
 		if ($id != null) {
 			$workshop = Workshop::with('conferenceEdition', 'conferenceEdition.conference', 'event')->find($id);
-		}
-		$editionOption = array();
-		if ($workshop) {
+			if (!$workshop) {
+				App::abort(404);
+			}
 			$editionOption = array($workshop->conference_edition_id => 'Dummy');
 		}
-		return View::make('conference/event_edit')->with('model', $workshop)->with('type', 'Workshop')->with('action', 'WorkshopController@postEdit')->with('conferenceName', 'conferenceEdition[conference][name]')->with('editionOption', $editionOption);
+
+		// get created conference edition
+		$initialConferenceEditionId = null;
+		$initialConferenceName = null;
+		if (Session::has('conference_edition_id') || (Input::has('conference_edition_id') && $workshop == null)) {
+			$edition = ConferenceEdition::with('conference')->find(Session::get('conference_edition_id') ?: Input::get('conference_edition_id'));
+			if ($edition) {
+				$initialConferenceId = $edition->id;
+				$initialConferenceName = $edition->conference->name;
+				$editionOption = array($edition->id => 'Dummy');
+				if ($workshop == null) {
+					$workshop = array(
+						'conference_edition_id' => $edition->id,
+						'conferenceEdition' => $edition->toArray()
+					);
+				}
+			}
+		}
+		return View::make('conference/event_edit')->
+			with('model', $workshop)->
+			with('type', 'Workshop')->
+			with('action', 'WorkshopController@postEditTarget')->
+			with('backAction', 'WorkshopController@postBack')->
+			with('conferenceName', 'conferenceEdition[conference][name]')->
+			with('editionOption', $editionOption)->
+			with('initialConferenceEditionId', $initialConferenceEditionId)->
+			with('initialConferenceName', $initialConferenceName)->
+			with('initialName', $initialName);
     }
 
 	/**
 	 * Handle edit/create result.
 	 */
-	public function postEdit() {
+	public function postEditTarget() {
 		// validate
 		$validator = Workshop::validate(Input::all());
 		if ($validator->fails()) {
-			return Redirect::action('WorkshopController@getEdit')->withErrors($validator)->withInput();
+			return Redirect::action('WorkshopController@anyEdit')->withErrors($validator)->withInput();
 		}
 
 		$workshop = null;
@@ -52,6 +88,9 @@ class WorkshopController extends BaseController {
 		$edit = (bool) Input::get('id');
 		if ($edit) {
 			$workshop = Workshop::with('event')->find(Input::get('id'));
+			if (!$workshop) {
+				App::abort(404);
+			}
 			$workshop->fill(Input::all());
 			$workshop->event->fill(Input::get('event'));
 			$success = $workshop->push();
@@ -70,11 +109,36 @@ class WorkshopController extends BaseController {
 
 		// check for success
 		if (!$success) {
-			return Redirect::action('WorkshopController@getEdit')->withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->withInput();
+			return Redirect::action('WorkshopController@anyEdit')->
+				withErrors(new MessageBag(array('Sorry, couldn\'t save models to database.')))->
+				withInput();
 		}
 
-		return View::make('conference/event_edited')->with('type', 'Workshop')->with('action', 'WorkshopController@getDetails')->with('id', $workshop->id)->with('edited', $edit);
+		if (Session::has('workshop-create-return')) {
+			$input = Session::get('workshop-create-return');
+			Session::forget('workshop-create-return');
+			return Redirect::to($input['workshop-create-return-url'])->withInput($input)->with('workshop_id', $workshop->id);
+		}
+
+		return View::make('common/edit_successful')->
+			with('type', 'Workshop')->
+			with('action', 'WorkshopController@getDetails')->
+			with('id', $workshop->id)->
+			with('edited', $edit);
     }
+
+	/**
+	 * Handle back button.
+	 */
+	public function postBack() {
+		if (Session::has('workshop-create-return')) {
+			$input = Session::get('workshop-create-return');
+			Session::forget('workshop-create-return');
+			return Redirect::to($input['workshop-create-return-url'])->withInput($input);
+		} else {
+			return Redirect::to(Input::get('workshopBackTarget'));
+		}
+	}
 
 	/**
 	 * Autocomplete for workshops.

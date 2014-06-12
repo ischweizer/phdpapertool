@@ -11,7 +11,7 @@ class Author extends Eloquent {
 
 	public function papers()
 	{
-		return $this->belongsToMany('Paper');
+		return $this->belongsToMany('Paper')->withPivot('order_position');
 	}
 	
 	/**
@@ -24,8 +24,16 @@ class Author extends Eloquent {
 		if (is_null($input)) {
 			$input = Input::all();
 		}
+
+		$uniqueIgnore = '';
+		if (isset($input['id'])) {
+			$id = (int) $input['id'];
+			if ($id > 0) {
+				$uniqueIgnore = ',' . $id;
+			}
+		}
 		$rules = array(
-				'email'				=> 'required|email',
+				'email'				=> 'Required|Email|Unique:authors,email' . $uniqueIgnore,
 				'first_name'		=> 'Required',
 				'last_name'			=> 'Required'
 		);
