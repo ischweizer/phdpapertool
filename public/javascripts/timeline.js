@@ -23,7 +23,7 @@ var data = (function () {
 
 	var margin = {top: 20, right: 15, bottom: 15, left: 160}
 	  , width = 960 - margin.left - margin.right
-	  , height = lanes.length*150 - margin.top - margin.bottom
+	  , height = lanes.length*80 + 135 - margin.top - margin.bottom
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
