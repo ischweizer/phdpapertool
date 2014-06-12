@@ -100,8 +100,6 @@
 												<td>
 													@if ($roleId == UserRole::SUPER_ADMIN || ($roleId == UserRole::LAB_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader()) || ($roleId == UserRole::GROUP_LEADER && !$user->isSuperAdmin() && !$user->isLabLeader() && !$user->isGroupLeader()))
 														<a href="refuse?userId={{{$user->id}}}"><span class="glyphicon glyphicon-remove" title="remove from group"></span></a>
-													@else
-														<span class="glyphicon glyphicon-ok" title="you have no right to change this"></span>
 													@endif
 												</td>
 											</tr>
