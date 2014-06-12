@@ -18,8 +18,9 @@
 	<div id='main'>
 
 		<div class="page-header">
-			{{ Form::open(array('action' => 'PaperController@anyEdit', 'method' => 'GET')) }}
+			{{ Form::open(array('action' => 'PaperController@anyEdit')) }}
 				<h1>Papers <button type="submit" class="btn btn-xs btn-primary">Create New</button></h1>
+				{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
 			{{ Form::close() }}
 		</div>
 
@@ -39,7 +40,15 @@
 						<td>{{{ $paper->title }}}</td>
 						<td>{{{ Str::limit($paper->abstract, 90) }}}</td>
 						<td>{{{ $paper->repository_url }}}</td>
-						<td>{{ HTML::linkAction('PaperController@anyEdit', 'Edit', array('id' => $paper->id)) }}</td>
+						<td>
+							{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">Details</button>
+							{{ Form::close() }}
+							{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $paper->id), 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">Edit</button>
+								{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
+							{{ Form::close() }}
+						</td>
 					</tr>
 				@endforeach
 			</tbody>

@@ -12,6 +12,14 @@
 			}
 			
 			$(document).ready(function() {
+				$('#selected_authors').change(function(){
+					$('#side-buttons').removeAttr("disabled");
+				});
+				
+				$('#open_new_author').click(function(){
+					$('#authorCreationModal').modal('show');
+				});
+				
 				$('#add_author').click(function(){
 					var selection = $("#authorlist").children("option").filter(":selected");
 					var authorId = selection.val();
@@ -46,6 +54,7 @@
 									$('#selected_authors').append(
 								        $('<option></option>').val(key).html(value)
 								    );
+								    $('#authorCreationModal').modal('hide');
 								});
 							}
 						});
@@ -59,6 +68,9 @@
 						if ({{{ Auth::user()->author->id }}} == authorId) {
 							alert("You cannot remove yourself!");
 						} else {
+							$('#authorlist').append(
+						        $('<option></option>').val(authorId).html(author.text)
+						    );
 							$("#selected_authors option[value='"+authorId+"']").remove();
 						}
 					});
@@ -242,26 +254,33 @@
 					$('#paper-form').attr('action', '{{URL::action('WorkshopController@anyEdit')}}');
 					$('#paper-form').bootstrapValidator('defaultSubmit');
 				});
+
+				$(".alert").alert();
 			});
 		</script>
 @stop
 
 @section('content')
 		<div class="page-header">
-			{{ Form::open(array('action' => 'PaperController@getIndex', 'method' => 'GET')) }}
+			{{ Form::open(array('url' => Input::get('paperBackTarget') ?: Input::old('paperBackTarget'), 'method' => 'GET')) }}
 				<h1>@if($model) Edit @else Create @endif Paper <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 			{{ Form::close() }}
-			@if ( $errors->count() > 0 )
+		</div>
+
+		@if ( $errors->count() > 0 )
+		<div class="alert alert-danger fade in">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>The following errors have occurred:</p>
 			<ul>
 			@foreach( $errors->all() as $message )
 				<li>{{{ $message }}}</li>
 			@endforeach
 			</ul>
-		@endif
 		</div>
+		@endif
 
 		{{ Form::model($model, array('action' => 'PaperController@postEditTarget', 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
+			{{ Form::hidden('paperBackTarget', Input::get('paperBackTarget')) }}
 			{{ Form::hidden('id') }}
 			<div class="form-group">
 				{{ Form::label('title', 'Title') }}
@@ -274,37 +293,28 @@
 			
 			<!-- authors -->
 			{{ Form::label('authors', 'Authors') }}<br>
-			<div class="row">
+			<div class="form-group">
 				<!-- add author -->
-				<div class="col-md-6">
-					{{ Form::label('select', 'Select Author') }}<br>
-					{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist')) }}<br><br>
-					{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}<br><br>
-				</div>
-				<!-- create author -->
-				<div class="col-md-6">
-					<div class="row">
-						<div class="col-md-6">
-							{{ Form::label('firstname', 'First name') }}<br>
-							{{ Form::text('firstname', '', array('placeholder' => 'First name', 'class' => 'form-control', 'id' => 'first_name')) }}
-						</div>
-						<div class="col-md-6">
-							{{ Form::label('lastname', 'Last name') }}<br>
-							{{ Form::text('lastname', '', array('placeholder' => 'Lastname', 'class' => 'form-control', 'id' => 'last_name')) }}
-						</div>
-					</div>
-					<br>
-					{{ Form::label('email', 'Email') }}<br>
-					{{ Form::text('email', '', array('placeholder' => 'Email', 'class' => 'form-control', 'id' => 'email')) }}<br>
-					{{ Form::button('Add', array('id' => 'new_author', 'class' => 'btn btn-sm btn-primary')) }}<br><br>
-				</div>
+				{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist', 'class' => 'form-control')) }}<br>
+				{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}
+				{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}<br><br>
 			</div>
 			<div class="form-group">
 				{{ Form::label('selectedauthors', 'Selected Authors') }}
-				{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}<br>
-				{{ Form::button('Up', array('id' => 'author_up', 'class' => 'btn btn-sm btn-primary')) }}
-				{{ Form::button('Down', array('id' => 'author_down', 'class' => 'btn btn-sm btn-primary')) }}
-				{{ Form::button('Remove', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-primary')) }}<br>
+				<div class="row">
+					<div class="col-xs-11">
+						{{ Form::select('selectedauthors[]', $selectedauthors, null, array('size' => 10, 'class' => 'form-control', 'id' => 'selected_authors', 'multiple' => true)) }}
+					</div>
+					<div class="col-xs-1">
+						<fieldset id="side-buttons" disabled>
+							<div class="btn-group-vertical">
+								{{ Form::button('<span class="glyphicon glyphicon-chevron-up"></span>', array('id' => 'author_up', 'class' => 'btn btn-sm btn-default')) }}
+								{{ Form::button('<span class="glyphicon glyphicon-chevron-down"></span>', array('id' => 'author_down', 'class' => 'btn btn-sm btn-default')) }}
+								{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'remove_author', 'class' => 'btn btn-sm btn-default')) }}
+							</div>
+						</fieldset>
+					</div>
+				</div>
 			</div>
 			
 			<div class="form-group">
@@ -316,7 +326,7 @@
 			<div class="form-group">
 				{{ Form::label('submissionKind', 'Current Submission Target') }}
 				{{ Form::hidden('submissionKind', 'none') }}
-				<div class="form-control-static-bordered">
+				<div class="form-control-static-bordered" style="background-color:#eee">
 				@if ($submission['kind'] == 'ConferenceEdition')
 					<b>Conference</b> {{{ $submission['conferenceName'] }}}<br>
 					<b>Edition</b> {{{ $submission['editionName'] }}}<br>
@@ -368,4 +378,38 @@
 
 			{{ Form::submit('Submit', array('class' => 'btn btn-lg btn-primary')) }}
 		{{ Form::close() }}
+		
+		<div class="modal fade" id="authorCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Create an Author</h4>
+					</div>
+					<div class="modal-body">
+						
+						<div class="row">
+							<div class="col-md-6">
+								<label for="first_name" class="sr-only">First name</label>
+								<input type="text" class="form-control" id="first_name" placeholder="First name">
+							</div>
+							<div class="col-md-6">
+								<label for="last_name" class="sr-only">Last name</label>
+								<input type="text" class="form-control" id="last_name" placeholder="Last name">
+							</div>
+						</div>
+						<br>
+						<div class="form-group">
+							<label for="email" class="sr-only">Group name</label>
+							<input type="text" class="form-control" id="email" placeholder="Email">
+							
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="new_author">Save author</button>
+					</div>
+				</div>
+			</div>
+		</div>
 @stop

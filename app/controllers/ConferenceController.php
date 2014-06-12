@@ -37,6 +37,9 @@ class ConferenceController extends BaseController {
 		$conference = null;
 		if ($id != null) {
 			$conference = Conference::with('ranking')->find($id);
+			if (!$conference) {
+				App::abort(404);
+			}
 		}
 		$rankings = Ranking::orderBy('id', 'ASC')->get();
 		$rankingOptions = $rankings->lists('name', 'id');
@@ -65,6 +68,9 @@ class ConferenceController extends BaseController {
 		$edit = (bool) Input::get('id');
 		if ($edit) {
 			$conference = Conference::find(Input::get('id'));
+			if (!$conference) {
+				App::abort(404);
+			}
 			$conference->fill(Input::all());
 		} else {
 			$conference = new Conference(Input::all());
@@ -84,7 +90,7 @@ class ConferenceController extends BaseController {
 			return Redirect::to($input['conference-create-return-url'])->withInput($input)->with('conference_id', $conference->id);
 		}
 
-		return View::make('conference/edit_successful')->
+		return View::make('common/edit_successful')->
 			with('type', 'Conference')->
 			with('action', 'ConferenceController@getDetails')->
 			with('id', $conference->id)->
