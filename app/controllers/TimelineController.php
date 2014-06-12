@@ -29,18 +29,28 @@ class TimelineController extends BaseController {
     			'label' => $paper->title
     		);
     		
-    		$abstract_due = $paper->activeSubmission->event->abstract_due->format('m.d.Y');
-    		$paper_due = $paper->activeSubmission->event->paper_due->format('m.d.Y');
-    		$noti_due = $paper->activeSubmission->event->notification_date->format('m.d.Y');
-    		$cam_due = $paper->activeSubmission->event->camera_ready_due->format('m.d.Y');
+    		
+    		$abstract_due = $paper->activeSubmission->event->abstract_due;
+    		$paper_due = $paper->activeSubmission->event->paper_due;
+    		$noti_due = $paper->activeSubmission->event->notification_date;
+    		$cam_due = $paper->activeSubmission->event->camera_ready_due;
+    		
+    		$data['items'][] = array(
+    			'id' => $count++,
+    			'desc' => 'Abstract Submission',
+    			'class' => 'past',
+    			'lane' => $laneId,
+    			'start' => $abstract_due->copy()->subWeek()->format('m.d.Y'),
+    			'end' => $abstract_due->format('m.d.Y'),
+    		);
     		
     		$data['items'][] = array(
     			'id' => $count++,
     			'desc' => 'Paper Submission',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $abstract_due,
-    			'end' => $paper_due,
+    			'start' => $abstract_due->copy()->addDay()->format('m.d.Y'),
+    			'end' => $paper_due->format('m.d.Y'),
     		);
     		
     		$data['items'][] = array(
@@ -48,8 +58,8 @@ class TimelineController extends BaseController {
     			'desc' => 'Notification',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $paper_due,
-    			'end' => $noti_due,
+    			'start' => $paper_due->copy()->addDay()->format('m.d.Y'),
+    			'end' => $noti_due->format('m.d.Y'),
     		);
     		
     		$data['items'][] = array(
@@ -57,8 +67,8 @@ class TimelineController extends BaseController {
     			'desc' => 'Camera Ready Submission',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $noti_due,
-    			'end' => $cam_due,
+    			'start' => $noti_due->copy()->addDay()->format('m.d.Y'),
+    			'end' => $cam_due->format('m.d.Y'),
     		);
     		
     		$laneId++;

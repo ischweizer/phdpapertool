@@ -3,7 +3,7 @@ var data = (function () {
     $.ajax({
         'async': false,
         'global': false,
-        'url': '{{URL::action('TimelineController@getData')}}',
+        'url': dataURL,
         'dataType': "json",
         'success': function (data) {
             json = data;
@@ -11,30 +11,19 @@ var data = (function () {
     });
     
     json.items.forEach(function(entry) {
-    	var newDate = new Date();
-    	var oldDate = new Date(entry.start);
-    	newDate.setDate(oldDate.getDate() + 1); 
-    	entry.start = newDate;
-    	
+    	entry.start = new Date(entry.start);
     	entry.end = new Date(entry.end);
 	});
 
     return json;
 })(); 
-//console.log(data);
-
-/*var test = randomData(),
-		lanes = test.lanes
-	  , items = test.items
-	  , now = new Date();*/
-
 	var lanes = data.lanes
 	  , items = data.items
 	  , now = new Date();
 
-	var margin = {top: 20, right: 15, bottom: 15, left: 60}
+	var margin = {top: 20, right: 15, bottom: 15, left: 160}
 	  , width = 960 - margin.left - margin.right
-	  , height = 500 - margin.top - margin.bottom
+	  , height = lanes.length*150 - margin.top - margin.bottom
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
@@ -82,7 +71,7 @@ var data = (function () {
 		.attr('y2', function(d) { return d3.round(y1(d.id)) + 0.5; })
 		.attr('stroke', function(d) { return d.label === '' ? 'white' : 'lightgray' });
 
-	main.append('g').selectAll('.laneText')
+	/*main.append('g').selectAll('.laneText')
 		.data(lanes)
 		.enter().append('text')
 		.text(function(d) { return d.label; })
@@ -90,7 +79,21 @@ var data = (function () {
 		.attr('y', function(d) { return y1(d.id + .5); })
 		.attr('dy', '0.5ex')
 		.attr('text-anchor', 'end')
-		.attr('class', 'laneText');
+		.attr('class', 'laneText');*/
+		
+	main.append('g').selectAll('.laneText')
+		.data(lanes)
+		.enter().append('foreignObject')
+		.attr("width", "140")
+    	.attr("height", "130")
+		.html(function(d) { 
+        	return "<p align='right'>"+d.label+"</p>";
+    	})
+		.attr('x', -150)
+		.attr('y', function(d) { return y1(d.id + .1); })
+		.attr('dy', '0.5ex')
+		.attr('text-anchor', 'end')
+		.attr('class', 'laneText');	
 
 	// draw the lanes for the mini chart
 	mini.append('g').selectAll('.laneLines')

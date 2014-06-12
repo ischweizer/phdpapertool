@@ -62,6 +62,8 @@
 					 $('#example').dataTable();
 				});
 			});
+			
+			var dataURL='{{URL::action('TimelineController@getData')}}';
 		</script>
 @stop
 
