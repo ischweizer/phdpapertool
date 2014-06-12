@@ -31,6 +31,7 @@ class UserRole extends Eloquent {
             if($role != null) {
                 $role->active = $isActive;
                 $role->role_id = $roleId;
+                $role->save();
                 return $role;
             }
             $newRole = new UserRole;

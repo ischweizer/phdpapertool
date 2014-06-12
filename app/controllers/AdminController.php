@@ -115,7 +115,7 @@ class AdminController extends BaseController {
         if(!$this::isAbleToDecideAboutUser($refusedUser))
            return Response::json(false);
         if(!$isDeletingWholeGroup) {
-            $roles = UserRole::where('user_id', '=', $refusedUser->id);
+            $roles = UserRole::where('user_id', '=', $refusedUser->id)->get();
             foreach($roles as $role)
                 $role->delete();
         }
