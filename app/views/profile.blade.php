@@ -5,7 +5,7 @@
    		<h1>Your Profile</h1>
 		</div>
 
-        <a href="enroll">Enroll in a group</a><br><br>
+        
 
 		<div class="row">
         <div class="col-xs-8">
@@ -45,11 +45,35 @@
                     <p>{{ $user['email'] }}</p>
                 </div>
 
-				@if (isset($group['name']))
+
+                @if (Auth::user()->group_confirmed)
+                    <div class="form-group">
+                       <label>Lab</label>
+                      <p>{{{ Auth::user()->group->lab->name }}}</p>
+                    </div>
+
 					<div class="form-group">
                  	   <label>Group</label>
-                  	  <p>{{ $group['name'] }}</p>
+                  	  <p>{{{ Auth::user()->group->name }}}</p>
                 	</div>
+
+                    <div class="form-group">
+                        @if (Auth::user()->isAdmin())
+                            <label>You are a admin</label>
+                            <p>
+                                <a href="handle">Admin page</a>
+                            </p>
+                        @else
+                            <a href="enroll">change lab/group</a>
+                        @endif
+                    </div>
+                @else
+                    <div class="form-group">
+                        <label>You are not enrolled in a lab/group</label>
+                        <p>
+                            <a href="enroll">enroll</a>
+                        </p>
+                    </div>
                 @endif
                 
                 <div class="form-group">

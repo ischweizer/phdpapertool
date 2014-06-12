@@ -9,16 +9,15 @@ class ProfileController extends BaseController {
     public function getIndex($id = null) {
     	$user = Auth::user();
     	$author = $user->author;
-    	$group = $user->group;
-    	
         return View::make(
-				'profile', 
-				array(	
-					'user' => $user,				
-					'author' => $author,
-					'group' => $group,
-				)
-			);
+            'profile', 
+            array(  
+                'user' => $user,                
+                'author' => $author
+            )
+        );
+    	
+        
     }
     
     public function save() {
