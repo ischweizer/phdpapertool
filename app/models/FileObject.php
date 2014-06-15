@@ -2,7 +2,7 @@
 
 class FileObject extends Eloquent {
 	protected $table = 'files';
-	protected $fillable = array('user_id', 'paper_id', 'name', 'comment');
+	protected $fillable = array('user_id', 'paper_id', 'name', 'comment', 'filepath');
 	
 	public function paper()
 	{

@@ -343,22 +343,32 @@ class PaperController extends BaseController {
 	 */
 	public function postUploadFile($paperId) {
 		if (!is_null($paperId)) {
-			$files = Input::file('files');
-			foreach ($files as $file) {
-				$destinationPath = 'uploads/';
-				$filename = str_random(3).$file->getClientOriginalName();
-				$uploadSuccess = $file->move($destinationPath, $filename);
-				
-				if($uploadSuccess) {
+			$paper = Paper::with('authors')->find($paperId);
+			if (!is_null($paper)) {
+				$files = Input::file('files');
+				foreach ($files as $file) {
+					$destinationPath = 'uploads/';
+					$filename = time()."_".$file->getClientOriginalName();
+					$uploadSuccess = $file->move($destinationPath, $filename);
 					
-				} else {
-					return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
+					if($uploadSuccess) {
+						$fileObject = new FileObject();
+						$fileObject->user_id = Auth::user()->id;
+						$fileObject->paper_id = $paper->id;
+						$fileObject->name = $file->getClientOriginalName();
+						$fileObject->filepath = public_path()."/".$destinationPath.$filename;
+						$fileObject->save();
+					} else {
+						return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
+					}
 				}
+				
+				return Response::json(array('success' => 1));
+			} else {
+				return Response::json(array('success' => 0, 'error' => 'No Paper with given id found!'));
 			}
-			
-			return Response::json(array('success' => 1));
 		} else {
-			return Response::json(array('success' => 0, 'error' => 'No Paper id given'));
+			return Response::json(array('success' => 0, 'error' => 'No Paper id given!'));
 		}
 	}
 

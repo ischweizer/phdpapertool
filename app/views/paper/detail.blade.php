@@ -19,7 +19,7 @@
 			        dataType: 'json',
 			        type: 'POST',
 			        done: function (e, data) {
-			        	if (data.success == 1) {
+			        	if (data.result.success == 1) {
 				        	$.each(data.files, function (index, file) {
 				                $('<p/>').text(file.name).appendTo('#files');
 				            });
@@ -156,7 +156,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="upload_file">Save author</button>
+						<!--<button type="button" class="btn btn-primary" id="upload_file">Save</button>-->
 					</div>
 				</div>
 			</div>
