@@ -2,16 +2,16 @@
 
 class FileObject extends Eloquent {
 	protected $table = 'files';
-	protected $fillable = array('user_id', 'paper_id', 'name', 'comment', 'filepath');
+	protected $fillable = array('author_id', 'paper_id', 'name', 'comment', 'filepath');
 	
 	public function paper()
 	{
 		return $this->belongsTo('Paper');
 	}
 
-	public function user()
+	public function author()
 	{
-		return $this->belongsTo('User');
+		return $this->belongsTo('Author');
 	}
 	
 	/**

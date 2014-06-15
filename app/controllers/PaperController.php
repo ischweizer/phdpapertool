@@ -353,7 +353,7 @@ class PaperController extends BaseController {
 					
 					if($uploadSuccess) {
 						$fileObject = new FileObject();
-						$fileObject->user_id = Auth::user()->id;
+						$fileObject->author_id = Auth::user()->author->id;
 						$fileObject->paper_id = $paper->id;
 						$fileObject->name = $file->getClientOriginalName();
 						$fileObject->filepath = public_path()."/".$destinationPath.$filename;
