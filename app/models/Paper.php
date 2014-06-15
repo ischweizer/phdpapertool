@@ -13,6 +13,11 @@ class Paper extends Eloquent {
 	{
 		return $this->hasMany('Submission');
 	}
+	
+	public function files()
+	{
+		return $this->hasMany('FileObject');
+	}
 
 	public function activeSubmission()
 	{

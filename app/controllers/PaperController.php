@@ -51,6 +51,8 @@ class PaperController extends BaseController {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
 			}
+			
+			$files = $paper->files()->get();
 		}
 
 		$sessionEvent = $this->getSessionEvent();
@@ -60,7 +62,7 @@ class PaperController extends BaseController {
 
 		$submission = $this->getSubmissionArray($submissionEvent);
 
-		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission));
+		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission, 'files' => $files));
 	}
 
 	/**
@@ -229,7 +231,9 @@ class PaperController extends BaseController {
 			if (!$allowed) {
 				App::abort(404);
 			}
-			return View::make('paper/detail')->with('paper', $paper)->with('selectedauthors', $selectedauthors)->with('submission', $submission);
+			$files = $paper->files()->get();
+			
+			return View::make('paper/detail')->with('paper', $paper)->with('selectedauthors', $selectedauthors)->with('submission', $submission)->with('files', $files);
 		} else {
 			App::abort(404);
 		}
@@ -329,6 +333,30 @@ class PaperController extends BaseController {
 			with('action', 'PaperController@getDetails')->
 			with('id', $paper->id)->
 			with('edited', true);
+	}
+	
+	/**
+	 * Handle file uploads for given paper
+	 */
+	public function postUploadFile($paperId) {
+		if (!is_null($paperId)) {
+			$files = Input::file('files');
+			foreach ($files as $file) {
+				$destinationPath = 'uploads/';
+				$filename = str_random(3).$file->getClientOriginalName();
+				$uploadSuccess = $file->move($destinationPath, $filename);
+				
+				if($uploadSuccess) {
+					
+				} else {
+					return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
+				}
+			}
+			
+			return Response::json(array('success' => 1));
+		} else {
+			return Response::json(array('success' => 0, 'error' => 'No Paper id given'));
+		}
 	}
 
 	/**

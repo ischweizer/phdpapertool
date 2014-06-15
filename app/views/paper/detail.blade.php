@@ -1,11 +1,46 @@
 @extends('layouts/main')
 
 @section('head')
+		{{ HTML::style('stylesheets/jquery.fileupload.css') }}
 		<style type="text/css">
 			.form-control[readonly] {
 				background-color:#fff;
 			}
 		</style>
+		
+		<script>
+			$(document).ready(function() {
+				$('#open_file_upload').click(function(){
+					$('#fileUploadModal').modal('show');
+				});
+				
+				$('#fileupload').fileupload({
+			        url: "{{ URL::action('PaperController@postUploadFile', array('id' => $paper->id)) }}",
+			        dataType: 'json',
+			        type: 'POST',
+			        done: function (e, data) {
+			        	if (data.success == 1) {
+				        	$.each(data.files, function (index, file) {
+				                $('<p/>').text(file.name).appendTo('#files');
+				            });
+			        	} else {
+				        	alert("File Upload: Some problems occured!");
+			        	}
+			        },
+			        fail : function (e, data) {
+				        console.log("Failed");
+			        },
+			        progressall: function (e, data) {
+			            var progress = parseInt(data.loaded / data.total * 100, 10);
+			            $('#progress .progress-bar').css(
+			                'width',
+			                progress + '%'
+			            );
+			        }
+			    }).prop('disabled', !$.support.fileInput)
+			        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+			});
+		</script>
 @stop
 
 @section('content')
@@ -53,7 +88,79 @@
 			@endif
 			</div>
 		</div>
+		
+		<div class="form-group">
+			{{ Form::label('files', 'Files') }}<button type="submit" id="open_file_upload" class="btn btn-xs btn-primary">Upload File</button>
+			
+			<table id="file_table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Comment</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach ($files as $file)
+						<tr>
+							<td>{{{ $file->name }}}</td>
+							<td>{{{ Str::limit($file->comment, 90) }}}</td>
+							<td>
+								{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+									<button type="submit" class="btn btn-xs btn-primary">Details</button>
+								{{ Form::close() }}
+								{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $file->id), 'style' => 'display:inline')) }}
+									<button type="submit" class="btn btn-xs btn-primary">Edit</button>
+									{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
+								{{ Form::close() }}
+							</td>
+						</tr>
+					@endforeach
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>Title</th>
+						<th>Abstract</th>
+						<th>Action</th>
+					 </tr>
+				</tfoot>
+		 	</table>
+			
+		</div>
 
 		{{-- TODO show submission history --}}
 		
+		<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Upload a File</h4>
+					</div>
+					<div class="modal-body">
+						
+						<span class="btn btn-success fileinput-button">
+					        <i class="glyphicon glyphicon-plus"></i>
+					        <span>Select files...</span>
+					        <!-- The file input field used as target for the file upload widget -->
+					        <input id="fileupload" type="file" name="files[]" multiple>
+					    </span>
+					    <br>
+					    <br>
+					    <!-- The global progress bar -->
+					    <div id="progress" class="progress">
+					        <div class="progress-bar progress-bar-success"></div>
+					    </div>
+					    <!-- The container for the uploaded files -->
+					    <div id="files" class="files"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="upload_file">Save author</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{ HTML::script('javascripts/jquery.ui.widget.js') }}
+		{{ HTML::script('javascripts/jquery.fileupload.js') }}
 @stop
