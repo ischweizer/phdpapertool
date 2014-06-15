@@ -13,6 +13,10 @@ class Author extends Eloquent {
 	{
 		return $this->belongsToMany('Paper')->withPivot('order_position');
 	}
+
+	public function scopeNotAdmin($query) {
+		return $query->where('id', '<>', '1');
+	}
 	
 	/**
 	 * Validate the given input.

@@ -10,9 +10,6 @@
 
 @section('content')
 	<div>
-		<h1>
-			New Requests
-		</h1>
 		<ul class="list-group">
 			@foreach($users as $user)
 				@if (!$user->group_confirmed)

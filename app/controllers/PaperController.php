@@ -15,7 +15,7 @@ class PaperController extends BaseController {
 	 * Edit or create a paper.
 	 */
 	public function anyEdit($id = null) {
-		$autorList = Author::all();
+		$autorList = Author::notAdmin()->get();
 		$authors = array();
 		$selectedauthors = array();
 		$paper = null;
@@ -174,6 +174,9 @@ class PaperController extends BaseController {
 			$authors = $input['selectedauthors'];
 			if($authors != null) {
 				foreach ($authors as $author) {
+					if ($author == 1) { // skip admin
+						continue;
+					}
 					$paper->authors()->attach($author, array('order_position' => $currentPosition));
 					$currentPosition++;
 					if (Auth::user()->author->id == $author) {
