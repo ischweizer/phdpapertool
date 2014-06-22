@@ -34,14 +34,15 @@ class TimelineController extends BaseController {
     		$paper_due = $paper->activeSubmission->event->paper_due;
     		$noti_due = $paper->activeSubmission->event->notification_date;
     		$cam_due = $paper->activeSubmission->event->camera_ready_due;
+    		$format = 'm/d/Y';
     		
     		$data['items'][] = array(
     			'id' => $count++,
     			'desc' => 'Abstract Submission',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $abstract_due->copy()->subWeek()->format('m.d.Y'),
-    			'end' => $abstract_due->format('m.d.Y'),
+    			'start' => $abstract_due->copy()->subWeek()->format($format),
+    			'end' => $abstract_due->format($format),
     		);
     		
     		$data['items'][] = array(
@@ -49,8 +50,8 @@ class TimelineController extends BaseController {
     			'desc' => 'Paper Submission',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $abstract_due->copy()->addDay()->format('m.d.Y'),
-    			'end' => $paper_due->format('m.d.Y'),
+    			'start' => $abstract_due->copy()->addDay()->format($format),
+    			'end' => $paper_due->format($format),
     		);
     		
     		$data['items'][] = array(
@@ -58,8 +59,8 @@ class TimelineController extends BaseController {
     			'desc' => 'Notification',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $paper_due->copy()->addDay()->format('m.d.Y'),
-    			'end' => $noti_due->format('m.d.Y'),
+    			'start' => $paper_due->copy()->addDay()->format($format),
+    			'end' => $noti_due->format($format),
     		);
     		
     		$data['items'][] = array(
@@ -67,8 +68,8 @@ class TimelineController extends BaseController {
     			'desc' => 'Camera Ready Submission',
     			'class' => 'past',
     			'lane' => $laneId,
-    			'start' => $noti_due->copy()->addDay()->format('m.d.Y'),
-    			'end' => $cam_due->format('m.d.Y'),
+    			'start' => $noti_due->copy()->addDay()->format($format),
+    			'end' => $cam_due->format($format),
     		);
     		
     		$laneId++;

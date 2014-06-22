@@ -1,22 +1,23 @@
-var data = (function () {
-    var json = null;
-    $.ajax({
-        'async': false,
-        'global': false,
-        'url': dataURL,
-        'dataType': "json",
-        'success': function (data) {
-            json = data;
-        }
-    });
-    
-    json.items.forEach(function(entry) {
-    	entry.start = new Date(entry.start);
-    	entry.end = new Date(entry.end);
-	});
+	var data = (function () {
+		var json = null;
+		$.ajax({
+			'async': false,
+			'global': false,
+			'url': dataURL,
+			'dataType': "json",
+			'success': function (data) {
+				json = data;
+			}
+		});
+	
+		json.items.forEach(function(entry) {
+			entry.start = new Date(entry.start);
+			entry.end = new Date(entry.end);
+		});
 
-    return json;
-})(); 
+		return json;
+	})(); 
+	
 	var lanes = data.lanes
 	  , items = data.items
 	  , now = new Date();
@@ -261,6 +262,7 @@ function display () {
 		.data(visItems, function (d) { return d.id; })
 		.attr('x', function(d) { return x1(d.start); })
 		.attr('width', function(d) { return x1(d.end) - x1(d.start); });
+		//console.log(rects);
 
 	rects.enter().append('rect')
 		.attr('x', function(d) { return x1(d.start); })
@@ -268,6 +270,13 @@ function display () {
 		.attr('width', function(d) { return x1(d.end) - x1(d.start); })
 		.attr('height', function(d) { return .8 * y1(1); })
 		.attr('class', function(d) { return 'mainItem ' + d.class; });
+		
+	/*rects.enter().append('rect')
+		.attr('x', function(d) { return x1(d.end - 1000*60*60*24); })
+		.attr('y', function(d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
+		.attr('width', function(d) { return (x1(d.end) - x1(d.start))*1000*60*60*24/(d.end-d.start); })
+		.attr('height', function(d) { return .8 * y1(1); })
+		.attr('class', function(d) { return 'mainItem '; });	*/
 
 	rects.exit().remove();
 
