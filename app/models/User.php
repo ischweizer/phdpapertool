@@ -188,14 +188,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $result;
 	}
         
-        public static function getUsers($groups) {
+        public static function getUsers($groups, $exception = 0) {       
             $users =  User::where('id', '!=', 1)->where('group_id', '!=', 'null')->get();
             if($groups == null)
                 return $users;
             $result = array();
             foreach($users as $user) {
                 foreach($groups as $group) {
-                    if($user->group_id == $group->id && $user->id != 1) {
+                    if($user->group_id == $group->id && $user->id != 1 && $user->id != $exception) {
                         $result[] = $user;
                         continue 2;
                     }
