@@ -88,9 +88,16 @@ class ProfileController extends BaseController {
     
     public function leaveGroupLab() {
         $user = Auth::user();
+        $group = Group::find($user->group_id);
+        $lab = Lab::find($group->lab_id);
         $user->group_id = null;
         $user->group_confirmed = 0;
         $user->save();
+        if($group->active == 0) {
+            $group->delete();
+            if($lab->active == 0)
+                $lab->delete();
+        }
         return $this::getIndex();
     }
     
