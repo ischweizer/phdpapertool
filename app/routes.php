@@ -63,5 +63,6 @@ Route::group(array('before' => 'auth'), function()
 	Route::get('create', 'CreateDomainController@index');
 	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
 	Route::get('enroll', 'EnrollInGroupController@index');
+        Route::get('leaveGroupLab', 'ProfileController@leaveGroupLab');
 });
 

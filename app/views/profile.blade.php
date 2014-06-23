@@ -64,7 +64,8 @@
                                 <a href="handle">Admin page</a>
                             </p>
                         @else
-                            <a href="enroll">change lab/group</a>
+                            <a href="enroll">change lab/group</a><br>
+                            <a href="leaveGroupLab">leave lab/group</a>
                         @endif
                     </div>
                 @else
@@ -72,6 +73,10 @@
                         <label>You are not enrolled in a lab/group</label>
                         <p>
                             <a href="enroll">enroll</a>
+                            @if (Auth::user()->group_id != null)
+                                <br>
+                                <a href="leaveGroupLab">recall request</a>
+                            @endif
                         </p>
                     </div>
                 @endif

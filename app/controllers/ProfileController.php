@@ -15,10 +15,9 @@ class ProfileController extends BaseController {
                 'user' => $user,                
                 'author' => $author
             )
-        );
-    	
-        
+        );   
     }
+    
     
     public function save() {
     	$user = Auth::user();
@@ -85,4 +84,14 @@ class ProfileController extends BaseController {
     	}
     	return false;
     }
+    
+    
+    public function leaveGroupLab() {
+        $user = Auth::user();
+        $user->group_id = null;
+        $user->group_confirmed = 0;
+        $user->save();
+        return $this::getIndex();
+    }
+    
 }
