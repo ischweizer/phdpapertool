@@ -62,9 +62,12 @@
                             <label>You are a admin</label>
                             <p>
                                 <a href="handle">Admin page</a>
+                                <br>
+                                <a href="leaveAdminRole">Leave role</a>
                             </p>
                         @else
-                            <a href="enroll">change lab/group</a><br>
+                            <a href="enroll">change lab/group</a>
+                            <br>
                             <a href="leaveGroupLab">leave lab/group</a>
                         @endif
                     </div>

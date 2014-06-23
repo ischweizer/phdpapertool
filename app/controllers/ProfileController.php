@@ -94,4 +94,11 @@ class ProfileController extends BaseController {
         return $this::getIndex();
     }
     
+    public function leaveAdminRole() {
+        $usersRoles = UserRole::where('user_id', '=', Auth::user()->id)->get();
+        foreach($usersRoles as $role) {
+            $role->delete();
+        }
+        return $this::getIndex();
+    }
 }

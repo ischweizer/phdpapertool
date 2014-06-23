@@ -64,5 +64,6 @@ Route::group(array('before' => 'auth'), function()
 	Route::get('enrollInGroup', 'EnrollInGroupController@enroll');
 	Route::get('enroll', 'EnrollInGroupController@index');
         Route::get('leaveGroupLab', 'ProfileController@leaveGroupLab');
+        Route::get('leaveAdminRole', 'ProfileController@leaveAdminRole');
 });
 
