@@ -21,22 +21,12 @@ class FileObject extends Eloquent {
 	 * @return \Illuminate\Validation\Validator
 	 */
 	public static function validate($input = null) {
-		/*if (is_null($input)) {
+		if (is_null($input)) {
 			$input = Input::all();
 		}
-
-		$uniqueIgnore = '';
-		if (isset($input['id'])) {
-			$id = (int) $input['id'];
-			if ($id > 0) {
-				$uniqueIgnore = ',' . $id;
-			}
-		}
 		$rules = array(
-				'email'				=> 'Required|Email|Unique:authors,email' . $uniqueIgnore,
-				'first_name'		=> 'Required',
-				'last_name'			=> 'Required'
+				'name'	=> 'Required'
 		);
-		return Validator::make($input, $rules);*/
+		return Validator::make($input, $rules);
 	}
 }
