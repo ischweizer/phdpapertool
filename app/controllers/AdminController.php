@@ -72,14 +72,15 @@ class AdminController extends BaseController {
         return $this::confirmGroupId(Group::find(Input::get('groupId')));
     }
     
-    private function confirmGroupId($confirmedGroup) {
+    private function confirmGroupId($confirmedGroup, $isCreatingLab = false) {
         if(!$this::isAble2DecideAboutGroup($confirmedGroup))
             return Response::json(false);
         //$confirmedGroup = Group::find($groupId);
         $confirmedGroup->active = 1;
         $confirmedGroup->save();
         $groupLeader = User::where('group_id', '=', $confirmedGroup->id)->first();
-        UserRole::updateRole($groupLeader, UserRole::GROUP_LEADER, true);
+        if(!$isCreatingLab)
+            UserRole::updateRole($groupLeader, UserRole::GROUP_LEADER, true);
         return $this::confirmUserId(User::find($groupLeader->id));        
     }
     
@@ -100,7 +101,7 @@ class AdminController extends BaseController {
         $labLeader = User::where('group_id', '=', $group->id)->first();
         UserRole::updateRole($labLeader, UserRole::LAB_LEADER, true);
         //$this::confirmUserId($labLeader);              
-        return $this::confirmGroupId($group);  
+        return $this::confirmGroupId($group, true);  
     }    
     
     
