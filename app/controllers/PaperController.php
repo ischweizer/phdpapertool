@@ -358,6 +358,7 @@ class PaperController extends BaseController {
 						$fileObject->paper_id = $paper->id;
 						$fileObject->name = $file->getClientOriginalName();
 						$fileObject->filepath = public_path()."/".$destinationPath.$filename;
+						$fileObject->comment = '';
 						$fileObject->save();
 					} else {
 						return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
