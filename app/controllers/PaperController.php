@@ -348,7 +348,13 @@ class PaperController extends BaseController {
 			if (!is_null($paper)) {
 				$files = Input::file('files');
 				foreach ($files as $file) {
-					$destinationPath = 'uploads/';
+					$destinationPath = storage_path().'/uploads';
+					
+					if(!File::isDirectory($destinationPath))
+					{
+					     File::makeDirectory($destinationPath);
+					}
+					
 					$filename = time()."_".$file->getClientOriginalName();
 					$uploadSuccess = $file->move($destinationPath, $filename);
 					
