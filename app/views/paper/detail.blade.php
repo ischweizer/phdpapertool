@@ -17,14 +17,22 @@
 				$('#fileupload').fileupload({
 			        url: "{{ URL::action('PaperController@postUploadFile', array('id' => $paper->id)) }}",
 			        dataType: 'json',
+			        autoUpload: false,
 			        type: 'POST',
+			        add: function (e, data) {
+			        	$.each(data.files, function (index, file) {
+			                $('<p/>').text(file.name).appendTo('#files');
+			            });
+			        	$('#startupload').click(function () {
+		                    //data.context = $('<p/>').text('Uploading...').replaceAll($(this));
+		                    data.submit();
+		                });
+			        },
 			        done: function (e, data) {
 			        	if (data.result.success == 1) {
-				        	$.each(data.files, function (index, file) {
-				                $('<p/>').text(file.name).appendTo('#files');
-				            });
+				        	$('#uploadstatus').html('Upload finished.');
 			        	} else {
-				        	alert("File Upload: Some problems occured!");
+				        	$('#uploadstatus').html("Some problems occured!");
 			        	}
 			        },
 			        fail : function (e, data) {
@@ -90,7 +98,7 @@
 		</div>
 		
 		<div class="form-group">
-			{{ Form::label('files', 'Files') }}<button type="submit" id="open_file_upload" class="btn btn-xs btn-primary">Upload File</button>
+			{{ Form::label('files', 'Files') }} <button type="submit" id="open_file_upload" class="btn btn-xs btn-primary">Upload File</button>
 			
 			<table id="file_table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 				<thead>
@@ -106,12 +114,11 @@
 							<td>{{{ $file->name }}}</td>
 							<td>{{{ Str::limit($file->comment, 90) }}}</td>
 							<td>
-								{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('PaperController@getFileDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Details</button>
 								{{ Form::close() }}
-								{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $file->id), 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('PaperController@getEditFile', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Edit</button>
-									{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
 								{{ Form::close() }}
 							</td>
 						</tr>
@@ -145,8 +152,13 @@
 					        <!-- The file input field used as target for the file upload widget -->
 					        <input id="fileupload" type="file" name="files[]" multiple>
 					    </span>
+					    <!--<button type="submit" class="btn btn-primary start" id="startupload">
+		                    <i class="glyphicon glyphicon-upload"></i>
+		                    <span>Start upload</span>
+		                </button>-->
 					    <br>
 					    <br>
+					    <p id="uploadstatus"></p>
 					    <!-- The global progress bar -->
 					    <div id="progress" class="progress">
 					        <div class="progress-bar progress-bar-success"></div>
@@ -156,7 +168,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<!--<button type="button" class="btn btn-primary" id="upload_file">Save</button>-->
+						<button type="button" class="btn btn-primary" id="startupload">Upload</button>
 					</div>
 				</div>
 			</div>

@@ -20,6 +20,7 @@ class PaperController extends BaseController {
 		$selectedauthors = array();
 		$paper = null;
 		$submissionEvent = null;
+		$files = array();
 
 		// get authors
 		foreach ($autorList as $author) {
@@ -347,7 +348,13 @@ class PaperController extends BaseController {
 			if (!is_null($paper)) {
 				$files = Input::file('files');
 				foreach ($files as $file) {
-					$destinationPath = 'uploads/';
+					$destinationPath = storage_path().'/uploads';
+					
+					if(!File::isDirectory($destinationPath))
+					{
+					     File::makeDirectory($destinationPath);
+					}
+					
 					$filename = time()."_".$file->getClientOriginalName();
 					$uploadSuccess = $file->move($destinationPath, $filename);
 					
@@ -357,6 +364,7 @@ class PaperController extends BaseController {
 						$fileObject->paper_id = $paper->id;
 						$fileObject->name = $file->getClientOriginalName();
 						$fileObject->filepath = public_path()."/".$destinationPath.$filename;
+						$fileObject->comment = '';
 						$fileObject->save();
 					} else {
 						return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
@@ -370,6 +378,45 @@ class PaperController extends BaseController {
 		} else {
 			return Response::json(array('success' => 0, 'error' => 'No Paper id given!'));
 		}
+	}
+	
+	public function getEditFile($id) {
+		if (!is_null($id)) {
+			$file = FileObject::with('paper')->find($id);
+			
+			return View::make('file/edit', array('model' => $file, 'edit' => true));
+		}
+	}
+	
+	public function getFileDetails($id) {
+		if (!is_null($id)) {
+			$file = FileObject::with('paper')->find($id);
+			
+			return View::make('file/edit', array('model' => $file, 'edit' => false));
+		}
+	}
+	
+	public function postEditFile($id) {
+		if (!is_null($id)) {
+			$validator = FileObject::validate(Input::all());
+
+			if ($validator->fails()) {
+				return Redirect::action('PaperController@getEditFile')->withErrors($validator)->withInput();
+			}
+			$file = FileObject::find($id);
+			$file->fill(Input::all());
+			
+			$success = $file->save();
+			// check for success
+			if (!$success) {
+				return Redirect::action('PaperController@getEditFile')->
+					withErrors(new MessageBag(array('Sorry, couldn\'t save file to database.')))->
+					withInput();
+			}
+			
+			return Redirect::action('PaperController@getFileDetails', $id);
+		}
+		App::abort(404);
 	}
 
 	/**
