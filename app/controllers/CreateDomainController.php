@@ -29,8 +29,16 @@ class CreateDomainController extends BaseController {
         if(!Input::has('labId')) { 
             if(!Input::has('labName'))
                 return "Missing parameter labName";
-            $labId = $this::createLab(Input::get('labName'))->id;
-            $labCreated = true;
+            $lab = Lab::where('name', '=', Input::get('labName'))->first();
+            if($lab == null) {
+                $labId = $this::createLab(Input::get('labName'))->id;
+                $labCreated = true;
+            }
+            else {
+                $labId = $lab->id;
+                $labCreated = false;
+            }
+            
         } else {
             $labId = Input::get('labId');
             $labCreated = false;
@@ -43,11 +51,14 @@ class CreateDomainController extends BaseController {
         if(!$labCreated && Lab::find($labId)->active == 0)
             return "Lab is not active";
         $isGroupActive = UserRole::getUserRole(UserRole::LAB_LEADER) != null;
-        $group = new Group;
-        $group->name = $name;
-        $group->lab_id = $labId;
-        $group->active = $isGroupActive;
-        $group->save();
+        $group = Group::where('name', '=', $name)->where('lab_id', '=', $labId)->first();
+        if($group == null) {
+            $group = new Group;
+            $group->name = $name;
+            $group->lab_id = $labId;
+            $group->active = $isGroupActive;
+            $group->save();
+        }
         $user = Auth::user();
         $user->group_confirmed = $isGroupActive;
         $user->group_id = $group->id;
