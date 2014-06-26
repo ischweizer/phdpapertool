@@ -23,7 +23,7 @@
 
 @section('content')
 		<div class="page-header">
-			{{ Form::open(array('action' => array('PaperController@getEditFile', 'id' => $model->id), 'method' => 'GET')) }}
+			{{ Form::open(array('action' => array('FileController@getEditFile', 'id' => $model->id), 'method' => 'GET')) }}
 				<h1>@if($edit) Edit File @else File Details <button type="submit" class="btn btn-xs btn-primary">Edit</button></h1>@endif
 			{{ Form::close() }}
 		</div>
@@ -40,7 +40,7 @@
 		</div>
 		@endif
 
-		{{ Form::model($model, array('action' => array('PaperController@postEditFile', $model->id), 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
+		{{ Form::model($model, array('action' => array('FileController@postEditFile', $model->id), 'id' => 'paper-form', 'onsubmit' => 'onformsubmit()')) }}
 			<div class="form-group">
 				{{ Form::label('name', 'File Name') }}
 				{{ Form::text('name', null, array('placeholder' => 'File Name', 'class' => 'form-control', 'id' => 'filenamefield', 'required', 'data-bv-notempty-message' => 'May not be empty', ($edit)?'':'readonly')) }}

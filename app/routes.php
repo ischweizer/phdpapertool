@@ -30,6 +30,8 @@ Route::group(array('before' => 'guest'), function() {
 Route::group(array('before' => 'auth'), function()
 {
 	Route::controller('paper', 'PaperController');
+	
+	Route::controller('file', 'FileController');
 
 	Route::controller('timeline', 'TimelineController');
 	

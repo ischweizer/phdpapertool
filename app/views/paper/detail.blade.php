@@ -114,12 +114,13 @@
 							<td>{{{ $file->name }}}</td>
 							<td>{{{ Str::limit($file->comment, 90) }}}</td>
 							<td>
-								{{ Form::open(array('action' => array('PaperController@getFileDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('FileController@getFileDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Details</button>
 								{{ Form::close() }}
-								{{ Form::open(array('action' => array('PaperController@getEditFile', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('FileController@getEditFile', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Edit</button>
 								{{ Form::close() }}
+								<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-primary" role="button">Download</a>
 							</td>
 						</tr>
 					@endforeach
