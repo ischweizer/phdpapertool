@@ -23,7 +23,7 @@
 				});
 				
 				$('#fileupload').fileupload({
-			        url: "{{ URL::action('PaperController@postUploadFile', array('id' => $paper->id)) }}",
+			        url: "{{ URL::action('FileController@postUploadFile', array('id' => $paper->id)) }}",
 			        dataType: 'json',
 			        autoUpload: false,
 			        type: 'POST',
