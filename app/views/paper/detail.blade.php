@@ -181,7 +181,7 @@
 						{{ Form::label('files', 'Files: ') }}
 							@foreach ($review->files as $file)
 								@if ($file->author_id == Auth::user()->author->id)
-									{{ Form::button($file->name, array('class' => 'btn btn-default btn-xs')) }}
+									<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
 								@endif
 							@endforeach
 						<br>
@@ -193,7 +193,7 @@
 									{{{ $user->formatName() }}}
 									@foreach ($review->files as $file)
 										@if ($file->author_id == $user->author->id)
-											{{ Form::button($file->name, array('class' => 'btn btn-default btn-xs')) }}
+											<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
 										@endif
 									@endforeach
 								</li>
