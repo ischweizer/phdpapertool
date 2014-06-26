@@ -177,8 +177,10 @@
 								@endif
 							@endforeach
 						<br>
-						{{ Form::label('message', 'Message') }}
-						{{ $review->message }}
+						@if ($review->message)
+							{{ Form::label('message', 'Message') }}
+							<pre>{{ $review->message }}</pre>
+						@endif
 						<ul class="list-group">
 							@foreach ($review->users as $user)
 								<li class="list-group-item">
