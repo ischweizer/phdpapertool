@@ -37,6 +37,8 @@ Route::group(array('before' => 'auth'), function()
 	
 	Route::controller('papermanager', 'PaperManagerController');
 
+	Route::controller('review', 'ReviewController');
+
 	Route::get('overview', function() 
 	{
 		return View::make('overview');

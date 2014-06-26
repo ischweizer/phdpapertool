@@ -8,6 +8,7 @@ class PaperController extends BaseController {
 	 */
 	public function getIndex() {
 		$papers = Auth::user()->author->papers;
+		$temp = Author::all();
 		return View::make('paper/index', array('papers' => $papers));
 	}
 
@@ -236,8 +237,37 @@ class PaperController extends BaseController {
 				App::abort(404);
 			}
 			$files = $paper->files()->get();
-			
-			return View::make('paper/detail')->with('paper', $paper)->with('selectedauthors', $selectedauthors)->with('submission', $submission)->with('files', $files);
+
+			$fileNames = array();
+			foreach ($files as $file) {
+				$fileNames[$file->id] = $file->name;
+			}
+
+			$userNames = array();
+			foreach (User::notAdmin()->where('id', '<>', Auth::user()->id)->get() as $user) {
+					$userNames[$user->id] = $user->formatName();
+			}
+
+			$reviews = Review::where('paper_id', '=', $paper->id)->get();
+
+			/*$userFiles = DB::table('users')
+				->leftjoin('review_user', 'users.id', '=', 'review_user.user_id')
+				->leftjoin('file_review', 'review_user.review_id', '=', 'file_review.file_id')
+				->leftjoin('files', 'files.id', '=', 'file_review.file_id')
+				->select('users.id', 'review_user.review_id', 'file_review.file_id')
+				->get();*/
+
+
+			return View::make('paper/detail')
+				->with('paper', $paper)
+				->with('selectedauthors', $selectedauthors)
+				->with('submission', $submission)
+				->with('files', $files)
+				->with('userNames', $userNames)
+				->with('fileNames', $fileNames)
+				->with('reviews', $reviews);
+				//->with('userFiles', $userFiles);
+
 		} else {
 			App::abort(404);
 		}
@@ -339,6 +369,20 @@ class PaperController extends BaseController {
 			with('edited', true);
 	}
 	
+
+	public function postCreateReviewRequest(){
+		if (Input::has('deadline') && Input::has('selectedUsers') && Input::has('selectedFiles') && Input::has('paperId')) {
+			$review = new Review(array("user_id" => Auth::user()->id, "deadline" => Input::get('deadline'), 'paper_id' => Input::get('paperId')));
+			if(Input::has('message'))
+				$review->message = Input::get('message');
+			$review->save();
+			$review->users()->sync(Input::get('selectedUsers'));
+			$review->files()->sync(Input::get('selectedFiles'));
+			
+			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
+		} else
+			return App::abort(404);
+	}
 
 	/**
 	 * Checks whether the currently authed user is an author of the given paper

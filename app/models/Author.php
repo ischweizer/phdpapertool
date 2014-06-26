@@ -17,6 +17,14 @@ class Author extends Eloquent {
 	public function scopeNotAdmin($query) {
 		return $query->where('id', '<>', '1');
 	}
+
+	/**
+	 * return the name of this as a readable String
+	 */
+	public function formatName()
+	{
+		return $this->first_name." ".$this->last_name." (".$this->email.")";
+	}
 	
 	/**
 	 * Validate the given input.
