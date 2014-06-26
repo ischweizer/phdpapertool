@@ -23,30 +23,38 @@
 				});
 				
 				$('#fileupload').fileupload({
-					url: "{{ URL::action('PaperController@postUploadFile', array('id' => $paper->id)) }}",
-					dataType: 'json',
-					type: 'POST',
-					done: function (e, data) {
-						if (data.result.success == 1) {
-							$.each(data.files, function (index, file) {
-								$('<p/>').text(file.name).appendTo('#files');
-							});
-						} else {
-							alert("File Upload: Some problems occured!");
-						}
-					},
-					fail : function (e, data) {
-						console.log("Failed");
-					},
-					progressall: function (e, data) {
-						var progress = parseInt(data.loaded / data.total * 100, 10);
-						$('#progress .progress-bar').css(
-							'width',
-							progress + '%'
-						);
-					}
-				}).prop('disabled', !$.support.fileInput)
-					.parent().addClass($.support.fileInput ? undefined : 'disabled');
+			        url: "{{ URL::action('PaperController@postUploadFile', array('id' => $paper->id)) }}",
+			        dataType: 'json',
+			        autoUpload: false,
+			        type: 'POST',
+			        add: function (e, data) {
+			        	$.each(data.files, function (index, file) {
+			                $('<p/>').text(file.name).appendTo('#files');
+			            });
+			        	$('#startupload').click(function () {
+		                    //data.context = $('<p/>').text('Uploading...').replaceAll($(this));
+		                    data.submit();
+		                });
+			        },
+			        done: function (e, data) {
+			        	if (data.result.success == 1) {
+				        	$('#uploadstatus').html('Upload finished.');
+			        	} else {
+				        	$('#uploadstatus').html("Some problems occured!");
+			        	}
+			        },
+			        fail : function (e, data) {
+				        console.log("Failed");
+			        },
+			        progressall: function (e, data) {
+			            var progress = parseInt(data.loaded / data.total * 100, 10);
+			            $('#progress .progress-bar').css(
+			                'width',
+			                progress + '%'
+			            );
+			        }
+			    }).prop('disabled', !$.support.fileInput)
+			        .parent().addClass($.support.fileInput ? undefined : 'disabled');
 
 
 				$.fn.datepicker.defaults.format = "M dd, yyyy";
@@ -153,6 +161,7 @@
 		</div>
 		
 		<div class="form-group">
+
 			{{ Form::label('reviews', 'Review Requests') }}
 			{{ Form::button('Create Review Request', array('class' => 'btn btn-xs btn-primary', 'id' => 'openCreateReview')) }}
 
@@ -205,12 +214,11 @@
 							<td>{{{ $file->name }}}</td>
 							<td>{{{ Str::limit($file->comment, 90) }}}</td>
 							<td>
-								{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('PaperController@getFileDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Details</button>
 								{{ Form::close() }}
-								{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $file->id), 'style' => 'display:inline')) }}
+								{{ Form::open(array('action' => array('PaperController@getEditFile', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 									<button type="submit" class="btn btn-xs btn-primary">Edit</button>
-									{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
 								{{ Form::close() }}
 							</td>
 						</tr>
@@ -257,7 +265,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<!--<button type="button" class="btn btn-primary" id="upload_file">Save</button>-->
+						<button type="button" class="btn btn-primary" id="startupload">Upload</button>
 					</div>
 				</div>
 			</div>
