@@ -27,7 +27,7 @@ class FileController extends BaseController {
 			if (!is_null($paper)) {
 				$files = Input::file('files');
 				foreach ($files as $file) {
-					$destinationPath = storage_path().'/uploads';
+					$destinationPath = storage_path().'/uploads/';
 					
 					if(!File::isDirectory($destinationPath))
 					{
@@ -42,7 +42,7 @@ class FileController extends BaseController {
 						$fileObject->author_id = Auth::user()->author->id;
 						$fileObject->paper_id = $paper->id;
 						$fileObject->name = $file->getClientOriginalName();
-						$fileObject->filepath = public_path()."/".$destinationPath.$filename;
+						$fileObject->filepath = $destinationPath.$filename;
 						$fileObject->comment = '';
 						$fileObject->save();
 					} else {
