@@ -27,7 +27,7 @@ class FileController extends BaseController {
 			if (!is_null($paper)) {
 				$files = Input::file('files');
 				foreach ($files as $file) {
-					$destinationPath = storage_path().'/uploads';
+					$destinationPath = storage_path().'/uploads/';
 					
 					if(!File::isDirectory($destinationPath))
 					{
