@@ -17,10 +17,17 @@
 		</style>
 		
 		<script>
+			var filesUploaded = false;
+			
 			$(document).ready(function() {
 				$('#open_file_upload').click(function(){
 					$('#fileUploadModal').modal('show');
 				});
+				
+				$('#fileUploadModal').on('hidden.bs.modal', function () {
+				    if(filesUploaded) 
+				    	location.reload();
+				})
 				
 				$('#fileupload').fileupload({
 			        url: "{{ URL::action('FileController@postUploadFile', array('id' => $paper->id)) }}",
@@ -38,6 +45,7 @@
 			        },
 			        done: function (e, data) {
 			        	if (data.result.success == 1) {
+			        		filesUploaded = true;
 				        	$('#uploadstatus').html('Upload finished.');
 			        	} else {
 				        	$('#uploadstatus').html("Some problems occured!");
