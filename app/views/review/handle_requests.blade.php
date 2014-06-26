@@ -15,7 +15,7 @@
 					Deadline: {{{ @date_format($reviewRequest->deadline, 'M d, Y') }}}
 					@foreach ($reviewRequest->files as $file)
 						@if ($file->author_id == $reviewRequest->user->author->id)
-							{{ Form::button($file->name, array('class' => 'btn btn-default btn-xs')) }}
+							<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
 						@endif
 					@endforeach
 				</li>		
