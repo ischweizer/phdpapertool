@@ -89,6 +89,16 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $this->hasMany('UserRole');
 	}
 
+	public function reviews()
+	{
+		return $this->hasMany('Review');
+	}
+
+	public function reviewRequests()
+	{
+		return $this->belongsToMany('Review')->withPivot('answer');
+	}
+
 	/**
 	 * Returns all users waiting for activation who this user may manage.
 	 *
@@ -134,6 +144,10 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function formatName()
 	{
 		return $this->author->first_name." ".$this->author->last_name." (".$this->email.")";
+	}
+
+	public function scopeNotAdmin($query) {
+		return $query->where('id', '<>', '1');
 	}
 
 	/**

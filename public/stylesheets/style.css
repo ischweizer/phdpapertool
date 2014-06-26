@@ -133,7 +133,7 @@ body {
 }
 .has-feedback .input-group .form-control-feedback {
   top: 0px;
-  z-index: 2;
+  z-index: 1152;
 }
 .has-feedback .input-daterange input:first-child + .form-control-feedback {
   left: 0px;
