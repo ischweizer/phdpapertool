@@ -282,12 +282,11 @@ class PaperController extends BaseController {
 		$validation = Author::validate();
 		if ($validation->fails())
 	    {
-	        return "Validation Failed";
-	        //return Redirect::to('register')->with_input()->with_errors($validation);
+	        return Response::json(array('success' => 0, 'authors' => array()));
 	    }
 		$author = Author::create( $input );
 		
-		return Response::json(array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")"));
+		return Response::json(array('success' => 1, 'authors' => array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")")));
 	}
 
 	/**
