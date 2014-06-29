@@ -6,52 +6,7 @@
 
 		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<style>
-			.chart {
-				shape-rendering: crispEdges;
-			}
-
-			.mini text {
-				font: 9px sans-serif;	
-			}
-
-			.main text {
-				font: 12px sans-serif;	
-			}
-
-			.month text {
-				text-anchor: start;
-			}
-
-			.todayLine {
-				stroke: blue;
-				stroke-width: 1.5;
-			}
-
-			.axis line, .axis path {
-				stroke: black;
-			}
-
-			.miniItem {
-				stroke-width: 6;	
-			}
-
-			.future {
-				stroke: gray;
-				fill: #ddd;
-			}
-
-			.past {
-				stroke: green;
-				fill: lightgreen;
-			}
-
-			.brush .extent {
-				stroke: gray;
-				fill: blue;
-				fill-opacity: .165;
-			}
-		</style>
+		{{ HTML::style('stylesheets/timeline.css'); }}
 		<script>
 			jQuery(document).ready(function() {
 				$(document).ready(function() {
