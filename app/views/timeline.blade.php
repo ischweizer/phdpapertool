@@ -8,11 +8,40 @@
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		{{ HTML::style('stylesheets/timeline.css'); }}
 		<script>
-			jQuery(document).ready(function() {
-				$(document).ready(function() {
-					 $('#example').dataTable();
-				});
+			$(document).ready(function() {
+				 $('#example').dataTable();
 			});
+
+			function updateSubmission(paperId, field, success) {
+				$.ajax({
+					url: "{{ URL::action('PaperController@getUpdateSubmission', array('PAPERID', 'FIELD', 'SUCCESS')) }}".replace('PAPERID', paperId).replace('FIELD', field).replace('SUCCESS', success),
+					dataType: 'json',
+					success: function(data) {
+						if (!data.success) {
+							alert(data.error);
+						} else {
+							var $tableCell = $('#cell_' + paperId + '_' + field);
+							$tableCell.removeClass('info');
+							if (success) {
+								$tableCell.addClass('success');
+								var next = '';
+								if (field == 'abstract')
+									next = 'paper';
+								else if (field == 'paper')
+									next = 'notification';
+								else if (field == 'notification')
+									next = 'camera';
+								var $nextTableCell = $('#cell_' + paperId + '_' + next);
+								$nextTableCell.append(' <button type="button" class="btn btn-default btn-xs" onclick="updateSubmission(' + paperId + ', \'' + next + '\', 1)"><span class="glyphicon glyphicon-ok"></span></button>' +
+													  ' <button type="button" class="btn btn-default btn-xs" onclick="updateSubmission(' + paperId + ', \'' + next + '\', 0)"><span class="glyphicon glyphicon-remove"></span></button>');
+							} else {
+								$tableCell.addClass('danger');
+							}
+							$tableCell.find('button').remove();
+						}
+					}
+				});
+			}
 			
 			var dataURL='{{URL::action('TimelineController@getData')}}';
 		</script>
@@ -45,12 +74,80 @@
 				<tr>
 					<td>{{{ $paper->title }}}</td>
 					@if ($paper->activeSubmission)
-					<td align='center'>{{{ $paper->activeSubmission->event->abstract_due->format('d.m.Y') }}}</td>
-					<td align='center'>{{{ $paper->activeSubmission->event->paper_due->format('d.m.Y') }}}</td>
-					<td align='center'>{{{ $paper->activeSubmission->event->notification_date->format('d.m.Y') }}}</td>
-					<td align='center'>{{{ $paper->activeSubmission->event->camera_ready_due->format('d.m.Y') }}}</td>
+						@if($paper->activeSubmission->abstract_submitted === null)
+							@if($paper->activeSubmission->isAbstractReadyToSet())
+								<td align="center" class="info" id="cell_{{ $paper->id }}_abstract">{{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}}
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'abstract', 1)"><span class="glyphicon glyphicon-ok"></span></button>
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'abstract', 0)"><span class="glyphicon glyphicon-remove"></span></button>
+								</td>
+							@elseif ($paper->activeSubmission->event->abstract_due->lte(Carbon::now()))
+								<td align="center" class="info" id="cell_{{ $paper->id }}_abstract">{{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="warning" id="cell_{{ $paper->id }}_abstract">{{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}}</td>
+							@endif
+						@else
+							@if ($paper->activeSubmission->abstract_submitted)
+								<td align="center" class="success" id="cell_{{ $paper->id }}_abstract">{{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="danger" id="cell_{{ $paper->id }}_abstract">{{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}}</td>
+							@endif
+						@endif
+						@if($paper->activeSubmission->paper_submitted === null)
+							@if($paper->activeSubmission->isPaperReadyToSet())
+								<td align="center" class="info" id="cell_{{ $paper->id }}_paper">{{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}}
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'paper', 1)"><span class="glyphicon glyphicon-ok"></span></button>
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'paper', 0)"><span class="glyphicon glyphicon-remove"></span></button>
+								</td>
+							@elseif ($paper->activeSubmission->event->paper_due->lte(Carbon::now()))
+								<td align="center" class="info" id="cell_{{ $paper->id }}_paper">{{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="warning" id="cell_{{ $paper->id }}_paper">{{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}}</td>
+							@endif
+						@else
+							@if ($paper->activeSubmission->paper_submitted)
+								<td align="center" class="success" id="cell_{{ $paper->id }}_paper">{{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="danger" id="cell_{{ $paper->id }}_paper">{{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}}</td>
+							@endif
+						@endif
+						@if($paper->activeSubmission->notification_result === null)
+							@if($paper->activeSubmission->isNotificationReadyToSet())
+								<td align="center" class="info" id="cell_{{ $paper->id }}_notification">{{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}}
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'notification', 1)"><span class="glyphicon glyphicon-ok"></span></button>
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'notification', 0)"><span class="glyphicon glyphicon-remove"></span></button>
+								</td>
+							@elseif ($paper->activeSubmission->event->notification_date->lte(Carbon::now()))
+								<td align="center" class="info" id="cell_{{ $paper->id }}_notification">{{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="warning" id="cell_{{ $paper->id }}_notification">{{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}}</td>
+							@endif
+						@else
+							@if ($paper->activeSubmission->notification_result)
+								<td align="center" class="success" id="cell_{{ $paper->id }}_notification">{{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="danger" id="cell_{{ $paper->id }}_notification">{{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}}</td>
+							@endif
+						@endif
+						@if($paper->activeSubmission->camera_ready_submitted === null)
+							@if($paper->activeSubmission->isCameraReadyReadyToSet())
+								<td align="center" class="info" id="cell_{{ $paper->id }}_camera">{{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}}
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'camera', 1)"><span class="glyphicon glyphicon-ok"></span></button>
+									<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission({{ $paper->id }}, 'camera', 0)"><span class="glyphicon glyphicon-remove"></span></button>
+								</td>
+							@elseif ($paper->activeSubmission->event->camera_ready_due->lte(Carbon::now()))
+								<td align="center" class="info" id="cell_{{ $paper->id }}_camera">{{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="warning" id="cell_{{ $paper->id }}_camera">{{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}}</td>
+							@endif
+						@else
+							@if ($paper->activeSubmission->camera_ready_submitted)
+								<td align="center" class="success" id="cell_{{ $paper->id }}_camera">{{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}}</td>
+							@else
+								<td align="center" class="danger" id="cell_{{ $paper->id }}_camera">{{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}}</td>
+							@endif
+						@endif
 					@else
-					<td></td><td></td><td></td><td></td>
+						<td></td><td></td><td></td><td></td>
 					@endif
 				</tr>
 				@endforeach

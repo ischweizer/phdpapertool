@@ -394,6 +394,84 @@ class PaperController extends BaseController {
 	}
 
 	/**
+	 * Target for asynchronous submission updates.
+	 *
+	 * @param $paperId the paper id whose submission to update
+	 * @param $type which submission field to set
+	 * @param $success 0/1
+	 * @return ajax object with success field and in case of success=false a error string
+	 */
+	public function getUpdateSubmission($paperId, $type, $success) {
+		if (Request::ajax()) {
+			$paper = Paper::find($paperId);
+			// paper has to exist be editable by the current user and have an active submission
+			if (!$paper || !$this->checkAccess($paper) || !$paper->activeSubmission) {
+				App::abort(404);
+			}
+			// success must be 0/1
+			if (!is_numeric($success) || ($success != 0 && $success != 1)) {
+				App::abort(404);
+			}
+			$submission = $paper->activeSubmission;
+			$error = null;
+			// no date checks, as it generally is allowed to set fields for future dates
+			// it only is an error if the field is already set
+			// -left out fields will be set to '1'
+			// -it cannot be that a previous field is '0' otherwise the submission would be inactive
+			switch($type) {
+				case 'abstract':
+					if ($submission->abstract_submitted !== null) {
+						$error = 'Abstract submitted is already set.';
+					} else {
+						$submission->abstract_submitted = $success;
+					}
+					break;
+				case 'paper':
+					if ($submission->paper_submitted !== null) {
+						$error = 'Paper submitted is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = $success;
+					}
+					break;
+				case 'notification':
+					if ($submission->notification_result !== null) {
+						$error = 'Notification result is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = 1;
+						$submission->notification_result = $success;
+					}
+					break;
+				case 'camera':
+					if ($submission->camera_ready_submitted !== null) {
+						$error = 'Camera ready submitted is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = 1;
+						$submission->notification_result = 1;
+						$submission->camera_ready_submitted = $success;
+					}
+					break;
+				default:
+					App::abort(404);
+			}
+			if (!$error) {
+				if ($success == 0) {
+					$submission->active = 0;
+					$submission->finished_at = new Carbon;
+				}
+				if (!$submission->save()) {
+					$error = 'Sorry, couldn\'t update submission in database.';
+				}
+			}
+			return Response::json(array('success' => !$error, 'error' => $error));
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Checks whether the currently authed user is an author of the given paper
 	 *
 	 * @param $paper the paper model

@@ -150,6 +150,8 @@
 				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
 				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
 				{{ Form::close() }}
+			@else
+				{{ Form::label('submissionKind', 'Successfully Finished Submission') }}
 			@endif
 			<div class="form-control-static-bordered">
 			@if ($submission['kind'] == 'ConferenceEdition')
