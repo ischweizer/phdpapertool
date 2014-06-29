@@ -304,6 +304,10 @@ class PaperController extends BaseController {
 		$currentSubmissionEvent = null;
 		if ($paper->activeSubmission) {
 			$currentSubmissionEvent = $paper->activeSubmission->event;
+			if ($paper->activeSubmission->camera_ready_submitted) {
+				// no beautiful UI, because the user will never be navigated here by us
+				return "The submission for this paper finished successfully already.";
+			}
 		}
 		$newSubmissionEvent = $this->getSessionEvent();
 
@@ -322,6 +326,12 @@ class PaperController extends BaseController {
 			App::abort(404);
 		}
 		$oldActiveSubmission = $paper->activeSubmission;
+		
+		if ($paper->activeSubmission && $paper->activeSubmission->camera_ready_submitted) {
+			// no beautiful UI, because the user will never be navigated here by us
+			return "The submission for this paper finished successfully already.";
+		}
+
 		$submission = null;
 		$submissionKind = Input::get('submissionKind');
 		if($submissionKind != 'none') {

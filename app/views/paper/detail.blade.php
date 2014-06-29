@@ -146,9 +146,11 @@
 		</div>
 
 		<div class="form-group">
-			{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
-			{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
-			{{ Form::close() }}
+			@if(!$paper->activeSubmission || !$paper->activeSubmission->camera_ready_submitted)
+				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
+				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
+				{{ Form::close() }}
+			@endif
 			<div class="form-control-static-bordered">
 			@if ($submission['kind'] == 'ConferenceEdition')
 				{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $submission['activeDetailID']), 'method' => 'GET')) }}
