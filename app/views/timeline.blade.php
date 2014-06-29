@@ -66,6 +66,7 @@
 					  <th>Paper Submission Deadline</th>
 					  <th>Notification Date</th>
 					  <th>Camera Ready Submission Deadline</th>
+					  <th>Action</th>
 				  </tr>
 			  </thead>
 	 
@@ -149,6 +150,17 @@
 					@else
 						<td></td><td></td><td></td><td></td>
 					@endif
+					<td>
+						{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+							<button type="submit" class="btn btn-xs btn-primary">Details</button>
+						{{ Form::close() }}
+						@if (!$paper->activeSubmission)
+							{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id), 'style' => 'display:inline')) }}
+							{{ Form::hidden('paperRetargetBackTarget', URL::to('timeline')) }}
+							<button type="submit" class="btn btn-xs btn-primary">Set Target</button>
+							{{ Form::close() }}
+						@endif
+					</td>
 				</tr>
 				@endforeach
 				</tbody>

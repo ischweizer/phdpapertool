@@ -148,6 +148,7 @@
 		<div class="form-group">
 			@if(!$paper->activeSubmission || !$paper->activeSubmission->camera_ready_submitted)
 				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
+				{{ Form::hidden('paperRetargetBackTarget', URL::action('PaperController@getDetails', array('id' => $paper->id))) }}
 				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
 				{{ Form::close() }}
 			@else

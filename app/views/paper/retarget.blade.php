@@ -172,7 +172,7 @@
 
 @section('content')
 		<div class="page-header">
-			{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET')) }}
+			{{ Form::open(array('url' => Input::get('paperRetargetBackTarget') ?: Input::old('paperRetargetBackTarget'), 'method' => 'GET')) }}
 				<h1>Change Submission Target <button type="submit" class="btn btn-xs btn-primary">Back</button></h1>
 			{{ Form::close() }}
 		</div>
@@ -211,6 +211,7 @@
 		<br>
 		{{ Form::model($paper, array('action' => 'PaperController@postRetargetTarget', 'id' => 'paper-form')) }}
 			{{ Form::hidden('id') }}
+			{{ Form::hidden('paperRetargetBackTarget', Input::get('paperRetargetBackTarget')) }}
 			<div class="form-group">
 				{{ Form::label('submissionKind', 'New Submission Target') }}
 				<div class="form-control">
