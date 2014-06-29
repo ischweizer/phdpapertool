@@ -31,6 +31,10 @@ class TimelineController extends BaseController {
     	
     	$count = 0; $laneId = 0;
     	foreach(self::getPapers() as $paper) {
+			if (!$paper->activeSubmission) {
+				continue;
+			}
+
     		$event = $paper->activeSubmission->event;  
     		
     		$now = Carbon::now();
@@ -40,12 +44,12 @@ class TimelineController extends BaseController {
     		if ($event->end->lt($left_limit) || $event->abstract_due->gte($right_limit)) {
     			continue;
     		}
-    	
+
     		$data['lanes'][] = array(
     			'id' => $laneId,
     			'label' => $paper->title
     		);
- 			
+
  			if ($event->abstract_due->gte($left_limit)) {
 				$data['items'][] = array(
 					'id' => $count++,
