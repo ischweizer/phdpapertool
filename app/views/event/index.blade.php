@@ -18,7 +18,8 @@
 			<h1>Events</h1>
 		</div>
 
-		<table id="events-table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+		{{ Form::label('ceditions', 'Conferences') }}
+		<table id="ceditions-table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 			<thead>
 				<tr>
 					<th>Acronym</th>
@@ -34,21 +35,24 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach ($eventlist as $event)
-					<?php $cEdition = $event->detail->isConferenceEdition() ? $event->detail : $event->detail->conferenceEdition ?>
+				@foreach ($conferenceeditions as $ceditionevent)
 					<tr>
-						<td>{{{ $cEdition->conference->acronym }}}</td>
-						<td>{{{ $cEdition->edition }}}</td>
-						<td>{{{ $cEdition->location }}}</td>
-						<td>{{{ $event->abstract_due->format('M d, Y') }}}</td>
-						<td>{{{ $event->paper_due->format('M d, Y') }}}</td>
-						<td>{{{ $event->notification_date->format('M d, Y') }}}</td>
-						<td>{{{ $event->camera_ready_due->format('M d, Y') }}}</td>
-						<td>{{{ $event->start->format('M d, Y') }}}</td>
-						<td>{{{ $event->end->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->detail->conference->acronym }}}</td>
+						<td>{{{ $ceditionevent->detail->edition }}}</td>
+						<td>{{{ $ceditionevent->detail->location }}}</td>
+						<td>{{{ $ceditionevent->abstract_due->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->paper_due->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->notification_date->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->camera_ready_due->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->start->format('M d, Y') }}}</td>
+						<td>{{{ $ceditionevent->end->format('M d, Y') }}}</td>
 						<td>
-							{{ Form::open(array('action' => ($event->detail->isConferenceEdition()) ? array('ConferenceEditionController@getDetails', 'id' => $cEdition->id) : array('WorkshopController@getDetails', 'id' => $event->detail->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+							{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $ceditionevent->detail->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 								<button type="submit" class="btn btn-xs btn-primary">Details</button>
+							{{ Form::close() }}
+							
+							{{ Form::open(array('action' => array('ConferenceEditionController@getNewPaper', 'id' => $ceditionevent->detail->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">New Paper</button>
 							{{ Form::close() }}
 						</td>
 					</tr>
@@ -59,6 +63,57 @@
 					<th>Acronym</th>
 					<th>Edition</th>
 					<th>Location</th>
+					<th>Abstract Due</th>
+					<th>Paper Due</th>
+					<th>Notification Date</th>
+					<th>Camera Ready Due</th>
+					<th>Start</th>
+					<th>End</th>
+					<th>Action</th>
+				</tr>
+			</tfoot>
+	 	</table>
+	 	
+	 	
+	 	{{ Form::label('workshops', 'Workshops') }}
+	 	<table id="workshop-table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Abstract Due</th>
+					<th>Paper Due</th>
+					<th>Notification Date</th>
+					<th>Camera Ready Due</th>
+					<th>Start</th>
+					<th>End</th>
+					<th>Action &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>{{-- preserve space for both buttons to fit beside each other --}}
+				</tr>
+			</thead>
+			<tbody>
+				@foreach ($workshops as $workshopevent)
+					<tr>
+						<td>{{{ $workshopevent->detail->name }}}</td>
+						<td>{{{ $workshopevent->abstract_due->format('M d, Y') }}}</td>
+						<td>{{{ $workshopevent->paper_due->format('M d, Y') }}}</td>
+						<td>{{{ $workshopevent->notification_date->format('M d, Y') }}}</td>
+						<td>{{{ $workshopevent->camera_ready_due->format('M d, Y') }}}</td>
+						<td>{{{ $workshopevent->start->format('M d, Y') }}}</td>
+						<td>{{{ $workshopevent->end->format('M d, Y') }}}</td>
+						<td>
+							{{ Form::open(array('action' => array('WorkshopController@getDetails', 'id' => $workshopevent->detail->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">Details</button>
+							{{ Form::close() }}
+							
+							{{ Form::open(array('action' => array('WorkshopController@getNewPaper', 'id' => $workshopevent->detail->id), 'method' => 'GET', 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">New Paper</button>
+							{{ Form::close() }}
+						</td>
+					</tr>
+				@endforeach
+			</tbody>
+			<tfoot>
+				<tr>
+					<th>Name</th>
 					<th>Abstract Due</th>
 					<th>Paper Due</th>
 					<th>Notification Date</th>

@@ -19,8 +19,8 @@ class ConferenceEditionController extends BaseController {
 			App::abort(404);
 		}
     }
-
-	/**
+    
+    /**
 	 * Edit or create a conference edition.
 	 *
 	 * @param $id the id to edit
@@ -134,4 +134,17 @@ class ConferenceEditionController extends BaseController {
 			return Redirect::to(Input::get('conferenceEditionBackTarget'));
 		}
 	}
+	
+	/**
+	 * Open paper creation view with given conference edition
+	 */
+	public function getNewPaper($id = null) {
+	    if (!is_null($id)) {
+	    	Session::forget('workshop_id');
+		    Session::set('conference_edition_id', $id);
+		    return Redirect::action('PaperController@anyEdit');
+	    } else {
+			App::abort(404);
+		}
+    }
 }
