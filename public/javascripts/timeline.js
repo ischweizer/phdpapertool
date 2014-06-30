@@ -35,7 +35,7 @@
         var minTime = new Date(currentMillis-radius);
         var timeStart = minTime < itemMinTime ? minTime : itemMinTime;
         
-        var itemMaxTime = d3.max(items, function(d) { return d.start; });
+        var itemMaxTime = d3.max(items, function(d) { return d.end; });
         var maxTime = new Date(currentMillis+radius);
         var timeEnd = maxTime > itemMaxTime ? maxTime : itemMaxTime;
         /*var x = d3.time.scale()
