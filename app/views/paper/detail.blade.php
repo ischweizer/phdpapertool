@@ -17,10 +17,17 @@
 		</style>
 		
 		<script>
+			var filesUploaded = false;
+			
 			$(document).ready(function() {
 				$('#open_file_upload').click(function(){
 					$('#fileUploadModal').modal('show');
 				});
+				
+				$('#fileUploadModal').on('hidden.bs.modal', function () {
+				    if(filesUploaded) 
+				    	location.reload();
+				})
 				
 				$('#fileupload').fileupload({
 			        url: "{{ URL::action('FileController@postUploadFile', array('id' => $paper->id)) }}",
@@ -38,6 +45,7 @@
 			        },
 			        done: function (e, data) {
 			        	if (data.result.success == 1) {
+			        		filesUploaded = true;
 				        	$('#uploadstatus').html('Upload finished.');
 			        	} else {
 				        	$('#uploadstatus').html("Some problems occured!");
@@ -138,9 +146,14 @@
 		</div>
 
 		<div class="form-group">
-			{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
-			{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
-			{{ Form::close() }}
+			@if(!$paper->activeSubmission || !$paper->activeSubmission->camera_ready_submitted)
+				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
+				{{ Form::hidden('paperRetargetBackTarget', URL::action('PaperController@getDetails', array('id' => $paper->id))) }}
+				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
+				{{ Form::close() }}
+			@else
+				{{ Form::label('submissionKind', 'Successfully Finished Submission') }}
+			@endif
 			<div class="form-control-static-bordered">
 			@if ($submission['kind'] == 'ConferenceEdition')
 				{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $submission['activeDetailID']), 'method' => 'GET')) }}
@@ -177,8 +190,10 @@
 								@endif
 							@endforeach
 						<br>
-						{{ Form::label('message', 'Message') }}
-						{{ $review->message }}
+						@if ($review->message)
+							{{ Form::label('message', 'Message') }}
+							<pre>{{ $review->message }}</pre>
+						@endif
 						<ul class="list-group">
 							@foreach ($review->users as $user)
 								<li class="list-group-item">

@@ -50,12 +50,20 @@
 							url: "{{ URL::action('PaperController@postCreateAuthor') }}",
 							data: data,
 							success: function(response) {
-								$.each(response, function(key, value){
-									$('#selected_authors').append(
-								        $('<option></option>').val(key).html(value)
-								    );
-								    $('#authorCreationModal').modal('hide');
-								});
+								if (response.success !== undefined && response.success == 1) {
+									$.each(response.authors, function(key, value){
+										$('#selected_authors').append(
+									        $('<option></option>').val(key).html(value)
+									    );
+									    $('#authorCreationModal').modal('hide');
+									});
+									
+									$('#last_name').val('');
+									$('#first_name').val('');
+									$('#email').val('');
+								} else {
+									alert("An authors with the given email address already exists!");
+								}
 							}
 						});
 					}

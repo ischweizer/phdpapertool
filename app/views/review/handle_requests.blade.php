@@ -12,7 +12,10 @@
 			@foreach ($reviewRequests as $reviewRequest)
 				<li class="list-group-item">
 					From: {{{ $reviewRequest->user->formatName() }}} <br>
-					Deadline: {{{ @date_format($reviewRequest->deadline, 'M d, Y') }}}
+					Deadline: {{{ @date_format($reviewRequest->deadline, 'M d, Y') }}} <br>
+					@if ($reviewRequest->message)
+						Message: <pre>{{{ $reviewRequest->message }}}</pre>
+					@endif
 					@foreach ($reviewRequest->files as $file)
 						@if ($file->author_id == $reviewRequest->user->author->id)
 							<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
