@@ -229,17 +229,21 @@ function display () {
 
 	x1.domain([minExtent, maxExtent]);
 
-	if ((maxExtent - minExtent) > 1468800000) {
-		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))		
+	if((maxExtent - minExtent) > 5256000000) {
+		x1DateAxis.ticks(d3.time.months, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.months, 1).tickFormat(d3.time.format('%b'));
+	}
+	else if ((maxExtent - minExtent) > 1468800000) {
+		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'));
 	}
 	else if ((maxExtent - minExtent) > 172800000) {
-		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-	}
+		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'));
+	} 
 	else {
-		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
+		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'));
+		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'));
 	}
 
 
