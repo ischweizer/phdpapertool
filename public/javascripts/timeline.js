@@ -28,9 +28,16 @@
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
-	var x = d3.time.scale()
+        var currentMillis = new Date().getTime();
+        var radius = 1000*60*60*24*30*3;
+        /*
+        var x = d3.time.scale()
 		.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
 				 d3.max(items, function(d) { return d.end; })])
+		.range([0, width]);
+         */
+	var x = d3.time.scale()
+		.domain([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
 		.range([0, width]);
 	var x1 = d3.time.scale().range([0, width]);
 
@@ -204,9 +211,13 @@
 		.on('mouseup', moveBrush);
 
 	// draw the selection area
+        var currentMillis = new Date().getTime();
+        var radius = 1000*60*60*24*30*3;
+        
 	var brush = d3.svg.brush()
 		.x(x)
-		.extent([d3.time.monday(now),d3.time.saturday.ceil(now)])
+		.extent([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
+                //.extent([d3.time.monday(now),d3.time.saturday(now)])
 		.on("brush", display);
 
 	mini.append('g')
