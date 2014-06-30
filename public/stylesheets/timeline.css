@@ -1,0 +1,59 @@
+.chart {
+	shape-rendering: crispEdges;
+}
+
+.mini text {
+	font: 9px sans-serif;	
+}
+
+.main text {
+	font: 12px sans-serif;	
+}
+
+.month text {
+	text-anchor: start;
+}
+
+.todayLine {
+	stroke: blue;
+	stroke-width: 1.5;
+}
+
+.axis line, .axis path {
+	stroke: black;
+}
+
+.miniItem {
+	stroke-width: 6;	
+}
+
+.future {
+	stroke: gray;
+	fill: #ddd;
+}
+
+.paper {
+	stroke: #fde802;
+	fill: #fde802;
+}
+
+.noti {
+	stroke: #00c0ff;
+	fill: #00c0ff;
+}
+
+.cam {
+	stroke: #00d914;
+	fill: #00d914;
+}
+
+.con {
+	stroke: #fe9595;
+	fill: #fe9595;
+}
+
+.brush .extent {
+	stroke: gray;
+	fill: blue;
+	fill-opacity: .165;
+}
