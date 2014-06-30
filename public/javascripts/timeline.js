@@ -30,18 +30,24 @@
 
         var currentMillis = new Date().getTime();
         var radius = 1000*60*60*24*30*3;
-        /*
-        var x = d3.time.scale()
+      
+        var itemMinTime = d3.min(items, function(d) { return d.start; });
+        var minTime = new Date(currentMillis-radius);
+        var timeStart = minTime < itemMinTime ? minTime : itemMinTime;
+        
+        var itemMaxTime = d3.max(items, function(d) { return d.start; });
+        var maxTime = new Date(currentMillis+radius);
+        var timeEnd = maxTime > itemMaxTime ? maxTime : itemMaxTime;
+        /*var x = d3.time.scale()
 		.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
 				 d3.max(items, function(d) { return d.end; })])
-		.range([0, width]);
-         */
+		.range([0, width]);*/
+         
 	/*var x = d3.time.scale()
 		.domain([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
 		.range([0, width]);*/
         var x = d3.time.scale()
-		.domain([d3.time.sunday(d3.min(items, d3.time.day(new Date(currentMillis-radius)))),
-				 d3.max(items, d3.time.day(new Date(currentMillis+radius)))])
+		.domain([timeStart, timeEnd])
 		.range([0, width]);
 	var x1 = d3.time.scale().range([0, width]);
 
