@@ -28,9 +28,20 @@
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
-	var x = d3.time.scale()
+        var currentMillis = new Date().getTime();
+        var radius = 1000*60*60*24*30*3;
+        /*
+        var x = d3.time.scale()
 		.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
 				 d3.max(items, function(d) { return d.end; })])
+		.range([0, width]);
+         */
+	/*var x = d3.time.scale()
+		.domain([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
+		.range([0, width]);*/
+        var x = d3.time.scale()
+		.domain([d3.time.sunday(d3.min(items, d3.time.day(new Date(currentMillis-radius)))),
+				 d3.max(items, d3.time.day(new Date(currentMillis+radius)))])
 		.range([0, width]);
 	var x1 = d3.time.scale().range([0, width]);
 
@@ -204,9 +215,13 @@
 		.on('mouseup', moveBrush);
 
 	// draw the selection area
+        var currentMillis = new Date().getTime();
+        var radius = 1000*60*60*24*30*3;
+        
 	var brush = d3.svg.brush()
 		.x(x)
-		.extent([d3.time.monday(now),d3.time.saturday.ceil(now)])
+		.extent([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
+                //.extent([d3.time.monday(now),d3.time.saturday(now)])
 		.on("brush", display);
 
 	mini.append('g')
@@ -229,17 +244,21 @@ function display () {
 
 	x1.domain([minExtent, maxExtent]);
 
-	if ((maxExtent - minExtent) > 1468800000) {
-		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))		
+	if((maxExtent - minExtent) > 5256000000) {
+		x1DateAxis.ticks(d3.time.months, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.months, 1).tickFormat(d3.time.format('%b'));
+	}
+	else if ((maxExtent - minExtent) > 1468800000) {
+		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'));
 	}
 	else if ((maxExtent - minExtent) > 172800000) {
-		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-	}
+		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'));
+		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'));
+	} 
 	else {
-		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
+		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'));
+		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'));
 	}
 
 
