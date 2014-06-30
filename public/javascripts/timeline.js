@@ -36,8 +36,12 @@
 				 d3.max(items, function(d) { return d.end; })])
 		.range([0, width]);
          */
-	var x = d3.time.scale()
+	/*var x = d3.time.scale()
 		.domain([d3.time.day(new Date(currentMillis-radius)),d3.time.day(new Date(currentMillis+radius))])
+		.range([0, width]);*/
+        var x = d3.time.scale()
+		.domain([d3.time.sunday(d3.min(items, d3.time.day(new Date(currentMillis-radius)))),
+				 d3.max(items, d3.time.day(new Date(currentMillis+radius)))])
 		.range([0, width]);
 	var x1 = d3.time.scale().range([0, width]);
 
