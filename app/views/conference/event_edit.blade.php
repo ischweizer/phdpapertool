@@ -284,7 +284,7 @@
 			</div>
 		@if ($type == 'Conference Edition')
 			<div class="form-group col-md-1" style="padding:1px 0 0 0">
-				<label>&nbsp;</label>
+				<label style="display:block">&nbsp;</label>
 				<input id="conference_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 			</div>
 		@elseif ($type == 'Workshop')
@@ -293,7 +293,7 @@
 				{{ Form::select('conference_edition_id', $editionOption, $initialConferenceEditionId, array('class' => 'form-control', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 			</div>
 			<div class="form-group col-md-1" style="padding:1px 0 0 0">
-				<label>&nbsp;</label>
+				<label style="display:block">&nbsp;</label>
 				<input id="conference_edition_create" type="button" class="btn btn-sm btn-primary" value="Create New">
 			</div>
 		@endif
