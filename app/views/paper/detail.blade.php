@@ -172,7 +172,7 @@
 			@endif
 			</div>
 		</div>
-		
+		{{--
 		<div class="form-group">
 
 			{{ Form::label('reviews', 'Review Requests') }}
@@ -240,19 +240,11 @@
 						</tr>
 					@endforeach
 				</tbody>
-				{{--
-				<tfoot>
-					<tr>
-						<th>Title</th>
-						<th>Abstract</th>
-						<th>Action</th>
-					 </tr>
-				</tfoot>
-				--}}
+
 			</table>
 			
 		</div>
-
+--}}
 		{{-- TODO show submission history --}}
 		
 		<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
