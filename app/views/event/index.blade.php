@@ -15,7 +15,24 @@
 
 @section('content')
 		<div class="page-header">
-			<h1>Events</h1>
+			<h1>
+				Events<br>
+				{{ Form::open(array('action' => array('ConferenceController@getIndex'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Browse Conferences</button>
+				{{ Form::close() }}
+				{{ Form::open(array('action' => array('ConferenceController@anyEdit'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Create Conference</button>
+				{{ Form::close() }}
+				{{ Form::open(array('action' => array('ConferenceEditionController@anyEdit'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Create Conference Edition</button>
+				{{ Form::close() }}
+				{{ Form::open(array('action' => array('WorkshopController@anyEdit'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Create Workshop</button>
+				{{ Form::close() }}
+				{{ Form::open(array('action' => array('PaperController@anyEdit'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Create Paper</button>
+				{{ Form::close() }}
+			</h1>
 		</div>
 
 		{{ Form::label('ceditions', 'Conferences') }}
