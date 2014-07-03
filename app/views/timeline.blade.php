@@ -104,7 +104,7 @@
 <div id="graph"></div>
 <p>&nbsp;</p>
 <h3 class="cat-title">Papers</h3>
-			<table id="example" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+			<table id="example" class="table table-bordered table-hover" cellspacing="0" width="100%">
 			  <thead>
 				  <tr>
 					  <th>Paper</th>
