@@ -35,26 +35,31 @@
 .paper {
 	stroke: #fde802;
 	fill: #fde802;
+	color:#fde802;
 }
 
 .noti {
 	stroke: #00c0ff;
 	fill: #00c0ff;
+	color: #00c0ff;
 }
 
 .cam {
 	stroke: #00d914;
 	fill: #00d914;
+	color: #00d914;
 }
 
 .con {
 	stroke: #fe9595;
 	fill: #fe9595;
+	color: #fe9595;
 }
 
 .workshop {
 	stroke: #A34B4B;
 	fill: #A34B4B;
+	color: #A34B4B;
 }
 
 .brush .extent {

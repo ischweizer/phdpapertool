@@ -102,6 +102,15 @@
 
 <h3 class="cat-title">Interactive Paper Timeline</h3>
 <div id="graph"></div>
+
+<ul class="list-inline" style="float:right">
+	<li><span class="paper">&#9608; </span>Paper Submission Stage</li>
+	<li><span class="noti">&#9608; </span>Notification Stage</li>
+	<li><span class="cam">&#9608; </span>Camera Ready Submission Stage</li>
+	<li><span class="con">&#9608; </span>Conference</li>
+	<li><span class="workshop">&#9608; </span>Workshop</li>
+</ul>
+
 <p>&nbsp;</p>
 <h3 class="cat-title">Papers</h3>
 			<table id="example" class="table table-bordered table-hover" cellspacing="0" width="100%">
