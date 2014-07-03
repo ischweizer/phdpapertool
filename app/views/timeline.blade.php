@@ -1,11 +1,10 @@
 @extends('layouts/main')
 
 @section('head')
-		<script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-		<script src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-
-		<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
-		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		{{ HTML::script('javascripts/jquery.dataTables.min.js')}}
+		{{ HTML::script('javascripts/dataTables.bootstrap.js')}}
+		{{ HTML::style('stylesheets/dataTables.bootstrap.css'); }}
+		{{ HTML::script('javascripts/d3.v3.min.js')}}
 		{{ HTML::style('stylesheets/timeline.css'); }}
 		<script>
 			$(document).ready(function() {
