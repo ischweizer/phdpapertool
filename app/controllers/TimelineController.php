@@ -118,6 +118,7 @@ class TimelineController extends BaseController {
 			$laneId++;
 		}
 
+		
 		return Response::json($data);
 	}
 	
@@ -140,21 +141,22 @@ class TimelineController extends BaseController {
 					  ->get();    
 	}
 
-	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'id', $order = 'asc') {
+	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'title', $order = 'asc') {
 		$query = Submission::with('paper', 'event')
 			//->currentUser()
 			//->groups($groupsIds)
 			->users($usersIds)
 			->active()
-			->join('events', 'events.id', '=', 'submissions.event_id')
-			->select('submissions.*')
-			->orderBy('events.abstract_due', 'ASC');
+			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+			->join('papers', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+			//->select('submissions.*')
+			->orderBy($sortByColumn, $order);
 		if ($pastLimit > 0) {
 			$query = $query->where('end', '>', DB::raw('DATE_SUB(CURDATE(), INTERVAL '. $pastLimit .' MONTH)'));
 		}
 		if ($futureLimit > 0) {
 			$query = $query->where('abstract_due', '<', DB::raw('DATE_ADD(CURDATE(), INTERVAL '. $futureLimit .' MONTH)'));
 		}
-		return $query->orderBy($sortByColumn, $order)->get();
+		return $query->get();
 	}
 }
