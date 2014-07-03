@@ -22,7 +22,8 @@ class PaperController extends BaseController {
 		$paper = null;
 		$submissionEvent = null;
 		$files = array();
-
+		$paperAuthors = $this->getOldSelectedAuthors();
+		
 		// get authors
 		foreach ($autorList as $author) {
 			if (Auth::user()->author->id != $author->id) {
@@ -39,22 +40,24 @@ class PaperController extends BaseController {
 				if (!$this->checkAccess($paper)) {
 					App::abort(404);
 				}
-				$paperAuthors = $paper->authors;
-				foreach ($paperAuthors as $author) {
-					if (array_key_exists($author->id, $selectedauthors)) {
-						unset($selectedauthors[$author->id]);
-					}
-					$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
-					if (array_key_exists($author->id, $authors)) {
-						unset($authors[$author->id]);
-					}
-				}
+				$paperAuthors = (count($paperAuthors) == 0) ? $paper->authors : $paperAuthors;
+				
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
 			}
 			
 			$files = $paper->files()->get();
+		}
+		
+		foreach ($paperAuthors as $author) {
+			if (array_key_exists($author->id, $selectedauthors)) {
+				unset($selectedauthors[$author->id]);
+			}
+			$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			if (array_key_exists($author->id, $authors)) {
+				unset($authors[$author->id]);
+			}
 		}
 
 		$sessionEvent = $this->getSessionEvent();
@@ -65,6 +68,20 @@ class PaperController extends BaseController {
 		$submission = $this->getSubmissionArray($submissionEvent);
 
 		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission, 'files' => $files));
+	}
+	
+	private function getOldSelectedAuthors() {
+		$selectedAuthors = array();
+		if (Session::getOldInput('selectedauthors')) {
+			$authors = Session::getOldInput('selectedauthors');
+			foreach ($authors as $authorid) {
+				$author = Author::find($authorid);
+				if ($author != null) {
+					array_push($selectedAuthors, $author);
+				}
+			}
+		}
+		return $selectedAuthors;
 	}
 
 	/**
