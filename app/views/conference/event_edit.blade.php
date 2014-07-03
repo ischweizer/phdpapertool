@@ -70,6 +70,11 @@
 				datepickersComplete.forEach(function (datepicker) {
 					datepicker.datepicker().on('change', function(e) {
 						var field = $(this).attr('name');
+						var check = $(this);
+						var index = datepickersComplete.indexOf(datepicker);
+						if (index >= 0 && index < datepickersComplete.length-1) {
+							datepickersComplete[index + 1].datepicker('setStartDate', $(this).datepicker('getDate'));
+						}
 						$('#event-form')
 							.data('bootstrapValidator')
 							.updateStatus(field, 'NOT_VALIDATED', null)
