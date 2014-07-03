@@ -119,7 +119,7 @@
 					  <th name='title'>Paper</th>
 					  <th name='abstract_due'>Abstract Submission Deadline</th>
 					  <th name='paper_due'>Paper Submission Deadline</th>
-					  <th name='notification_due'>Notification Date</th>
+					  <th name='notification_date'>Notification Date</th>
 					  <th name='camera_ready_due'>Camera Ready Submission Deadline</th>
 					  <th>Action</th>
 				  </tr>
