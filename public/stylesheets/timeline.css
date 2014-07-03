@@ -52,6 +52,11 @@
 	fill: #fe9595;
 }
 
+.workshop {
+	stroke: #A34B4B;
+	fill: #A34B4B;
+}
+
 .brush .extent {
 	stroke: gray;
 	fill: blue;
