@@ -18,10 +18,23 @@
 	<div id='main'>
 
 		<div class="page-header">
-			{{ Form::open(array('action' => 'PaperController@anyEdit')) }}
-				<h1>Papers <button type="submit" class="btn btn-xs btn-primary">Create New</button></h1>
-				{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
-			{{ Form::close() }}
+			<h1>
+				@if($archived) Archive @else Papers @endif 
+				{{ Form::open(array('action' => 'PaperController@anyEdit', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Create New</button>
+					{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
+				{{ Form::close() }}
+				@if($archived) 
+				{{ Form::open(array('action' => array('PaperController@getIndex'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">All Papers</button>
+				{{ Form::close() }}
+				@else 
+				{{ Form::open(array('action' => array('PaperController@getArchived'), 'method' => 'GET', 'style' => 'display:inline')) }}
+					<button type="submit" class="btn btn-xs btn-primary">Archived Papers</button>
+				{{ Form::close() }}
+				@endif
+				
+			</h1>
 		</div>
 
 		<h3 class="cat-title">Paper Table</h3>
@@ -47,6 +60,11 @@
 							{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $paper->id), 'style' => 'display:inline')) }}
 								<button type="submit" class="btn btn-xs btn-primary">Edit</button>
 								{{ Form::hidden('paperBackTarget', URL::action('PaperController@getIndex')) }}
+							{{ Form::close() }}
+							{{ Form::open(array('action' => array('PaperController@postArchivePaper', 'id' => $paper->id), 'style' => 'display:inline')) }}
+								<button type="submit" class="btn btn-xs btn-primary">@if($archived) Unarchive @else Archive @endif</button>
+								{{ Form::hidden('archivepaper', ($archived) ? 0 : 1 ) }}
+								{{ Form::hidden('paperBackTarget', ($archived) ? URL::action('PaperController@getArchived') : URL::action('PaperController@getIndex') ) }}
 							{{ Form::close() }}
 						</td>
 					</tr>

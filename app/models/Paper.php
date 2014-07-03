@@ -2,7 +2,7 @@
 
 class Paper extends Eloquent {
 	
-	protected $fillable = array('title', 'abstract', 'repository_url');
+	protected $fillable = array('title', 'abstract', 'repository_url', 'archived');
 	
 	public function authors()
 	{
