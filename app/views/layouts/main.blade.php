@@ -8,10 +8,10 @@
 		</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet">
-		<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+		{{ HTML::script('javascripts/jquery-2.1.1.min.js'); }}
+		{{ HTML::style('stylesheets/bootstrap.min.css'); }}
+		{{ HTML::style('stylesheets/bootstrap-theme.min.css'); }}
+		{{ HTML::script('javascripts/bootstrap.min.js'); }}
 		{{ HTML::script('javascripts/script.js'); }}
 		{{ HTML::style('stylesheets/style.css'); }}
 		@yield('head')
