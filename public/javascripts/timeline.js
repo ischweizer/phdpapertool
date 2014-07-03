@@ -1,20 +1,58 @@
 var Timeline = new function() {
-	this.load = function(url) {
+	var _url, _sort, _order, _groups;
+	
+	this.load = function(url, groups, sort, order) {
+		_url = url;
+		_sort = sort;
+		_order = order;
+		_groups = groups;
+		
 		$.ajax({
 			'global': false,
-			'url': url,
+			'url': url + '?groupids=' + groups + '&sort=' + sort + '&order=' + order,
 			'dataType': "json",
 			'success': function (data) {
-				data.items.forEach(function(entry) {
+				data.graph.items.forEach(function(entry) {
 					entry.start = new Date(entry.start);
 					entry.end = new Date(entry.end);
 				});
 				
 				$('#graph').html('');
-				Timeline.draw(data);
+				Timeline.draw(data.graph);
+				
+				$('#example tbody').html('');
+				$.each(data.table, function(index, item) {
+					$(item).appendTo('#example tbody');
+				});
+				$('#example').dataTable();
+				
+				// Move sort to backend
+				$('#example th').unbind('click.DT');
+				$('#example th').removeClass().addClass('sorting');
+				$('#example [name=' + sort +']').removeClass().addClass('sorting_' + order);
+    			$('#example th').click(function(e) {
+    				var asc = $(this).hasClass('sorting_asc');
+    				var column = $(this).attr('name');
+    				
+    				if (typeof column != 'undefined') {
+						if (asc) {
+							Timeline.sort(column, 'desc');
+						} else {
+							Timeline.sort(column, 'asc');
+						}
+					}
+    			});
 			}
 		});
 	}; 
+	
+	this.reloadGroups = function(groups) {
+		Timeline.load(_url, groups, _sort, _order);
+	}
+	
+	this.sort = function(sort, order) {
+		Timeline.load(_url, _groups, sort, order);
+	}
 	
 	this.draw = function(data) {
 		var lanes = data.lanes
