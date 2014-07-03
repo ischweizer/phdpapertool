@@ -131,9 +131,14 @@
 @section('content')
 		<div class="page-header">
 			{{ Form::open(array('action' => array('PaperController@anyEdit', 'id' => $paper->id))) }}
-				<h1>{{{ $paper->title }}} <button type="submit" class="btn btn-xs btn-primary">Edit</button></h1>
+				<h1>{{{ $paper->title }}} 
+				@if ($owner)
+					<button type="submit" class="btn btn-xs btn-primary">Edit</button>
+				@endif
+				</h1>
 				{{ Form::hidden('paperBackTarget', URL::action('PaperController@getDetails', array('id' => $paper->id))) }}
 			{{ Form::close() }}
+			
 		</div>
 
 		<div class="form-group">
@@ -155,7 +160,10 @@
 			@if(!$paper->activeSubmission || !$paper->activeSubmission->camera_ready_submitted)
 				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
 				{{ Form::hidden('paperRetargetBackTarget', URL::action('PaperController@getDetails', array('id' => $paper->id))) }}
-				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
+				{{ Form::label('submissionKind', 'Current Submission Target') }} 
+				@if($owner)
+					<button type="submit" class="btn btn-xs btn-primary">Change Target</button>
+				@endif
 				{{ Form::close() }}
 			@else
 				{{ Form::label('submissionKind', 'Successfully Finished Submission') }}
