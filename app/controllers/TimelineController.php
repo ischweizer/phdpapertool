@@ -209,7 +209,7 @@ class TimelineController extends BaseController {
 		return $user->author->papers;*/	    
 	    $paper = Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
 			->join('users', DB::raw('author_paper.author_id'), '=', DB::raw('users.author_id'))
-			->where('users.id', 2)->orderBy($sortByColumn, $order)->get();//->whereIn('users.id', $usersIds);
+			->whereIn('users.id', $usersIds)->orderBy($sortByColumn, $order)->get();//->whereIn('users.id', $usersIds);
 	    return $paper;/*Paper::users($usersIds)->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
 					  ->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
 					  ->orderBy($sortByColumn, $order)
