@@ -5,12 +5,7 @@ class Group extends Eloquent {
 	{
 		return $this->belongsTo('Lab');
 	}
-
-	public function authors()
-	{
-		return $this->hasMany('Author');
-	}
-
+	
 	public function getInactiveUsersQuery()
 	{
 		return User::where('active', '=', 0)

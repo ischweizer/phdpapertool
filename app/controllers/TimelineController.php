@@ -37,12 +37,18 @@ class TimelineController extends BaseController {
 			'items' => array(),
 		);
 
-		if(Input::has('groupids'))
-			$groupsIds = explode(',', Input::get('groupids'));
+		if(Input::has('groupids')) {
+		    $groupsIds = explode(',', Input::get('groupids'));
+		    $users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		    $usersIds = array();
+		    foreach($users as $user) {
+			$usersIds[] = $user->id;
+		    }			    
+		}
 		else
-			$groupsIds = array(Auth::user()->group_id);
+			$usersIds = array(Auth::user()->id);	
 		$count = 0; $laneId = 0;
-		foreach($this->getSubmissions($groupsIds, $pastLimit, $futureLimit) as $submission) {
+		foreach($this->getSubmissions($usersIds, $pastLimit, $futureLimit) as $submission) {
 			$paper = $submission->paper;
 			$event = $submission->event;
 
@@ -122,10 +128,11 @@ class TimelineController extends BaseController {
 		return $user->author->papers;
 	}
 
-	private function getSubmissions($groupsIds, $pastLimit = 0, $futureLimit = 0) {
+	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0) {
 		$query = Submission::with('paper', 'event')
 			//->currentUser()
-			->groups($groupsIds)
+			//->groups($groupsIds)
+			->users($usersIds)
 			->active()
 			->join('events', 'events.id', '=', 'submissions.event_id')
 			->select('submissions.*')
