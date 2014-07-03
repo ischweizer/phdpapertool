@@ -65,8 +65,13 @@
 		.enter().append('foreignObject')
 		.attr("width", "140")
     	.attr("height", "70")
-		.html(function(d) { 
-        	return "<p align='right'>"+d.label+"</p>";
+		.html(function(d) {
+			var truncated = d.label;
+			if (d.label.length > 20) {
+				return '<div align="right" title="'+d.label+'">'+d.label.substr(0, 17) + '...'+"</p>";
+			} else {
+				return '<div align="right">'+d.label+"</p>";
+			}
     	})
 		.attr('x', -160)
 		.attr('y', function(d) { return y2(d.id); })
