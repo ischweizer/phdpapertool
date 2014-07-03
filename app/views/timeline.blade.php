@@ -80,6 +80,7 @@
    		<h1>Timeline</h1>
 		</div>
 
+@if (count($groups) > 0)
 <div id="paperDropdown" class="dropdown pull-right">
 	<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Papers</button>
 	<div class="dropdown-menu panel-body" role="menu" aria-labelledby="selectPapersBtn">
@@ -97,6 +98,7 @@
 			<button id="applyGroupBtn" class="btn btn-primary" style="width: 100%">Apply</button>
 	</div>
 </div>
+@endif
 
 <h3 class="cat-title">Interactive Paper Timeline</h3>
 <div id="graph"></div>
