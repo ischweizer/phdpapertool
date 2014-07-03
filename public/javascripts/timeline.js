@@ -5,11 +5,16 @@ var Timeline = new function() {
 		_url = url;
 		_sort = sort;
 		_order = order;
-		_groups = groups;
+		
+		var update = 0;
+		if (groups != _groups) {
+			_groups = groups;
+			update = 1;
+		}
 		
 		$.ajax({
 			'global': false,
-			'url': url + '?groupids=' + groups + '&sort=' + sort + '&order=' + order,
+			'url': url + '?groupids=' + groups + '&sort=' + sort + '&order=' + order + '&update=' + update,
 			'dataType': "json",
 			'success': function (data) {
 				data.graph.items.forEach(function(entry) {
@@ -20,27 +25,23 @@ var Timeline = new function() {
 				$('#graph').html('');
 				Timeline.draw(data.graph);
 				
-				$('#example tbody').html('');
-				$.each(data.table, function(index, item) {
-					$(item).appendTo('#example tbody');
-				});
-				$('#example').dataTable();
-				
-				// Move sort to backend
-				$('#example th').unbind('click.DT');
-				$('#example th').removeClass().addClass('sorting');
-				$('#example [name=' + sort +']').removeClass().addClass('sorting_' + order);
-    			$('#example th').click(function(e) {
-    				var asc = $(this).hasClass('sorting_asc');
-    				var column = $(this).attr('name');
+				if (data.table != false) {
+					$('#example tbody').html('');
+					$.each(data.table, function(index, item) {
+						$(item).appendTo('#example tbody');
+					});
+					$('#example').dataTable();
+				}
+
+    			$('#example').on( 'order.dt',  function () {
+    				var asc = $('#example .sorting_asc');
+    				var desc = $('#example .sorting_desc');
     				
-    				if (typeof column != 'undefined') {
-						if (asc) {
-							Timeline.sort(column, 'desc');
-						} else {
-							Timeline.sort(column, 'asc');
-						}
-					}
+    				if (asc.length == 1) {
+    					Timeline.sort(asc.attr('name'), 'asc');
+    				} else if (desc.length == 1) {
+    					Timeline.sort(desc.attr('name'), 'desc');
+    				}
     			});
 			}
 		});
@@ -51,7 +52,9 @@ var Timeline = new function() {
 	}
 	
 	this.sort = function(sort, order) {
-		Timeline.load(_url, _groups, sort, order);
+		if (typeof sort != 'undefined') {
+			Timeline.load(_url, _groups, sort, order);
+		}	
 	}
 	
 	this.draw = function(data) {

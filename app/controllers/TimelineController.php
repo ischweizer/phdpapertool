@@ -123,10 +123,15 @@ class TimelineController extends BaseController {
 
 			$laneId++;
 		}
+		
+		$table = false;
+		if (Input::has('update') && Input::get('update') == 1) {
+			$table = self::buildTable(self::getPapers($usersIds, $sort, $order));
+		}
 
 		return Response::json(array(
 			'graph' => $data,
-			'table' => self::buildTable(self::getPapers($usersIds, $sort, $order)),
+			'table' => $table,
 		));
 	}
 	
