@@ -43,19 +43,19 @@ class Submission extends Eloquent {
 		return $query->join('events', 'events.id', '=', 'submissions.event_id')->where(function($query)
 			{
 				$query->whereNull('abstract_submitted')
-					  ->whereBetween('abstract_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)', DB::raw('CURDATE()'))));
+					  ->whereBetween('abstract_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
 			})->orWhere(function($query)
 			{
 				$query->whereNull('paper_submitted')
-					  ->whereBetween('paper_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)', DB::raw('CURDATE()'))));
+					  ->whereBetween('paper_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
 			})->orWhere(function($query)
 			{
 				$query->whereNull('notification_result')
-					  ->whereBetween('notification_date', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)', DB::raw('CURDATE()'))));
+					  ->whereBetween('notification_date', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
 			})->orWhere(function($query)
 			{
 				$query->whereNull('camera_ready_submitted')
-					  ->whereBetween('camery_ready_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)', DB::raw('CURDATE()'))));
+					  ->whereBetween('camery_ready_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
 			})->select('submissions.*');
 	}
 
