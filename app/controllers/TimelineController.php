@@ -128,7 +128,8 @@ class TimelineController extends BaseController {
 			->groups($groupsIds)
 			->active()
 			->join('events', 'events.id', '=', 'submissions.event_id')
-			->select('submissions.*');
+			->select('submissions.*')
+			->orderBy('events.abstract_due', 'ASC');
 		if ($pastLimit > 0) {
 			$query = $query->where('end', '>', DB::raw('DATE_SUB(CURDATE(), INTERVAL '. $pastLimit .' MONTH)'));
 		}
