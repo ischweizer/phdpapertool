@@ -24,7 +24,7 @@
 
 	var margin = {top: 20, right: 15, bottom: 15, left: 160}
 	  , width = 960 - margin.left - margin.right
-	  , height = lanes.length*62 + margin.top
+	  , height = lanes.length * 12 + 70
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
@@ -43,12 +43,6 @@
 		.attr('width', width + margin.right + margin.left)
 		.attr('height', height + margin.top + margin.bottom)
 		.attr('class', 'chart');
-
-	chart.append('defs').append('clipPath')
-		.attr('id', 'clip')
-		.append('rect')
-			.attr('width', width)
-			.attr('height', mainHeight);
 
 	var mini = chart.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + (mainHeight + 60) + ')')
