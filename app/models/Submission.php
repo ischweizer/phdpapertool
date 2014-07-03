@@ -39,6 +39,17 @@ class Submission extends Eloquent {
                         ->where('author_paper.paper_id', DB::raw('submissions.paper_id'));
             });
         }
+	
+	public function scopeUsers($fluentQuery, $usersIds) {
+	    $fluentQuery->whereExists(function($query) use ($usersIds) {
+		$query->select(DB::raw(1))
+			->from('author_paper')
+			    ->join('authors', 'author_paper.author_id', '=', DB::raw('authors.id'))
+                            ->join('users', 'authors.id', '=', DB::raw('users.author_id'))
+                            ->whereIn('users.id', $usersIds)
+                        ->where('author_paper.paper_id', DB::raw('submissions.paper_id'));
+	    });
+	}
 
 	/**
 	 * Scope to select active submissions.

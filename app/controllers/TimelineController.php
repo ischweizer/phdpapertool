@@ -37,12 +37,17 @@ class TimelineController extends BaseController {
 			'items' => array(),
 		);
 
-		if(Input::has('groupids'))
-			$groupsIds = explode(',', Input::get('groupids'));
+		if(Input::has('groupids')) {
+		    $groupsIds = explode(',', Input::get('groupids'));
+		    $users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		    $usersIds = array();
+		    foreach($users as $user) 
+			$usersIds[] = $user->id;
+		}
 		else
-			$groupsIds = array(Auth::user()->group_id);
+			$usersIds = array(Auth::user()->id);	
 		$count = 0; $laneId = 0;
-		foreach($this->getSubmissions($groupsIds, $pastLimit, $futureLimit) as $submission) {
+		foreach($this->getSubmissions($usersIds, $pastLimit, $futureLimit) as $submission) {
 			$paper = $submission->paper;
 			$event = $submission->event;
 
@@ -116,16 +121,30 @@ class TimelineController extends BaseController {
 		return Response::json($data);
 	}
 	
-	private function getPapers() {
-		$user = Auth::user();
+	private function getPapers($sortByColumn = 'title', $order = 'asc') {
+		/*$user = Auth::user();
 		$user->load('author', 'author.papers', 'author.papers.activeSubmission', 'author.papers.activeSubmission.event');
-		return $user->author->papers;
+		return $user->author->papers;*/
+	    if(Input::has('groupids')) {
+		$groupsIds = explode(',', Input::get('groupids'));
+		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		$usersIds = array();
+		foreach($users as $user) 
+		    $usersIds[] = $user->id;
+	    } else
+		$usersIds = array(Auth::user()->id);
+	    
+	    return Paper::users($usersIds)->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+					  ->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+					  ->orderBy($sortByColumn, $order)
+					  ->get();    
 	}
 
-	private function getSubmissions($groupsIds, $pastLimit = 0, $futureLimit = 0) {
+	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'id', $order = 'asc') {
 		$query = Submission::with('paper', 'event')
 			//->currentUser()
-			->groups($groupsIds)
+			//->groups($groupsIds)
+			->users($usersIds)
 			->active()
 			->join('events', 'events.id', '=', 'submissions.event_id')
 			->select('submissions.*')
@@ -136,6 +155,6 @@ class TimelineController extends BaseController {
 		if ($futureLimit > 0) {
 			$query = $query->where('abstract_due', '<', DB::raw('DATE_ADD(CURDATE(), INTERVAL '. $futureLimit .' MONTH)'));
 		}
-		return $query->get();
+		return $query->orderBy($sortByColumn, $order)->get();
 	}
 }

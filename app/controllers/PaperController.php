@@ -11,6 +11,20 @@ class PaperController extends BaseController {
 		$temp = Author::all();
 		return View::make('paper/index', array('papers' => $papers, 'archived' => false));
 	}
+	/*public function getIndex() {
+	    if(Input::has('groupids')) {
+		$groupsIds = explode(',', Input::get('groupids'));
+		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		$usersIds = array();
+		foreach($users as $user) 
+		    $usersIds[] = $user->id;
+	    } else
+		$usersIds = array(Auth::user()->id);
+	    
+	    $papers = Paper::users($usersIds)->get();//Auth::user()->author->papers;
+	    //$temp = Author::all();
+	    return View::make('paper/index', array('papers' => $papers, 'archived' => false));
+	}*/
 	
 	/**
 	 * List all archived papers.
@@ -248,20 +262,43 @@ class PaperController extends BaseController {
 		$selectedauthors = array();
 		if (!is_null($paper)) {
 			$allowed = false;
+			$owner = false;
 			foreach ($paper->authors as $author) {
 				if ($author->id == Auth::user()->author->id) {
 					$allowed = true;
+					$owner = true;
 				}
 				$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			}
+
+			if(Auth::user()->isAdmin()){
+				if(Auth::user()->isLabLeader()){
+					$lab = Auth::user()->group->lab;
+					$groups = $lab->groups;
+					$usersBelow = User::getUsers($groups);
+				} else if(Auth::user()->isGroupLeader()){
+					$group = Auth::user()->group;
+					$usersBelow = User::getUsers(array($group));
+				}
+				foreach ($paper->authors as $author) {
+					foreach ($usersBelow as $userBelow) {
+						if($author->id == $userBelow->id){
+							$allowed = true;
+							break;
+						}
+					}
+				}	
+			}
+
+			if (!$allowed) {
+				App::abort(404);
 			}
 			$submissionEvent = null;
 			if ($paper->activeSubmission) {
 				$submissionEvent = $paper->activeSubmission->event;
 			}
 			$submission = $this->getSubmissionArray($submissionEvent);
-			if (!$allowed) {
-				App::abort(404);
-			}
+
 			$files = $paper->files()->get();
 
 			$fileNames = array();
@@ -291,7 +328,8 @@ class PaperController extends BaseController {
 				->with('files', $files)
 				->with('userNames', $userNames)
 				->with('fileNames', $fileNames)
-				->with('reviews', $reviews);
+				->with('reviews', $reviews)
+				->with('owner', $owner);
 				//->with('userFiles', $userFiles);
 
 		} else {

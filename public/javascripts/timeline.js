@@ -55,19 +55,19 @@ var Timeline = new function() {
 	}
 	
 	this.draw = function(data) {
-		var lanes = data.lanes
-		  , items = data.items
-		  , now = new Date();
+		var lanes = data.lanes, 
+			items = data.items, 
+			now = new Date();
 
-		var margin = {top: 20, right: 0, bottom: 15, left: 160}
-		  , width = $('#main').width() - margin.left - margin.right
-		  , height = lanes.length * 12 + 70
-		  , miniHeight = lanes.length * 12 + 50
-		  , mainHeight = height - miniHeight - 50;
+		var margin = {top: 20, right: 0, bottom: 15, left: 160},
+			width = $('#main').width() - margin.left - margin.right,
+			height = lanes.length * 12 + 70,
+			miniHeight = lanes.length * 12 + 50,
+			mainHeight = height - miniHeight - 50;
 
 		var x = d3.time.scale()
 			.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
-					 d3.max(items, function(d) { return d.end; })])
+				d3.max(items, function(d) { return d.end; })])
 			.range([0, width]);
 		var x1 = d3.time.scale().range([0, width]);
 
@@ -95,7 +95,7 @@ var Timeline = new function() {
 			.attr('y1', function(d) { return d3.round(y2(d.id)) + 0.5; })
 			.attr('x2', width)
 			.attr('y2', function(d) { return d3.round(y2(d.id)) + 0.5; })
-			.attr('stroke', function(d) { return d.label === '' ? 'white' : 'lightgray' });
+			.attr('stroke', function(d) { return d.label === '' ? 'white' : 'lightgray'; });
 
 		mini.append('g').selectAll('.laneText')
 			.data(lanes)
@@ -169,13 +169,13 @@ var Timeline = new function() {
 			.enter().append('path')
 			.attr('class', function(d) { return 'miniItem ' + d.class; })
 			.attr('d', function(d) { return d.path; });
-	}
+	};
 
 	// generates a single path for each item class in the mini display
 	// ugly - but draws mini 2x faster than append lines or line generator
 	// is there a better way to do a bunch of lines as a single path with d3?
 	this.getPaths = function(x, y2, items) {
-		var paths = {}, d, offset = .5 * y2(1) + 0.5, result = [];
+		var paths = {}, d, offset = 0.5 * y2(1) + 0.5, result = [];
 		for (var i = 0; i < items.length; i++) {
 			d = items[i];
 			if (!paths[d.class]) paths[d.class] = '';	
@@ -187,5 +187,5 @@ var Timeline = new function() {
 		}
 
 		return result;
-	}
-}
+	};
+};
