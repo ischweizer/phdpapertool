@@ -28,6 +28,7 @@
 					}
 					
 				 	Timeline.load('{{URL::action('TimelineController@getData')}}?groupids=' + selectedGroups.join( "," ));
+				 	$('#selectPapersBtn').dropdown('toggle');
 				});
 				
 				$('#selectAllGroups').change(function() {
