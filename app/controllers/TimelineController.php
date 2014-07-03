@@ -43,7 +43,7 @@ class TimelineController extends BaseController {
 				'class' => 'paper',
 				'lane' => $laneId,
 				'start' => $event->abstract_due->format($format),
-				'end' => $event->paper_due->format($format),
+				'end' => $event->paper_due->addDay()->format($format),
 			);
 
 			$data['items'][] = array(
@@ -52,7 +52,7 @@ class TimelineController extends BaseController {
 				'class' => 'noti',
 				'lane' => $laneId,
 				'start' => $event->paper_due->format($format),
-				'end' => $event->notification_date->format($format),
+				'end' => $event->notification_date->addDay()->format($format),
 			);
 
 			$data['items'][] = array(
@@ -61,17 +61,40 @@ class TimelineController extends BaseController {
 				'class' => 'cam',
 				'lane' => $laneId,
 				'start' => $event->notification_date->format($format),
-				'end' => $event->camera_ready_due->format($format),
+				'end' => $event->camera_ready_due->addDay()->format($format),
 			);
+
+			$eventStart = $event->start;
+			$eventEnd = $event->end;
+			if ($event->detail->isWorkshop()) {
+				$ceEvent = $event->detail->conferenceEdition->event;
+				if ($eventStart->gt($ceEvent->start)) {
+					$eventStart = $ceEvent->start;
+				}
+				if ($eventEnd->lt($ceEvent->end)) {
+					$eventEnd = $ceEvent->end;
+				}
+			}
 
 			$data['items'][] = array(
 				'id' => $count++,
 				'desc' => 'Conference',
 				'class' => 'con',
 				'lane' => $laneId,
-				'start' => $event->start->format($format),
-				'end' => $event->end->format($format),
+				'start' => $eventStart->format($format),
+				'end' => $eventEnd->addDay()->format($format),
 			);
+			
+			if ($event->detail->isWorkshop()) {
+				$data['items'][] = array(
+					'id' => $count++,
+					'desc' => 'Workshop',
+					'class' => 'workshop',
+					'lane' => $laneId,
+					'start' => $event->start->format($format),
+					'end' => $event->end->addDay()->format($format),
+				);
+			}
 
     		$laneId++;
     	}
