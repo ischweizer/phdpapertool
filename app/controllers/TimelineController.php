@@ -126,7 +126,7 @@ class TimelineController extends BaseController {
 
 		return Response::json(array(
 			'graph' => $data,
-			'table' => self::buildTable(self::getPapers($sort, $order)),
+			'table' => self::buildTable(self::getPapers($usersIds, $sort, $order)),
 		));
 	}
 	
@@ -198,18 +198,10 @@ class TimelineController extends BaseController {
 		return $result;			
 	}
 	
-	private function getPapers($sortByColumn = 'title', $order = 'asc') {
+	private function getPapers($usersIds, $sortByColumn = 'title', $order = 'asc') {
 		/*$user = Auth::user();
 		$user->load('author', 'author.papers', 'author.papers.activeSubmission', 'author.papers.activeSubmission.event');
-		return $user->author->papers;*/
-	    if(Input::has('groupids')) {
-		$groupsIds = explode(',', Input::get('groupids'));
-		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
-		$usersIds = array();
-		foreach($users as $user) 
-		    $usersIds[] = $user->id;
-	    } else
-		$usersIds = array(Auth::user()->id);
+		return $user->author->papers;*/	    
 	    
 	    return Paper::users($usersIds)->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
 					  ->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
