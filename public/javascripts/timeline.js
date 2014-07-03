@@ -10,6 +10,7 @@ var Timeline = new function() {
 					entry.end = new Date(entry.end);
 				});
 				
+				TimelineData = data;
 				$('#graph').html('');
 				Timeline.draw(data);
 			}
@@ -27,10 +28,19 @@ var Timeline = new function() {
 			miniHeight = lanes.length * 12 + 50,
 			mainHeight = height - miniHeight - 50;
 
-		var x = d3.time.scale()
-			.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
-				d3.max(items, function(d) { return d.end; })])
+		if(typeof timelineFrom != "undefined" && typeof timelineTo != "undefined"){
+			var monthMs = 2628000000;
+
+			var x = d3.time.scale()
+			.domain([d3.time.day(new Date(now.getTime()+timelineFrom*monthMs)),
+				d3.time.day(new Date(now.getTime()+timelineTo*monthMs))])
 			.range([0, width]);
+		} else {
+			var x = d3.time.scale()
+				.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
+					d3.max(items, function(d) { return d.end; })])
+				.range([0, width]);
+		}
 		var x1 = d3.time.scale().range([0, width]);
 
 		var ext = d3.extent(lanes, function(d) { return d.id; });

@@ -11,6 +11,11 @@
 		{{ HTML::style('javascripts/chosen/chosen.css'); }}
 		{{ HTML::script('javascripts/chosen/chosen.jquery.js'); }}
 		<script>
+
+			var timelineFrom = -3;
+			var timelineTo = 3;
+			var TimelineData;
+
 			$(document).ready(function() {
 				Timeline.load('{{URL::action('TimelineController@getData')}}');
 				$('#example').dataTable();
@@ -38,6 +43,41 @@
 				$('.dropdown-menu').click(function(e) {
 					e.stopPropagation();
 	  			});
+
+				$('#timelineMinus').click(function () {
+					timelineFrom *= 2;
+					timelineTo *= 2;
+					
+					$('#graph').html('');
+					Timeline.draw(TimelineData);
+				});
+
+				$('#timelinePlus').click(function () {
+					timelineFrom /= 2;
+					timelineTo /= 2;
+					
+					$('#graph').html('');
+					Timeline.draw(TimelineData);
+				});
+
+				$('#timelineBack').click(function () {
+					var step = Math.abs(timelineTo-timelineFrom)/4;
+					timelineFrom -= step;
+					timelineTo -= step;
+					
+					$('#graph').html('');
+					Timeline.draw(TimelineData);
+				});
+
+				$('#timelineForward').click(function () {
+					var step = Math.abs(timelineTo-timelineFrom)/4;
+					timelineFrom += step;
+					timelineTo += step;
+					
+					$('#graph').html('');
+					Timeline.draw(TimelineData);
+				});
+
 			});
 
 			function updateSubmission(paperId, field, success) {
@@ -103,13 +143,26 @@
 <h3 class="cat-title">Interactive Paper Timeline</h3>
 <div id="graph"></div>
 
-<ul class="list-inline" style="float:right">
-	<li><span class="paper">&#9608; </span>Paper Submission Stage</li>
-	<li><span class="noti">&#9608; </span>Notification Stage</li>
-	<li><span class="cam">&#9608; </span>Camera Ready Submission Stage</li>
-	<li><span class="con">&#9608; </span>Conference</li>
-	<li><span class="workshop">&#9608; </span>Workshop</li>
-</ul>
+<div style="float:right">
+
+	<ul class="list-inline" style="display:inline-block">
+		<li><span class="paper">&#9608; </span>Paper Submission Stage</li>
+		<li><span class="noti">&#9608; </span>Notification Stage</li>
+		<li><span class="cam">&#9608; </span>Camera Ready Submission Stage</li>
+		<li><span class="con">&#9608; </span>Conference</li>
+		<li><span class="workshop">&#9608; </span>Workshop</li>
+	</ul>
+
+	<div class="btn-group" style="display:inline-block">
+		<button type="button" class="btn btn-default" id="timelineMinus"><span class="glyphicon glyphicon-minus"></span></button>
+		<button type="button" class="btn btn-default" id="timelinePlus"><span class="glyphicon glyphicon-plus"></span></button>
+		<button type="button" class="btn btn-default" id="timelineBack"><span class="glyphicon glyphicon-chevron-left"></span></button>
+		<button type="button" class="btn btn-default" id="timelineForward"><span class="glyphicon glyphicon-chevron-right"></span></button>
+	</div>
+
+
+</div>
+
 
 <p>&nbsp;</p>
 <h3 class="cat-title">Papers</h3>
