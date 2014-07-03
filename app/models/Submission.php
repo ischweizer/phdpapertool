@@ -28,6 +28,17 @@ class Submission extends Eloquent {
 				  ->where('author_paper.author_id', '=', Auth::user()->author->id);
             });
 	}
+        
+        public function scopeGroups($fluentQuery, $groupsIds) {
+            $fluentQuery->whereExists(function ($query)  use ($groupsIds) {
+                $query->select(DB::raw(1))
+                        ->from('author_paper')
+                            ->join('authors', 'author_paper.author_id', '=', DB::raw('authors.id'))
+                            ->join('users', 'authors.id', '=', DB::raw('users.author_id'))
+                            ->whereIn('users.group_id', $groupsIds)
+                        ->where('author_paper.paper_id', DB::raw('submissions.paper_id'));
+            });
+        }
 
 	/**
 	 * Scope to select active submissions.

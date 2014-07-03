@@ -6,9 +6,37 @@
 		{{ HTML::style('stylesheets/dataTables.bootstrap.css'); }}
 		{{ HTML::script('javascripts/d3.v3.min.js')}}
 		{{ HTML::style('stylesheets/timeline.css'); }}
+		{{ HTML::script('javascripts/timeline.js'); }}
+			
+		{{ HTML::style('javascripts/chosen/chosen.css'); }}
+		{{ HTML::script('javascripts/chosen/chosen.jquery.js'); }}
 		<script>
 			$(document).ready(function() {
-				 $('#example').dataTable();
+				Timeline.load('{{URL::action('TimelineController@getData')}}');
+				$('#example').dataTable();
+				$( "#selectGroups" ).chosen();
+				$(".dropdown-menu .chosen-container").width('200px');
+				$(".dropdown-menu .chosen-container .search-field input").width('100px');
+				
+				$('#applyGroupBtn').click(function() {
+					var selectedGroups = $( "#selectGroups" ).val() || [];
+					if ($('#selectAllGroups').prop('checked')) {
+						selectedGroups = [];
+						$("#selectGroups option").each(function() {
+    						selectedGroups.push($(this).val());
+						});
+					}
+					
+				 	Timeline.load('{{URL::action('TimelineController@getData')}}?groupids=' + selectedGroups.join( "," ));
+				});
+				
+				$('#selectAllGroups').change(function() {
+					$( "#selectGroups" ).prop('disabled', $(this).prop('checked')).trigger('chosen:updated');
+				});
+				
+				$('.dropdown-menu').click(function(e) {
+					e.stopPropagation();
+	  			});
 			});
 
 			function updateSubmission(paperId, field, success) {
@@ -43,8 +71,6 @@
 					}
 				});
 			}
-			
-			var dataURL='{{URL::action('TimelineController@getData')}}';
 		</script>
 @stop
 
@@ -53,10 +79,26 @@
    		<h1>Timeline</h1>
 		</div>
 
-<h3 class="cat-title">Interactive Paper Timeline</h3>
-<div id="graph">
-	{{ HTML::script('javascripts/timeline.js'); }}
+<div id="paperDropdown" class="dropdown pull-right">
+	<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Papers</button>
+	<div class="dropdown-menu panel-body" role="menu" aria-labelledby="selectPapersBtn">
+			<select class="form-control" id="selectGroups" data-placeholder="Select groups" multiple>
+				@foreach ($groups as $group)
+					<option value="{{{ $group->id }}}">{{{ $group->name }}}</option>
+				@endforeach
+			</select>
+			<div class="checkbox">
+    			<label>
+      				<input id="selectAllGroups" type="checkbox"> Select all
+    			</label>
+  			</div>
+			<hr>
+			<button id="applyGroupBtn" class="btn btn-primary" style="width: 100%">Apply</button>
+	</div>
 </div>
+
+<h3 class="cat-title">Interactive Paper Timeline</h3>
+<div id="graph"></div>
 <p>&nbsp;</p>
 <h3 class="cat-title">Papers</h3>
 			<table id="example" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
