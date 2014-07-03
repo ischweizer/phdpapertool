@@ -41,9 +41,8 @@ class TimelineController extends BaseController {
 		    $groupsIds = explode(',', Input::get('groupids'));
 		    $users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
 		    $usersIds = array();
-		    foreach($users as $user) {
+		    foreach($users as $user) 
 			$usersIds[] = $user->id;
-		    }			    
 		}
 		else
 			$usersIds = array(Auth::user()->id);	
@@ -123,9 +122,19 @@ class TimelineController extends BaseController {
 	}
 	
 	private function getPapers() {
-		$user = Auth::user();
+		/*$user = Auth::user();
 		$user->load('author', 'author.papers', 'author.papers.activeSubmission', 'author.papers.activeSubmission.event');
-		return $user->author->papers;
+		return $user->author->papers;*/
+	    if(Input::has('groupids')) {
+		$groupsIds = explode(',', Input::get('groupids'));
+		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		$usersIds = array();
+		foreach($users as $user) 
+		    $usersIds[] = $user->id;
+	    } else
+		$usersIds = array(Auth::user()->id);
+	    
+	    return Paper::users($usersIds)->get();//Auth::user()->author->papers;	    
 	}
 
 	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0) {
