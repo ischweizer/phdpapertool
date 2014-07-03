@@ -11,6 +11,20 @@ class PaperController extends BaseController {
 		$temp = Author::all();
 		return View::make('paper/index', array('papers' => $papers, 'archived' => false));
 	}
+	/*public function getIndex() {
+	    if(Input::has('groupids')) {
+		$groupsIds = explode(',', Input::get('groupids'));
+		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
+		$usersIds = array();
+		foreach($users as $user) 
+		    $usersIds[] = $user->id;
+	    } else
+		$usersIds = array(Auth::user()->id);
+	    
+	    $papers = Paper::users($usersIds)->get();//Auth::user()->author->papers;
+	    //$temp = Author::all();
+	    return View::make('paper/index', array('papers' => $papers, 'archived' => false));
+	}*/
 	
 	/**
 	 * List all archived papers.

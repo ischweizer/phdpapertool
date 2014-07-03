@@ -24,6 +24,16 @@ class Paper extends Eloquent {
 		return $this->hasOne('Submission')->where('active', '=', 1);
 	}
 	
+	public function scopeUsers($fluentQuery, $usersIds) {
+	    $fluentQuery->whereExists(function($query) use ($usersIds) {
+		$query->select(DB::raw(1))
+			->from('papers')
+			->join('author_paper', 'papers.id', '=', DB::raw('author_paper.paper_id'))
+			->join('users', 'author_paper.author_id', '=', DB::raw('users.author_id'))
+			->whereIn('users.id', $usersIds);
+	    });
+	}
+	
 	/**
 	 * Validate the given input.
 	 *
