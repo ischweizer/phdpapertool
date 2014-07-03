@@ -9,7 +9,16 @@ class PaperController extends BaseController {
 	public function getIndex() {
 		$papers = Auth::user()->author->papers;
 		$temp = Author::all();
-		return View::make('paper/index', array('papers' => $papers));
+		return View::make('paper/index', array('papers' => $papers, 'archived' => false));
+	}
+	
+	/**
+	 * List all archived papers.
+	 */
+	public function getArchived() {
+		$papers = Auth::user()->author->archivedPapers;
+		$temp = Author::all();
+		return View::make('paper/index', array('papers' => $papers, 'archived' => true));
 	}
 
 	/**
@@ -485,6 +494,33 @@ class PaperController extends BaseController {
 			return Response::json(array('success' => !$error, 'error' => $error));
 		} else {
 			return null;
+		}
+	}
+	
+	public function postArchivePaper($id) {
+		if (!is_null($id)) {
+			$paper = Paper::find($id);
+			if (!$paper || !$this->checkAccess($paper)) {
+				App::abort(404);
+			}
+			if (Input::has('archivepaper') && Input::get('archivepaper') == 1) {
+				$paper->archived = 1;
+			} else {
+				$paper->archived = 0;
+			}
+			
+			$success = $paper->save();
+			
+			// check for success
+			if (!$success) {
+				return Redirect::action('PaperController@getIndex')->
+					withErrors(new MessageBag(array('Sorry, couldn\'t archive paper.')));
+			}
+			return (Input::has('paperBackTarget')) ? 
+				Redirect::to(Input::get('paperBackTarget')) : 
+				Redirect::action('PaperController@getIndex');
+		} else {
+			App::abort(404);
 		}
 	}
 

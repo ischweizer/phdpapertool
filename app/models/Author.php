@@ -11,7 +11,12 @@ class Author extends Eloquent {
 
 	public function papers()
 	{
-		return $this->belongsToMany('Paper')->withPivot('order_position');
+		return $this->belongsToMany('Paper')->withPivot('order_position')->where('archived', '<>', '1');
+	}
+	
+	public function archivedPapers()
+	{
+		return $this->belongsToMany('Paper')->where('archived', '<>', '0');
 	}
 
 	public function scopeNotAdmin($query) {
