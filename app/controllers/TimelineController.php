@@ -8,10 +8,21 @@ use Carbon\Carbon;
  */
 class TimelineController extends BaseController {
 	public function getIndex($id = null) {
+		$user = Auth::user();
+    	$groups = array();
+    	if ($user->isLabLeader()) {
+    		$lab = array($user->group->lab);
+    		$groups = Group::getGroupsFromLabs($lab);
+    	} elseif ($user->isGroupLeader()) {
+    		$groups[] = $user->group;
+    	}
+    //die(var_dump($groups));
 		return View::make(
 			'timeline', 
 			array(	
 				'papers' => self::getPapers(),
+				'groups' => $groups,
+				'selectedGroups' => array(),
 			)
 		);
 	}
