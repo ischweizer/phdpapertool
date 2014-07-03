@@ -70,8 +70,6 @@ var Timeline = new function() {
 				} else {
 					return '<div align="right">'+d.label+"</p>";
 				}
-				if (d.label.length >)
-				return "<p align='right'>"+d.label+"</p>";
 			})
 			.attr('x', -160)
 			.attr('y', function(d) { return y2(d.id); })
