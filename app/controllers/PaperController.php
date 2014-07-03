@@ -22,7 +22,8 @@ class PaperController extends BaseController {
 		$paper = null;
 		$submissionEvent = null;
 		$files = array();
-
+		$paperAuthors = $this->getOldSelectedAuthors();
+		
 		// get authors
 		foreach ($autorList as $author) {
 			if (Auth::user()->author->id != $author->id) {
@@ -39,22 +40,24 @@ class PaperController extends BaseController {
 				if (!$this->checkAccess($paper)) {
 					App::abort(404);
 				}
-				$paperAuthors = $paper->authors;
-				foreach ($paperAuthors as $author) {
-					if (array_key_exists($author->id, $selectedauthors)) {
-						unset($selectedauthors[$author->id]);
-					}
-					$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
-					if (array_key_exists($author->id, $authors)) {
-						unset($authors[$author->id]);
-					}
-				}
+				$paperAuthors = (count($paperAuthors) == 0) ? $paper->authors : $paperAuthors;
+				
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
 			}
 			
 			$files = $paper->files()->get();
+		}
+		
+		foreach ($paperAuthors as $author) {
+			if (array_key_exists($author->id, $selectedauthors)) {
+				unset($selectedauthors[$author->id]);
+			}
+			$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
+			if (array_key_exists($author->id, $authors)) {
+				unset($authors[$author->id]);
+			}
 		}
 
 		$sessionEvent = $this->getSessionEvent();
@@ -65,6 +68,20 @@ class PaperController extends BaseController {
 		$submission = $this->getSubmissionArray($submissionEvent);
 
 		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission, 'files' => $files));
+	}
+	
+	private function getOldSelectedAuthors() {
+		$selectedAuthors = array();
+		if (Session::getOldInput('selectedauthors')) {
+			$authors = Session::getOldInput('selectedauthors');
+			foreach ($authors as $authorid) {
+				$author = Author::find($authorid);
+				if ($author != null) {
+					array_push($selectedAuthors, $author);
+				}
+			}
+		}
+		return $selectedAuthors;
 	}
 
 	/**
@@ -304,6 +321,10 @@ class PaperController extends BaseController {
 		$currentSubmissionEvent = null;
 		if ($paper->activeSubmission) {
 			$currentSubmissionEvent = $paper->activeSubmission->event;
+			if ($paper->activeSubmission->camera_ready_submitted) {
+				// no beautiful UI, because the user will never be navigated here by us
+				return "The submission for this paper finished successfully already.";
+			}
 		}
 		$newSubmissionEvent = $this->getSessionEvent();
 
@@ -322,6 +343,12 @@ class PaperController extends BaseController {
 			App::abort(404);
 		}
 		$oldActiveSubmission = $paper->activeSubmission;
+		
+		if ($paper->activeSubmission && $paper->activeSubmission->camera_ready_submitted) {
+			// no beautiful UI, because the user will never be navigated here by us
+			return "The submission for this paper finished successfully already.";
+		}
+
 		$submission = null;
 		$submissionKind = Input::get('submissionKind');
 		if($submissionKind != 'none') {
@@ -381,6 +408,84 @@ class PaperController extends BaseController {
 			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
 		} else
 			return App::abort(404);
+	}
+
+	/**
+	 * Target for asynchronous submission updates.
+	 *
+	 * @param $paperId the paper id whose submission to update
+	 * @param $type which submission field to set
+	 * @param $success 0/1
+	 * @return ajax object with success field and in case of success=false a error string
+	 */
+	public function getUpdateSubmission($paperId, $type, $success) {
+		if (Request::ajax()) {
+			$paper = Paper::find($paperId);
+			// paper has to exist be editable by the current user and have an active submission
+			if (!$paper || !$this->checkAccess($paper) || !$paper->activeSubmission) {
+				App::abort(404);
+			}
+			// success must be 0/1
+			if (!is_numeric($success) || ($success != 0 && $success != 1)) {
+				App::abort(404);
+			}
+			$submission = $paper->activeSubmission;
+			$error = null;
+			// no date checks, as it generally is allowed to set fields for future dates
+			// it only is an error if the field is already set
+			// -left out fields will be set to '1'
+			// -it cannot be that a previous field is '0' otherwise the submission would be inactive
+			switch($type) {
+				case 'abstract':
+					if ($submission->abstract_submitted !== null) {
+						$error = 'Abstract submitted is already set.';
+					} else {
+						$submission->abstract_submitted = $success;
+					}
+					break;
+				case 'paper':
+					if ($submission->paper_submitted !== null) {
+						$error = 'Paper submitted is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = $success;
+					}
+					break;
+				case 'notification':
+					if ($submission->notification_result !== null) {
+						$error = 'Notification result is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = 1;
+						$submission->notification_result = $success;
+					}
+					break;
+				case 'camera':
+					if ($submission->camera_ready_submitted !== null) {
+						$error = 'Camera ready submitted is already set.';
+					} else {
+						$submission->abstract_submitted = 1;
+						$submission->paper_submitted = 1;
+						$submission->notification_result = 1;
+						$submission->camera_ready_submitted = $success;
+					}
+					break;
+				default:
+					App::abort(404);
+			}
+			if (!$error) {
+				if ($success == 0) {
+					$submission->active = 0;
+					$submission->finished_at = new Carbon;
+				}
+				if (!$submission->save()) {
+					$error = 'Sorry, couldn\'t update submission in database.';
+				}
+			}
+			return Response::json(array('success' => !$error, 'error' => $error));
+		} else {
+			return null;
+		}
 	}
 
 	/**

@@ -71,7 +71,7 @@
                             <a href="leaveGroupLab">leave lab/group</a>
                         @endif
                     </div>
-                @else
+                @elseif(Auth::user()->group_id != 1)
                     <div class="form-group">
                         <label>You are not enrolled in a lab/group</label>
                         <p>

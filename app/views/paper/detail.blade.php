@@ -13,7 +13,13 @@
 			.form-control[readonly] {
 				background-color:#fff;
 			}
-			.datepicker{z-index:1151 !important;}
+			.modal-open .datepicker {
+				z-index:1151 !important;
+			}
+
+			.modal-open .has-feedback .input-group .form-control-feedback {
+				z-index: 1152;
+			}
 		</style>
 		
 		<script>
@@ -146,9 +152,14 @@
 		</div>
 
 		<div class="form-group">
-			{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
-			{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
-			{{ Form::close() }}
+			@if(!$paper->activeSubmission || !$paper->activeSubmission->camera_ready_submitted)
+				{{ Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id))) }}
+				{{ Form::hidden('paperRetargetBackTarget', URL::action('PaperController@getDetails', array('id' => $paper->id))) }}
+				{{ Form::label('submissionKind', 'Current Submission Target') }} <button type="submit" class="btn btn-xs btn-primary">Change Target</button>
+				{{ Form::close() }}
+			@else
+				{{ Form::label('submissionKind', 'Successfully Finished Submission') }}
+			@endif
 			<div class="form-control-static-bordered">
 			@if ($submission['kind'] == 'ConferenceEdition')
 				{{ Form::open(array('action' => array('ConferenceEditionController@getDetails', 'id' => $submission['activeDetailID']), 'method' => 'GET')) }}
@@ -167,7 +178,7 @@
 			@endif
 			</div>
 		</div>
-		
+		{{--
 		<div class="form-group">
 
 			{{ Form::label('reviews', 'Review Requests') }}
@@ -235,19 +246,11 @@
 						</tr>
 					@endforeach
 				</tbody>
-				{{--
-				<tfoot>
-					<tr>
-						<th>Title</th>
-						<th>Abstract</th>
-						<th>Action</th>
-					 </tr>
-				</tfoot>
-				--}}
+
 			</table>
 			
 		</div>
-
+--}}
 		{{-- TODO show submission history --}}
 		
 		<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

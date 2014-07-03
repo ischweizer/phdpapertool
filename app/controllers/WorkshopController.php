@@ -188,4 +188,17 @@ class WorkshopController extends BaseController {
 			return null;
 		}
 	}
+	
+	/**
+	 * Open paper creation view with given workshop
+	 */
+	public function getNewPaper($id = null) {
+	    if (!is_null($id)) {
+	    	Session::forget('conference_edition_id');
+		    Session::set('workshop_id', $id);
+		    return Redirect::action('PaperController@anyEdit');
+	    } else {
+			App::abort(404);
+		}
+    }
 }
