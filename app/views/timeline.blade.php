@@ -113,18 +113,18 @@
 
 <p>&nbsp;</p>
 <h3 class="cat-title">Papers</h3>
-			<table id="example" class="table table-bordered table-hover" cellspacing="0" width="100%">
-			  <thead>
-				  <tr>
-					  <th name='title'>Paper</th>
-					  <th name='abstract_due'>Abstract Submission Deadline</th>
-					  <th name='paper_due'>Paper Submission Deadline</th>
-					  <th name='notification_date'>Notification Date</th>
-					  <th name='camera_ready_due'>Camera Ready Submission Deadline</th>
-					  <th>Action</th>
-				  </tr>
-			  </thead>
-	 
-			  <tbody></tbody>
-			</table>
+<table id="example" class="table table-bordered table-hover" cellspacing="0" width="100%">
+  <thead>
+	  <tr>
+		  <th name='title'>Paper</th>
+		  <th name='abstract_due'>Abstract Submission Deadline</th>
+		  <th name='paper_due'>Paper Submission Deadline</th>
+		  <th name='notification_date'>Notification Date</th>
+		  <th name='camera_ready_due'>Camera Ready Submission Deadline</th>
+		  <th>Action</th>
+	  </tr>
+  </thead>
+
+  <tbody></tbody>
+</table>
 @stop
