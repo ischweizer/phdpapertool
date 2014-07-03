@@ -21,8 +21,8 @@ var Timeline = new function() {
 		  , items = data.items
 		  , now = new Date();
 
-		var margin = {top: 20, right: 15, bottom: 15, left: 160}
-		  , width = 960 - margin.left - margin.right
+		var margin = {top: 20, right: 0, bottom: 15, left: 160}
+		  , width = $('#main').width() - margin.left - margin.right
 		  , height = lanes.length * 12 + 70
 		  , miniHeight = lanes.length * 12 + 50
 		  , mainHeight = height - miniHeight - 50;
