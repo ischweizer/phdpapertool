@@ -24,7 +24,7 @@
 
 	var margin = {top: 20, right: 15, bottom: 15, left: 160}
 	  , width = 960 - margin.left - margin.right
-	  , height = lanes.length*80 + 135 - margin.top - margin.bottom
+	  , height = lanes.length*62 + margin.top
 	  , miniHeight = lanes.length * 12 + 50
 	  , mainHeight = height - miniHeight - 50;
 
@@ -50,51 +50,11 @@
 			.attr('width', width)
 			.attr('height', mainHeight);
 
-	var main = chart.append('g')
-		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-		.attr('width', width)
-		.attr('height', mainHeight)
-		.attr('class', 'main');
-
 	var mini = chart.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + (mainHeight + 60) + ')')
 		.attr('width', width)
 		.attr('height', miniHeight)
 		.attr('class', 'mini');
-
-	// draw the lanes for the main chart
-	main.append('g').selectAll('.laneLines')
-		.data(lanes)
-		.enter().append('line')
-		.attr('x1', 0)
-		.attr('y1', function(d) { return d3.round(y1(d.id)) + 0.5; })
-		.attr('x2', width)
-		.attr('y2', function(d) { return d3.round(y1(d.id)) + 0.5; })
-		.attr('stroke', function(d) { return d.label === '' ? 'white' : 'lightgray' });
-
-	/*main.append('g').selectAll('.laneText')
-		.data(lanes)
-		.enter().append('text')
-		.text(function(d) { return d.label; })
-		.attr('x', -10)
-		.attr('y', function(d) { return y1(d.id + .5); })
-		.attr('dy', '0.5ex')
-		.attr('text-anchor', 'end')
-		.attr('class', 'laneText');*/
-		
-	main.append('g').selectAll('.laneText')
-		.data(lanes)
-		.enter().append('foreignObject')
-		.attr("width", "140")
-    	.attr("height", "130")
-		.html(function(d) { 
-        	return "<p align='right'>"+d.label+"</p>";
-    	})
-		.attr('x', -150)
-		.attr('y', function(d) { return y1(d.id + .1); })
-		.attr('dy', '0.5ex')
-		.attr('text-anchor', 'end')
-		.attr('class', 'laneText');	
 
 	// draw the lanes for the mini chart
 	mini.append('g').selectAll('.laneLines')
@@ -108,10 +68,14 @@
 
 	mini.append('g').selectAll('.laneText')
 		.data(lanes)
-		.enter().append('text')
-		.text(function(d) { return d.label; })
-		.attr('x', -10)
-		.attr('y', function(d) { return y2(d.id + .5); })
+		.enter().append('foreignObject')
+		.attr("width", "140")
+    	.attr("height", "70")
+		.html(function(d) { 
+        	return "<p align='right'>"+d.label+"</p>";
+    	})
+		.attr('x', -160)
+		.attr('y', function(d) { return y2(d.id); })
 		.attr('dy', '0.5ex')
 		.attr('text-anchor', 'end')
 		.attr('class', 'laneText');
@@ -145,19 +109,6 @@
 		.tickFormat(d3.time.format('%b - Week %W'))
 		.tickSize(15, 0, 0);
 
-	main.append('g')
-		.attr('transform', 'translate(0,' + mainHeight + ')')
-		.attr('class', 'main axis date')
-		.call(x1DateAxis);
-
-	main.append('g')
-		.attr('transform', 'translate(0,0.5)')
-		.attr('class', 'main axis month')
-		.call(x1MonthAxis)
-		.selectAll('text')
-			.attr('dx', 5)
-			.attr('dy', 12);
-
 	mini.append('g')
 		.attr('transform', 'translate(0,' + miniHeight + ')')
 		.attr('class', 'axis date')
@@ -170,13 +121,6 @@
 		.selectAll('text')
 			.attr('dx', 5)
 			.attr('dy', 12);
-
-	// draw a line representing today's date
-	main.append('line')
-		.attr('y1', 0)
-		.attr('y2', mainHeight)
-		.attr('class', 'main todayLine')
-		.attr('clip-path', 'url(#clip)');
 	
 	mini.append('line')
 		.attr('x1', x(now) + 0.5)
@@ -185,126 +129,12 @@
 		.attr('y2', miniHeight)
 		.attr('class', 'todayLine');
 
-	// draw the items
-	var itemRects = main.append('g')
-		.attr('clip-path', 'url(#clip)');
-
 	mini.append('g').selectAll('miniItems')
 		.data(getPaths(items))
 		.enter().append('path')
 		.attr('class', function(d) { return 'miniItem ' + d.class; })
 		.attr('d', function(d) { return d.path; });
 
-	// invisible hit area to move around the selection window
-	mini.append('rect')
-		.attr('pointer-events', 'painted')
-		.attr('width', width)
-		.attr('height', miniHeight)
-		.attr('visibility', 'hidden')
-		.on('mouseup', moveBrush);
-
-	// draw the selection area
-	var brush = d3.svg.brush()
-		.x(x)
-		.extent([d3.time.monday(now),d3.time.saturday.ceil(now)])
-		.on("brush", display);
-
-	mini.append('g')
-		.attr('class', 'x brush')
-		.call(brush)
-		.selectAll('rect')
-			.attr('y', 1)
-			.attr('height', miniHeight - 1);
-
-	mini.selectAll('rect.background').remove();
-	display();
-
-function display () {
-	var rects, labels
-	  , minExtent = brush.extent()[0].getTime()
-	  , maxExtent = brush.extent()[1].getTime()
-	  , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent});
-
-	//mini.select('.brush').call(brush.extent([minExtent, maxExtent]));		
-
-	x1.domain([minExtent, maxExtent]);
-
-	if ((maxExtent - minExtent) > 1468800000) {
-		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))		
-	}
-	else if ((maxExtent - minExtent) > 172800000) {
-		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-	}
-	else {
-		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
-	}
-
-
-	//x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
-
-	// shift the today line
-	main.select('.main.todayLine')
-		.attr('x1', x1(now) + 0.5)
-		.attr('x2', x1(now) + 0.5);
-
-	// update the axis
-	main.select('.main.axis.date').call(x1DateAxis);
-	main.select('.main.axis.month').call(x1MonthAxis)
-		.selectAll('text')
-			.attr('dx', 5)
-			.attr('dy', 12);
-
-	// upate the item rects
-	rects = itemRects.selectAll('rect')
-		.data(visItems, function (d) { return d.id; })
-		.attr('x', function(d) { return x1(d.start); })
-		.attr('width', function(d) { return x1(d.end) - x1(d.start); });
-		//console.log(rects);
-
-	rects.enter().append('rect')
-		.attr('x', function(d) { return x1(d.start); })
-		.attr('y', function(d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
-		.attr('width', function(d) { return x1(d.end) - x1(d.start); })
-		.attr('height', function(d) { return .8 * y1(1); })
-		.attr('class', function(d) { return 'mainItem ' + d.class; });
-		
-	/*rects.enter().append('rect')
-		.attr('x', function(d) { return x1(d.end - 1000*60*60*24); })
-		.attr('y', function(d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
-		.attr('width', function(d) { return (x1(d.end) - x1(d.start))*1000*60*60*24/(d.end-d.start); })
-		.attr('height', function(d) { return .8 * y1(1); })
-		.attr('class', function(d) { return 'mainItem '; });	*/
-
-	rects.exit().remove();
-
-	// update the item labels
-	labels = itemRects.selectAll('text')
-		.data(visItems, function (d) { return d.id; })
-		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; });
-				
-	labels.enter().append('text')
-		.text(function (d) { return d.desc; })
-		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; })
-		.attr('y', function(d) { return y1(d.lane) + .4 * y1(1) + 0.5; })
-		.attr('text-anchor', 'start')
-		.attr('class', 'itemLabel');
-
-	labels.exit().remove();
-}
-
-function moveBrush () {
-	var origin = d3.mouse(this)
-	  , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
-	  , point = Math.min(Math.max(x.invert(origin[0]).getTime(), x.domain()[0].getTime() + halfExtent), x.domain()[1].getTime() - halfExtent)
-	  , start = new Date(point - halfExtent)
-	  , end = new Date(point + halfExtent);
-
-	mini.select('.brush').call(brush.extent([start,end]));
-	display();
-}
 
 // generates a single path for each item class in the mini display
 // ugly - but draws mini 2x faster than append lines or line generator
