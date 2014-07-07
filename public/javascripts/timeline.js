@@ -22,7 +22,7 @@ var Timeline = new function() {
 					entry.end = new Date(entry.end);
 				});
 				
-				TimelineData = data;
+				TimelineData = data.graph;
 				$('#graph').html('');
 				Timeline.draw(data.graph);
 				
@@ -191,14 +191,20 @@ var Timeline = new function() {
 		var paths = {}, d, offset = 0.5 * y2(1) + 0.5, result = [];
 		for (var i = 0; i < items.length; i++) {
 			d = items[i];
+
 			if (!paths[d.class]) paths[d.class] = '';	
-			paths[d.class] += ['M',x(d.start),(y2(d.lane) + offset),'H',x(d.end)].join(' ');
+
+			var temp = x(d.start);
+			
+
+			paths[d.class] += ['M',(x(d.start) > 0 ? x(d.start) : 0),(y2(d.lane) + offset),'H',(x(d.end) > 0 ? x(d.end) : 0)].join(' ');
+			//console.log(paths[d.class]);
 		}
 
 		for (var className in paths) {
+			//console.log(paths[className]);
 			result.push({class: className, path: paths[className]});
 		}
-
 		return result;
 	};
 };
