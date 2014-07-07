@@ -14,6 +14,8 @@
 
 			var timelineFrom = -3;
 			var timelineTo = 3;
+			var zoomSize = 1.5;
+			var stepSize = 0.25;
 			var TimelineData;
 
 			$(document).ready(function() {
@@ -45,34 +47,50 @@
 	  			});
 
 				$('#timelineMinus').click(function () {
-					timelineFrom *= 2;
-					timelineTo *= 2;
+					var dist = Math.abs(timelineTo-timelineFrom);
+
+					var mult = zoomSize;
+
+					var maxDist = 16;
+
+					if(dist >= maxDist/mult){
+						mult = maxDist/dist;
+						$(this).attr("disabled", true);
+					}
+
+					timelineFrom *= mult;
+					timelineTo *= mult;
 					
 					$('#graph').html('');
 					Timeline.draw(TimelineData);
 				});
 
 				$('#timelinePlus').click(function () {
-					timelineFrom /= 2;
-					timelineTo /= 2;
+
 					
+
+					timelineFrom /= zoomSize;
+					timelineTo /= zoomSize;
+
+					$('#timelineMinus').attr('disabled', false);
+
 					$('#graph').html('');
 					Timeline.draw(TimelineData);
 				});
 
 				$('#timelineBack').click(function () {
-					var step = Math.abs(timelineTo-timelineFrom)/4;
-					timelineFrom -= step;
-					timelineTo -= step;
+					var dist = Math.abs(timelineTo-timelineFrom);
+					timelineFrom -= dist*stepSize;
+					timelineTo -= dist*stepSize;
 					
 					$('#graph').html('');
 					Timeline.draw(TimelineData);
 				});
 
 				$('#timelineForward').click(function () {
-					var step = Math.abs(timelineTo-timelineFrom)/4;
-					timelineFrom += step;
-					timelineTo += step;
+					var dist = Math.abs(timelineTo-timelineFrom);
+					timelineFrom += dist*stepSize;
+					timelineTo += dist*stepSize;
 					
 					$('#graph').html('');
 					Timeline.draw(TimelineData);
