@@ -1,21 +1,62 @@
 var Timeline = new function() {
-	this.load = function(url) {
+	var _url, _sort, _order, _groups;
+	
+	this.load = function(url, groups, sort, order) {
+		_url = url;
+		_sort = sort;
+		_order = order;
+		
+		var update = 0;
+		if (groups != _groups) {
+			_groups = groups;
+			update = 1;
+		}
+		
 		$.ajax({
 			'global': false,
-			'url': url,
+			'url': url + '?groupids=' + groups + '&sort=' + sort + '&order=' + order + '&update=' + update,
 			'dataType': "json",
 			'success': function (data) {
-				data.items.forEach(function(entry) {
+				data.graph.items.forEach(function(entry) {
 					entry.start = new Date(entry.start);
 					entry.end = new Date(entry.end);
 				});
 				
 				TimelineData = data;
 				$('#graph').html('');
-				Timeline.draw(data);
+				Timeline.draw(data.graph);
+				
+				if (data.table != false) {
+					$('#example tbody').html('');
+					$.each(data.table, function(index, item) {
+						$(item).appendTo('#example tbody');
+					});
+					$('#example').dataTable();
+				}
+
+    			$('#example').on( 'order.dt',  function () {
+    				var asc = $('#example .sorting_asc');
+    				var desc = $('#example .sorting_desc');
+    				
+    				if (asc.length == 1) {
+    					Timeline.sort(asc.attr('name'), 'asc');
+    				} else if (desc.length == 1) {
+    					Timeline.sort(desc.attr('name'), 'desc');
+    				}
+    			});
 			}
 		});
 	}; 
+	
+	this.reloadGroups = function(groups) {
+		Timeline.load(_url, groups, _sort, _order);
+	}
+	
+	this.sort = function(sort, order) {
+		if (typeof sort != 'undefined') {
+			Timeline.load(_url, _groups, sort, order);
+		}	
+	}
 	
 	this.draw = function(data) {
 		var lanes = data.lanes, 

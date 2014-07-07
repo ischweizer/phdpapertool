@@ -16,11 +16,10 @@ class TimelineController extends BaseController {
 		} elseif ($user->isGroupLeader()) {
 			$groups[] = $user->group;
 		}
-	//die(var_dump($groups));
+		
 		return View::make(
 			'timeline', 
 			array(	
-				'papers' => self::getPapers(),
 				'groups' => $groups,
 				'selectedGroups' => array(),
 			)
@@ -36,6 +35,13 @@ class TimelineController extends BaseController {
 			'lanes' => array(),
 			'items' => array(),
 		);
+		
+		$sort = '';
+		$order = '';
+		if (Input::has('sort') && Input::has('order')) {
+			$sort = Input::get('sort');
+			$order = Input::get('order');
+		}
 
 		if(Input::has('groupids')) {
 		    $groupsIds = explode(',', Input::get('groupids'));
@@ -47,7 +53,7 @@ class TimelineController extends BaseController {
 		else
 			$usersIds = array(Auth::user()->id);	
 		$count = 0; $laneId = 0;
-		foreach($this->getSubmissions($usersIds, $pastLimit, $futureLimit) as $submission) {
+		foreach($this->getSubmissions($usersIds, $pastLimit, $futureLimit, $sort, $order) as $submission) {
 			$paper = $submission->paper;
 			$event = $submission->event;
 
@@ -117,35 +123,121 @@ class TimelineController extends BaseController {
 
 			$laneId++;
 		}
+		
+		$table = false;
+		if (Input::has('update') && Input::get('update') == 1) {
+			$table = self::buildTable(self::getPapers($usersIds, $sort, $order));
+		}
 
-		return Response::json($data);
+		return Response::json(array(
+			'graph' => $data,
+			'table' => $table,
+		));
 	}
 	
-	private function getPapers() {
+	private function buildTable($papers) {
+		$result = array();
+		foreach ($papers as $paper) {
+			$title = '<td>'. $paper->title. '</td>';
+			$abstract = '<td></td>';
+			$papersubmit = '<td></td>';
+			$notification = '<td></td>';
+			$camera = '<td></td>';
+			
+			if ($paper->activeSubmission) {
+				$abstract = self::buildHTML($paper, 'abstract', 'abstract_submitted', 'abstract_due', $paper->activeSubmission->isAbstractReadyToSet());
+				$papersubmit = self::buildHTML($paper, 'paper', 'paper_submitted', 'paper_due',$paper->activeSubmission->isPaperReadyToSet());
+				$notification = self::buildHTML($paper, 'notification', 'notification_result', 'notification_date', $paper->activeSubmission->isNotificationReadyToSet());
+				$camera = self::buildHTML($paper, 'camera', 'camera_ready_submitted', 'camera_ready_due', $paper->activeSubmission->isCameraReadyReadyToSet());
+			}
+			
+			$action = '<td>'
+					. Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline'))
+					. '<button type="submit" class="btn btn-xs btn-primary">Details</button>'
+					. Form::close();
+					
+			if (!$paper->activeSubmission) {
+				$action .= Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id), 'style' => 'display:inline'))
+						.  Form::hidden('paperRetargetBackTarget', URL::to('timeline'))
+						.  '<button type="submit" class="btn btn-xs btn-primary">Set Target</button>'
+						.  Form::close();
+			}
+			$action .= '</td>';
+			
+			$result[] = '<tr>'.
+				$title.
+				$abstract.
+				$papersubmit.
+				$notification.
+				$camera.
+				$action.
+				'</tr>'
+			;
+		}
+		
+		return $result;
+	}
+	
+	private function buildHTML($paper, $type, $type_submitted, $type_due, $isReadyToSet) {
+		$result = '<td></td>';
+		
+		if($paper->activeSubmission->$type_submitted === null) {
+			if($isReadyToSet) {
+				$result = '<td align="center" class="info" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y').
+			 			'<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission('. $paper->id. ', \''. $type. '\', 1)"><span class="glyphicon glyphicon-ok"></span></button>'.
+						'<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission('. $paper->id. ', \''. $type. '\', 0)"><span class="glyphicon glyphicon-remove"></span></button>'.
+						'</td>';
+			} elseif ($paper->activeSubmission->event->$type_due->lte(Carbon::now())) {
+				$result = '<td align="center" class="info" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y'). '</td>';
+			} else {
+				$result = '<td align="center" class="warning" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y'). '</td>';
+			}
+		} else {
+			if ($type_submitted) {
+				$result = '<td align="center" class="success" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y'). '</td>';
+			} else {
+				$result = '<td align="center" class="danger" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y'). '</td>';
+			}
+		}
+		
+		return $result;			
+	}
+	
+	private function getPapers($usersIds, $sortByColumn = 'title', $order = 'asc') {
 		/*$user = Auth::user();
 		$user->load('author', 'author.papers', 'author.papers.activeSubmission', 'author.papers.activeSubmission.event');
-		return $user->author->papers;*/
-	    if(Input::has('groupids')) {
-		$groupsIds = explode(',', Input::get('groupids'));
-		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
-		$usersIds = array();
-		foreach($users as $user) 
-		    $usersIds[] = $user->id;
-	    } else
-		$usersIds = array(Auth::user()->id);
+		return $user->author->papers;*/	
 	    
-	    return Paper::users($usersIds)->get();//Auth::user()->author->papers;	    
+	    return Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
+			->join('users', DB::raw('author_paper.author_id'), '=', DB::raw('users.author_id'))
+			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+			//->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+			->whereIn('users.id', $usersIds)
+			->get();
+	    return Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
+			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))->get();
+	    $paper = Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
+			->join('users', DB::raw('author_paper.author_id'), '=', DB::raw('users.author_id'))
+			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+			->whereIn('users.id', $usersIds)->orderBy($sortByColumn, $order)->get();//->whereIn('users.id', $usersIds);
+	    return $paper;/*Paper::users($usersIds)->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+					  ->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+					  ->orderBy($sortByColumn, $order)
+					  ->get(); */   
 	}
 
-	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0) {
+	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'title', $order = 'asc') {
 		$query = Submission::with('paper', 'event')
 			//->currentUser()
 			//->groups($groupsIds)
 			->users($usersIds)
 			->active()
-			->join('events', 'events.id', '=', 'submissions.event_id')
-			->select('submissions.*')
-			->orderBy('events.abstract_due', 'ASC');
+			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+			->join('papers', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
+			//->select('submissions.*')
+			->orderBy($sortByColumn, $order);
 		if ($pastLimit > 0) {
 			$query = $query->where('end', '>', DB::raw('DATE_SUB(CURDATE(), INTERVAL '. $pastLimit .' MONTH)'));
 		}
