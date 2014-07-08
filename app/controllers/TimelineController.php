@@ -28,8 +28,10 @@ class TimelineController extends BaseController {
 
 	public function getData() {
 		$format = 'm/d/Y';
-		$pastLimit = 3;
-		$futureLimit = 3;
+
+		// no limits currently as navigation is implemented
+		$pastLimit = 0;
+		$futureLimit = 0;
 
 		$data = array(
 			'lanes' => array(),
