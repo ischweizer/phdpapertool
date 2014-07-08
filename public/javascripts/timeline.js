@@ -21,7 +21,7 @@ $(document).ready(function() {
 });
 
 var Timeline = new function() {
-	var _url, _sort, _order, _groups;
+	var _url, _sort, _order, _groups, _table;
 	
 	this.load = function(url, groups, sort, order) {
 		_url = url;
@@ -49,11 +49,17 @@ var Timeline = new function() {
 				Timeline.draw(data.graph);
 				
 				if (data.table != false) {
+					if (typeof _table != 'undefined') {
+						_table.fnDestroy();
+					}
 					$('#example tbody').html('');
+					
+				
 					$.each(data.table, function(index, item) {
 						$(item).appendTo('#example tbody');
 					});
-					$('#example').dataTable({
+
+					_table = $('#example').dataTable({
 						"order": [[ 1, "desc" ]],
 						"columnDefs": [
 							{ "type": "our-date", targets: 1 },
