@@ -54,7 +54,7 @@ var Timeline = new function() {
 						$(item).appendTo('#example tbody');
 					});
 					$('#example').dataTable({
-						"order": [[ 1, "desc" ]],
+						"order": [[ 1, "asc" ]],
 						"columnDefs": [
 							{ "type": "our-date", targets: 1 },
 							{ "type": "our-date", targets: 2 },
