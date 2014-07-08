@@ -1,3 +1,25 @@
+
+$(document).ready(function() {
+	jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+		"our-date-pre": function ( a ) {
+			var x = a;
+			if (x.indexOf("<") > -1) {
+				x = x.substring(0, x.indexOf("<"));
+			}
+			var date = (x == "") ? 0 : $.fn.datepicker.DPGlobal.parseDate(x, "M dd, yyyy", $.fn.datepicker.defaults.language);
+			return date;
+		},
+	 
+		"our-date-asc": function ( a, b ) {
+			return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+		},
+	 
+		"our-date-desc": function ( a, b ) {
+			return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+		}
+	} );
+});
+
 var Timeline = new function() {
 	var _url, _sort, _order, _groups;
 	
@@ -31,7 +53,15 @@ var Timeline = new function() {
 					$.each(data.table, function(index, item) {
 						$(item).appendTo('#example tbody');
 					});
-					$('#example').dataTable();
+					$('#example').dataTable({
+						"order": [[ 1, "desc" ]],
+						"columnDefs": [
+							{ "type": "our-date", targets: 1 },
+							{ "type": "our-date", targets: 2 },
+							{ "type": "our-date", targets: 3 },
+							{ "type": "our-date", targets: 4 }
+						]
+					});
 				}
 
     			$('#example').on( 'order.dt',  function () {

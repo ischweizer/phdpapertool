@@ -1,6 +1,7 @@
 @extends('layouts/main')
 
 @section('head')
+	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> {{-- for parsing the dates --}}
 	{{ HTML::script('javascripts/jquery.dataTables.min.js')}}
 	{{ HTML::script('javascripts/dataTables.bootstrap.js')}}
 	{{ HTML::style('stylesheets/dataTables.bootstrap.css'); }}
@@ -19,7 +20,7 @@
 		var TimelineData;
 
 		$(document).ready(function() {
-			Timeline.load('{{URL::action('TimelineController@getData')}}', '', 'title', 'asc');
+			Timeline.load('{{URL::action('TimelineController@getData')}}', '', 'abstract_due', 'asc');
 			
 			$( "#selectGroups" ).chosen();
 			$(".dropdown-menu .chosen-container").width('200px');

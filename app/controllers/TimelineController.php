@@ -205,40 +205,29 @@ class TimelineController extends BaseController {
 		return $result;			
 	}
 	
-	private function getPapers($usersIds, $sortByColumn = 'title', $order = 'asc') {
-		/*$user = Auth::user();
-		$user->load('author', 'author.papers', 'author.papers.activeSubmission', 'author.papers.activeSubmission.event');
-		return $user->author->papers;*/	
-	    
-	    return Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
-			->join('users', DB::raw('author_paper.author_id'), '=', DB::raw('users.author_id'))
-			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
-			//->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
+	private function getPapers($usersIds, $sortByColumn = 'abstract_due', $order = 'asc') {
+	    return Paper::
+			  join('author_paper', 'papers.id', '=', 'author_paper.paper_id') // needed for users
+			->join('users', 'author_paper.author_id', '=', 'users.author_id') // needed for whereIn userIds
+			->leftJoin('submissions', 'papers.id', '=', 'submissions.paper_id') // needed for events
+			->where('submissions.active', '=', 1) // use the active submission
+			->join('events', 'events.id', '=', 'submissions.event_id') // needed for sorting by deadlines
 			->whereIn('users.id', $usersIds)
+			->select('papers.*') // for distinct to work correctly
+			->distinct() // include each paper only once (can occur multiple times with several user ids
+			->orderBy($sortByColumn, $order) // sorting
 			->get();
-	    return Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
-			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
-			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))->get();
-	    $paper = Paper::join('author_paper', DB::raw('papers.id'), '=', DB::raw('author_paper.paper_id'))
-			->join('users', DB::raw('author_paper.author_id'), '=', DB::raw('users.author_id'))
-			->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
-			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
-			->whereIn('users.id', $usersIds)->orderBy($sortByColumn, $order)->get();//->whereIn('users.id', $usersIds);
-	    return $paper;/*Paper::users($usersIds)->join('submissions', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
-					  ->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
-					  ->orderBy($sortByColumn, $order)
-					  ->get(); */   
 	}
 
-	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'title', $order = 'asc') {
+	private function getSubmissions($usersIds, $pastLimit = 0, $futureLimit = 0, $sortByColumn = 'abstract_due', $order = 'asc') {
 		$query = Submission::with('paper', 'event')
 			//->currentUser()
 			//->groups($groupsIds)
 			->users($usersIds)
 			->active()
-			->join('events', DB::raw('events.id'), '=', DB::raw('submissions.event_id'))
-			->join('papers', DB::raw('papers.id'), '=', DB::raw('submissions.paper_id'))
-			//->select('submissions.*')
+			->join('events', 'events.id', '=', 'submissions.event_id')
+			->join('papers', 'papers.id', '=', 'submissions.paper_id')
+			->select('submissions.*')
 			->orderBy($sortByColumn, $order);
 		if ($pastLimit > 0) {
 			$query = $query->where('end', '>', DB::raw('DATE_SUB(CURDATE(), INTERVAL '. $pastLimit .' MONTH)'));
