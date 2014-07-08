@@ -67,7 +67,8 @@ var Timeline = new function() {
 					} else if (sort == "camera_ready_due") {
 						initialSortColumn = 4;
 					}
-					$('#example').dataTable({
+
+					_table = $('#example').dataTable({
 						"order": [[ initialSortColumn, order ]],
 						"columnDefs": [
 							{ "type": "our-date", targets: 1 },
