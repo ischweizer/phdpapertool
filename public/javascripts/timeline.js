@@ -53,14 +53,12 @@ var Timeline = new function() {
 						_table.fnDestroy();
 					}
 					$('#example tbody').html('');
-					
 				
 					$.each(data.table, function(index, item) {
 						$(item).appendTo('#example tbody');
 					});
-
 					_table = $('#example').dataTable({
-						"order": [[ 1, "desc" ]],
+						"order": [[ 1, "asc" ]],
 						"columnDefs": [
 							{ "type": "our-date", targets: 1 },
 							{ "type": "our-date", targets: 2 },
