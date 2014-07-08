@@ -57,8 +57,18 @@ var Timeline = new function() {
 					$.each(data.table, function(index, item) {
 						$(item).appendTo('#example tbody');
 					});
-					_table = $('#example').dataTable({
-						"order": [[ 1, "asc" ]],
+					var initialSortColumn = 1;
+					if (sort == "title") {
+						initialSortColumn = 0;
+					} else if (sort == "paper_due") {
+						initialSortColumn = 2;
+					} else if (sort == "notification_date") {
+						initialSortColumn = 3;
+					} else if (sort == "camera_ready_due") {
+						initialSortColumn = 4;
+					}
+					$('#example').dataTable({
+						"order": [[ initialSortColumn, order ]],
 						"columnDefs": [
 							{ "type": "our-date", targets: 1 },
 							{ "type": "our-date", targets: 2 },
