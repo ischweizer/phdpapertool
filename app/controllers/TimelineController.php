@@ -53,11 +53,13 @@ class TimelineController extends BaseController {
 			$usersIds[] = $user->id;
 		}
 		else
-			$usersIds = array(Auth::user()->id);	
-		$count = 0; $laneId = 0;
+			
+		$usersIds = array(Auth::user()->id);	
+		$count = 0; $laneId = 0; $papers = array();
 		foreach($this->getSubmissions($usersIds, $pastLimit, $futureLimit, $sort, $order) as $submission) {
 			$paper = $submission->paper;
 			$event = $submission->event;
+			$papers[] = $paper;
 
 			$data['lanes'][] = array(
 				'id' => $laneId,
@@ -128,7 +130,7 @@ class TimelineController extends BaseController {
 		
 		$table = false;
 		if (Input::has('update') && Input::get('update') == 1) {
-			$table = self::buildTable(self::getPapers($usersIds, $sort, $order));
+			$table = self::buildTable($papers);
 		}
 
 		return Response::json(array(

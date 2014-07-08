@@ -47,6 +47,11 @@ var Timeline = new function() {
 				TimelineData = data.graph;
 				$('#graph').html('');
 				Timeline.draw(data.graph);
+				$('.long-title').tooltip({
+				   animated : 'fade',
+				   placement : 'top',
+				   container: '#graph'
+				});
 				
 				if (data.table != false) {
 					if (typeof _table != 'undefined') {
@@ -158,20 +163,29 @@ var Timeline = new function() {
 		mini.append('g').selectAll('.laneText')
 			.data(lanes)
 			.enter().append('foreignObject')
-			.attr("width", "140")
+			.attr("width", "150")
 			.attr("height", "70")
-			.html(function(d) {
-				if (d.label.length > 20) {
-					return '<div align="right" title="'+d.label+'">'+d.label.substr(0, 17) + '...'+"</p>";
-				} else {
-					return '<div align="right">'+d.label+"</p>";
-				}
-			})
 			.attr('x', -160)
 			.attr('y', function(d) { return y2(d.id); })
 			.attr('dy', '0.5ex')
 			.attr('text-anchor', 'end')
-			.attr('class', 'laneText');
+			.attr('class', 'laneText')
+			.append("xhtml:span")
+			.attr('class', function(d) { 
+				if (d.label.length > 20) {
+					return 'long-title';
+				} else { 
+					return '';
+				}
+			})
+			.attr('title', function(d) { return d.label; })
+    		.text(function(d) {
+				if (d.label.length > 20) {
+					return d.label.substr(0, 20) + ' ...';
+				} else { 
+					return d.label;
+				}
+			});
 
 		// draw the x axis
 		var xDateAxis = d3.svg.axis()

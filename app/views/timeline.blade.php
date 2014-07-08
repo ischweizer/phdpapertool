@@ -136,34 +136,29 @@
 
 @section('content')
 	<div class="page-header">
+		@if (count($groups) > 0)
+			<div id="paperDropdown" class="dropdown pull-right">
+				<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Papers</button>
+				<div class="dropdown-menu panel-body" role="menu" aria-labelledby="selectPapersBtn">
+					<select class="form-control" id="selectGroups" data-placeholder="Select groups" multiple>
+						@foreach ($groups as $group)
+							<option value="{{{ $group->id }}}">{{{ $group->name }}}</option>
+						@endforeach
+					</select>
+					<div class="checkbox">
+						<label>
+							<input id="selectAllGroups" type="checkbox"> Select all
+						</label>
+					</div>
+					<hr>
+					<button id="applyGroupBtn" class="btn btn-primary" style="width: 100%">Apply</button>
+				</div>
+			</div>
+		@endif
 		<h1>Timeline</h1>
 	</div>
-
-	@if (count($groups) > 0)
-	<div id="paperDropdown" class="dropdown pull-right">
-		<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Papers</button>
-		<div class="dropdown-menu panel-body" role="menu" aria-labelledby="selectPapersBtn">
-			<select class="form-control" id="selectGroups" data-placeholder="Select groups" multiple>
-				@foreach ($groups as $group)
-					<option value="{{{ $group->id }}}">{{{ $group->name }}}</option>
-				@endforeach
-			</select>
-			<div class="checkbox">
-				<label>
-					<input id="selectAllGroups" type="checkbox"> Select all
-				</label>
-			</div>
-			<hr>
-			<button id="applyGroupBtn" class="btn btn-primary" style="width: 100%">Apply</button>
-		</div>
-	</div>
-	@endif
-
-	<h3 class="cat-title">Interactive Paper Timeline</h3>
 	<div id="graph"></div>
-
 	<div style="float:right">
-
 		<ul class="list-inline" style="display:inline-block">
 			<li><span class="paper">&#9608; </span>Paper Submission Stage</li>
 			<li><span class="noti">&#9608; </span>Notification Stage</li>
