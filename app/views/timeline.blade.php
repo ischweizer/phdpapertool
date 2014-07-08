@@ -1,7 +1,7 @@
 @extends('layouts/main')
 
 @section('head')
-	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script> {{-- for parsing the dates --}}
+	{{ HTML::script('javascripts/bootstrap-datepicker.min.js') }} {{-- for parsing the dates --}}
 	{{ HTML::script('javascripts/jquery.dataTables.min.js')}}
 	{{ HTML::script('javascripts/dataTables.bootstrap.js')}}
 	{{ HTML::style('stylesheets/dataTables.bootstrap.css'); }}
