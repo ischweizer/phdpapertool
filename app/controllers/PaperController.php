@@ -271,7 +271,8 @@ class PaperController extends BaseController {
 				$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 			}
 
-			if(Auth::user()->isAdmin()){
+			if(!$allowed && Auth::user()->isAdmin()){
+				// XXX this can be done a lot more efficient as a SQL query
 				if(Auth::user()->isLabLeader()){
 					$lab = Auth::user()->group->lab;
 					$groups = $lab->groups;
@@ -286,6 +287,9 @@ class PaperController extends BaseController {
 							$allowed = true;
 							break;
 						}
+					}
+					if ($allowed) {
+						break;
 					}
 				}	
 			}

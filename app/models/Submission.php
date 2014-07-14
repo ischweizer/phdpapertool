@@ -77,7 +77,7 @@ class Submission extends Eloquent {
 			})->orWhere(function($query)
 			{
 				$query->whereNull('camera_ready_submitted')
-					  ->whereBetween('camery_ready_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
+					  ->whereBetween('camera_ready_due', array(DB::raw('DATE_SUB(CURDATE(), INTERVAL 1 DAY)'), DB::raw('CURDATE()')));
 			})->select('submissions.*');
 	}
 
@@ -100,7 +100,7 @@ class Submission extends Eloquent {
 			})->orWhere(function($query)
 			{
 				$query->whereNull('camera_ready_submitted')
-					  ->whereBetween('camery_ready_due', '>', DB::raw('CURDATE()'));
+					  ->whereBetween('camera_ready_due', '>', DB::raw('CURDATE()'));
 			})->select('submissions.*');
 	}
 
@@ -129,6 +129,6 @@ class Submission extends Eloquent {
 	 * Returns whether "camera ready submitted" may be set now. It may be set if "paper submitted", "abstract submitted" and "notification date" are set, it isn't set yet and "camera ready due" passed.
 	 */
 	public function isCameraReadyReadyToSet() {
-		return $this->abstract_submitted && $this->paper_submitted && $this->notification_result && $this->camery_ready_submitted === null && $this->event->notification_date->lte(Carbon::now());
+		return $this->abstract_submitted && $this->paper_submitted && $this->notification_result && $this->camery_ready_submitted === null && $this->event->camera_ready_due->lte(Carbon::now());
 	}
 }

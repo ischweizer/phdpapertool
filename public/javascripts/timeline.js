@@ -48,9 +48,9 @@ var Timeline = new function() {
 				$('#graph').html('');
 				Timeline.draw(data.graph);
 				$('.long-title').tooltip({
-				   animated : 'fade',
-				   placement : 'top',
-				   container: '#graph'
+					animated : 'fade',
+					placement : 'top',
+					container: '#graph'
 				});
 				
 				if (data.table != false) {
@@ -84,16 +84,16 @@ var Timeline = new function() {
 					});
 				}
 
-    			$('#example').on( 'order.dt',  function () {
-    				var asc = $('#example .sorting_asc');
-    				var desc = $('#example .sorting_desc');
-    				
-    				if (asc.length == 1) {
-    					Timeline.sort(asc.attr('name'), 'asc');
-    				} else if (desc.length == 1) {
-    					Timeline.sort(desc.attr('name'), 'desc');
-    				}
-    			});
+				$('#example').on( 'order.dt',  function () {
+					var asc = $('#example .sorting_asc');
+					var desc = $('#example .sorting_desc');
+					
+					if (asc.length == 1) {
+						Timeline.sort(asc.attr('name'), 'asc');
+					} else if (desc.length == 1) {
+						Timeline.sort(desc.attr('name'), 'desc');
+					}
+				});
 			}
 		});
 	}; 
@@ -116,7 +116,7 @@ var Timeline = new function() {
 		var margin = {top: 20, right: 0, bottom: 15, left: 160},
 			width = $('#main').width() - margin.left - margin.right,
 			height = lanes.length * 12 + 70,
-			miniHeight = lanes.length * 12 + 50,
+			miniHeight = lanes.length * 28,//* 12 + 50,
 			mainHeight = height - miniHeight - 50;
 
 		if(typeof timelineFrom != "undefined" && typeof timelineTo != "undefined"){
