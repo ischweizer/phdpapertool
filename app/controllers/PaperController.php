@@ -574,10 +574,13 @@ class PaperController extends BaseController {
 			// order for consistent results
 			$search = '%'.$query.'%';
 			return Author::select(array('id', 'last_name', 'first_name', 'email'))->
-				where('last_name', 'LIKE', $search)->
-	            orWhere('first_name', 'LIKE', $search)->
-	            orWhere('email', 'LIKE', $search)->
-	            having('id', '>', 1)->
+				where('id', '<>', '1')->
+				where(function($q) use ($search)
+	            {
+	                $q->where('first_name', 'LIKE', $search)->
+	                	orWhere('last_name', 'LIKE', $search)->
+	                    orWhere('email', 'LIKE', $search);
+	            })->
 	            orderBy('id', 'ASC')->take(5)->get()->toJson();
 		} else {
 			return null;
