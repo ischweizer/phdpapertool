@@ -147,12 +147,19 @@ class TimelineController extends BaseController {
 			$papersubmit = '<td></td>';
 			$notification = '<td></td>';
 			$camera = '<td></td>';
+
+			$isAuthor = false;
+			foreach ($paper->authors as $author) {
+				if ($author->id == Auth::user()->author->id) {
+					$isAuthor = true;
+				}
+			}
 			
 			if ($paper->activeSubmission) {
-				$abstract = self::buildHTML($paper, 'abstract', 'abstract_submitted', 'abstract_due', $paper->activeSubmission->isAbstractReadyToSet());
-				$papersubmit = self::buildHTML($paper, 'paper', 'paper_submitted', 'paper_due',$paper->activeSubmission->isPaperReadyToSet());
-				$notification = self::buildHTML($paper, 'notification', 'notification_result', 'notification_date', $paper->activeSubmission->isNotificationReadyToSet());
-				$camera = self::buildHTML($paper, 'camera', 'camera_ready_submitted', 'camera_ready_due', $paper->activeSubmission->isCameraReadyReadyToSet());
+				$abstract = self::buildHTML($paper, $isAuthor, 'abstract', 'abstract_submitted', 'abstract_due', $paper->activeSubmission->isAbstractReadyToSet());
+				$papersubmit = self::buildHTML($paper, $isAuthor, 'paper', 'paper_submitted', 'paper_due',$paper->activeSubmission->isPaperReadyToSet());
+				$notification = self::buildHTML($paper, $isAuthor, 'notification', 'notification_result', 'notification_date', $paper->activeSubmission->isNotificationReadyToSet());
+				$camera = self::buildHTML($paper, $isAuthor, 'camera', 'camera_ready_submitted', 'camera_ready_due', $paper->activeSubmission->isCameraReadyReadyToSet());
 			}
 			
 			$action = '<td>'
@@ -160,7 +167,7 @@ class TimelineController extends BaseController {
 					. '<button type="submit" class="btn btn-xs btn-primary">Details</button>'
 					. Form::close();
 					
-			if (!$paper->activeSubmission) {
+			if (!$paper->activeSubmission && $isAuthor) {
 				$action .= Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id), 'style' => 'display:inline'))
 						.  Form::hidden('paperRetargetBackTarget', URL::to('timeline'))
 						.  '<button type="submit" class="btn btn-xs btn-primary">Set Target</button>'
@@ -182,11 +189,11 @@ class TimelineController extends BaseController {
 		return $result;
 	}
 	
-	private function buildHTML($paper, $type, $type_submitted, $type_due, $isReadyToSet) {
+	private function buildHTML($paper, $isAuthor, $type, $type_submitted, $type_due, $isReadyToSet) {
 		$result = '<td></td>';
 		
 		if($paper->activeSubmission->$type_submitted === null) {
-			if($isReadyToSet) {
+			if($isReadyToSet && $isAuthor) {
 				$result = '<td align="center" class="info" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y').
 			 			'<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission('. $paper->id. ', \''. $type. '\', 1)"><span class="glyphicon glyphicon-ok"></span></button>'.
 						'<button type="button" class="btn btn-default btn-xs" onclick="updateSubmission('. $paper->id. ', \''. $type. '\', 0)"><span class="glyphicon glyphicon-remove"></span></button>'.
