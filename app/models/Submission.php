@@ -129,6 +129,6 @@ class Submission extends Eloquent {
 	 * Returns whether "camera ready submitted" may be set now. It may be set if "paper submitted", "abstract submitted" and "notification date" are set, it isn't set yet and "camera ready due" passed.
 	 */
 	public function isCameraReadyReadyToSet() {
-		return $this->abstract_submitted && $this->paper_submitted && $this->notification_result && $this->camery_ready_submitted === null && $this->event->notification_date->lte(Carbon::now());
+		return $this->abstract_submitted && $this->paper_submitted && $this->notification_result && $this->camery_ready_submitted === null && $this->event->camery_ready_due->lte(Carbon::now());
 	}
 }
