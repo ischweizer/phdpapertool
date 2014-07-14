@@ -115,7 +115,7 @@ var Timeline = new function() {
 
 		var margin = {top: 20, right: 0, bottom: 15, left: 160},
 			width = $('#main').width() - margin.left - margin.right,
-			height = lanes.length * 12 + 70,
+			height = lanes.length * 28 + 10,//* 12 + 70,
 			miniHeight = lanes.length * 28,//* 12 + 50,
 			mainHeight = height - miniHeight - 50;
 
