@@ -23,6 +23,10 @@ class Author extends Eloquent {
 		return $query->where('id', '<>', '1');
 	}
 
+	public function reviewRequests(){
+		return $this->belongsToMany('ReviewRequest')->with('answer');
+	}
+
 	/**
 	 * return the name of this as a readable String
 	 */

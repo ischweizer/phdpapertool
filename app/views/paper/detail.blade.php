@@ -2,27 +2,21 @@
 
 @section('head')
 		
-		<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css">
+		{{ HTML::script('javascripts/bootstrap-datepicker.min.js') }}
+		{{ HTML::style('stylesheets/datepicker3.min.css')}}
 
 		{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
-		{{ HTML::style('stylesheets/bootstrapValidator.min.css'); }}
+		{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
 
 		{{ HTML::style('stylesheets/jquery.fileupload.css') }}
 		<style type="text/css">
 			.form-control[readonly] {
 				background-color:#fff;
 			}
-			.modal-open .datepicker {
-				z-index:1151 !important;
-			}
 
-			.modal-open .has-feedback .input-group .form-control-feedback {
-				z-index: 1152;
-			}
 		</style>
 		
-		<script>
+		<script type="text/javascript">
 			var filesUploaded = false;
 			
 			$(document).ready(function() {
@@ -71,59 +65,7 @@
 			        .parent().addClass($.support.fileInput ? undefined : 'disabled');
 
 
-				$.fn.datepicker.defaults.format = "M dd, yyyy";
-				$.fn.datepicker.defaults.multidateSeparator = ";";
-
-				$('#deadline').datepicker({
-					startDate: '+1d'
-				}).on('change', function(e) {
-					var field = $(this).attr('name');
-					$('#createReviewForm')
-						.data('bootstrapValidator')
-						.updateStatus(field, 'NOT_VALIDATED', null)
-						.validateField(field);
-				});
-
-
-				$('#createReviewForm').bootstrapValidator({
-					excluded: [':disabled'],
-					message: 'This value is not valid',
-					live: 'enabled',
-					feedbackIcons: {
-						valid: 'glyphicon glyphicon-ok',
-						invalid: 'glyphicon glyphicon-remove',
-						validating: 'glyphicon glyphicon-refresh'
-					},
-				});
-
-				$('#openCreateReview').click(function() {
-					$('#createReviewModal').modal('show');
-				});
-
-				$('#addUser').click(function() {
-					var chosenUser = $('#userSelect option:selected').remove();
-					$('#selectedUsers').append(chosenUser);
-				});
-
-				$('#removeUser').click(function(){
-					var chosenUser = $('#selectedUsers option:selected').remove();
-					$('#userSelect').append(chosenUser);
-				});
-
-				$('#addFile').click(function() {
-					var chosenFile = $('#fileSelect option:selected').remove();
-					$('#selectedFiles').append(chosenFile);
-				});
-
-				$('#removeFile').click(function(){
-					var chosenFile = $('#selectedFiles option:selected').remove();
-					$('#fileSelect').append(chosenFile);
-				});
-
-				$('#createReviewForm').submit(function(){
-					$('#selectedUsers option').prop('selected', true);
-					$('#selectedFiles option').prop('selected', true);
-				});
+				
 			});
 		</script>
 @stop
@@ -186,44 +128,6 @@
 			@endif
 			</div>
 		</div>
-		{{--
-		<div class="form-group">
-
-			{{ Form::label('reviews', 'Review Requests') }}
-			{{ Form::button('Create Review Request', array('class' => 'btn btn-xs btn-primary', 'id' => 'openCreateReview')) }}
-
-			<ul class="list-group">
-				@foreach ($reviews as $review)
-					<li class="list-group-item">
-						{{ Form::label('deadline', 'Deadline: ' ) }}
-						{{ @date_format($review->deadline, 'M d, Y') }} <br>
-						{{ Form::label('files', 'Files: ') }}
-							@foreach ($review->files as $file)
-								@if ($file->author_id == Auth::user()->author->id)
-									<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
-								@endif
-							@endforeach
-						<br>
-						@if ($review->message)
-							{{ Form::label('message', 'Message') }}
-							<pre>{{ $review->message }}</pre>
-						@endif
-						<ul class="list-group">
-							@foreach ($review->users as $user)
-								<li class="list-group-item">
-									{{{ $user->formatName() }}}
-									@foreach ($review->files as $file)
-										@if ($file->author_id == $user->author->id)
-											<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
-										@endif
-									@endforeach
-								</li>
-							@endforeach
-						</ul>
-					</li>
-				@endforeach
-			</ul>
-		</div>
 
 		<div class="form-group">
 			{{ Form::label('files', 'Files') }}
@@ -258,7 +162,58 @@
 			</table>
 			
 		</div>
---}}
+
+		<div class="form-group">
+
+			
+			{{ Form::open(array('action' => array('ReviewController@getCreate', $paper->id), 'method' => 'get')) }}
+			{{ Form::label('reviews', 'Review Requests') }}
+				{{ Form::submit('Create Review Request', array('class' => 'btn btn-xs btn-primary')) }}
+			{{ Form::close() }}
+			<ul class="list-group">
+				@foreach ($reviewRequests as $reviewRequest)
+					<li class="list-group-item">
+						{{ Form::label('deadline', 'Deadline: ' ) }}
+						{{ @date_format($reviewRequest->deadline, 'M d, Y') }} <br>
+						{{ Form::label('files', 'Files: ') }}
+							@foreach ($reviewRequest->files as $file)
+								<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
+							@endforeach
+						<br>
+						@if ($reviewRequest->message)
+							{{ Form::label('message', 'Message') }}
+							<pre>{{ $reviewRequest->message }}</pre>
+						@endif	
+						<table class="table table-bordered">
+							<tr>
+								<th>Requested author</th>
+								<th>Status</th>
+							</tr>
+							@foreach ($reviewRequest->requestedAuthors as $author)
+								<tr>
+									<td>
+										{{{ $author->formatName() }}}
+									</td>
+									<td>
+										@if ($author->pivot->answer)
+											<?php $review = $requestAnswers[$reviewRequest->id][$author->id]; ?>
+											{{ Form::open(array('action' => array('ReviewController@getDetails', 'id' => $review->id), 'method' => 'GET')) }}
+												Review recieved <button type="submit" class="btn btn-xs btn-primary">Details</button>
+											{{ Form::close() }}
+										@elseif (is_null($author->pivot->answer)) 
+											No answer recieved yet
+										@else
+											Review denied
+										@endif
+									</td>
+								</tr>
+							@endforeach
+						</table>
+					</li>
+				@endforeach
+			</ul>
+		</div>
+
 		{{-- TODO show submission history --}}
 		
 		<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -293,80 +248,7 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="createReviewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					{{ Form::open(array('action' => 'PaperController@postCreateReviewRequest', 'id' => 'createReviewForm')) }}
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel">Request a Review</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group single-date">
-							{{ Form::label('deadline', 'Review Deadline') }}
-							<div class="input-group date" id="deadline-datepicker">
-								{{ Form::text('deadline', '', array('class' => 'form-control input-sm datepicker', 'required')) }}
-								<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('user', 'User') }}
-							<div class="input-group"> 
-								{{ Form::select('userSelect', $userNames, null, array('class' => 'form-control', 'id' => 'userSelect')) }}
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button" id="addUser"><span class="glyphicon glyphicon-plus"></span></button>
-								</span>
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('selectedUser', 'Selected User') }}
-							<div class="row">
-								<div class="col-xs-11">
-									{{ Form::select('selectedUsers[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedUsers', 'multiple' => true)) }}
-								</div>
-								<div class="col-xs-1">
-										<div class="btn-group-vertical" >
-											{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'removeUser', 'class' => 'btn btn-sm btn-default')) }}
-										</div>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('files', 'Files') }}
-							<div class="input-group"> 
-								{{ Form::select('fileSelect', $fileNames, null, array('class' => 'form-control', 'id' => 'fileSelect')) }}
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button" id="addFile"><span class="glyphicon glyphicon-plus"></span></button>
-								</span>
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('selectedFiles', 'Selected Files') }}
-							<div class="row">
-								<div class="col-xs-11">
-									{{ Form::select('selectedFiles[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedFiles', 'multiple' => true)) }}
-								</div>
-								<div class="col-xs-1">
-										<div class="btn-group-vertical" >
-											{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'removeFile', 'class' => 'btn btn-sm btn-default')) }}
-										</div>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('message', 'Message') }}
-							{{ Form::textarea('message', '', array('class' => 'form-control')) }}
-						</div>
-						{{ Form::hidden('paperId', $paper->id) }}
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						{{ Form::submit('Save', array('class' => 'btn btn-primary', 'id' => 'createReviewModalSave')) }}
-					</div>
-					{{ Form::close() }}
-				</div>
-			</div>
-		</div>
+		
 		{{ HTML::script('javascripts/jquery.ui.widget.js') }}
 		{{ HTML::script('javascripts/jquery.fileupload.js') }}
 

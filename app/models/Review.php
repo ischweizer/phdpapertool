@@ -5,16 +5,11 @@ use Carbon\Carbon;
 class Review extends Eloquent {
 	
 	protected $dates = array('deadline');
-	protected $fillable = array('user_id', 'paper_id', 'deadline');
+	protected $fillable = array('user_id', 'review_request_id', 'deadline');
 	
-	public function user()
+	public function author()
 	{
-		return $this->belongsTo('User');
-	}
-
-	public function paper()
-	{
-		return $this->belongsTo('Paper');
+		return $this->belongsTo('Author');
 	}
 
 	public function files()
@@ -22,9 +17,9 @@ class Review extends Eloquent {
 		return $this->belongsToMany('FileObject', 'file_review', 'review_id', 'file_id');
 	}
 
-	public function users()
+	public function request()
 	{
-		return $this->belongsToMany('User')->withPivot('answer');
+		return $this->belongsTo('ReviewRequest');
 	}
 
 	/**

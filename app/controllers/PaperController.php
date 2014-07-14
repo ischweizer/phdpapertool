@@ -306,12 +306,22 @@ class PaperController extends BaseController {
 				$fileNames[$file->id] = $file->name;
 			}
 
-			$userNames = array();
+			/*$userNames = array();
 			foreach (User::notAdmin()->where('id', '<>', Auth::user()->id)->get() as $user) {
 					$userNames[$user->id] = $user->formatName();
-			}
+			}*/
 
-			$reviews = Review::where('paper_id', '=', $paper->id)->get();
+			$reviewRequests = ReviewRequest::where('paper_id', '=', $paper->id)->get();
+
+			$requestAnswers = array();
+			foreach ($reviewRequests as $reviewRequest) {
+				$requestAnswers[$reviewRequest->id] = array();
+				foreach ($reviewRequest->requestedAuthors as $author) {
+					if($author->pivot->answer) {
+						$requestAnswers[$reviewRequest->id][$author->id] = Review::where('author_id', '=', $author->id)->where('review_request_id', '=', $reviewRequest->id)->firstOrFail();
+					}
+				}
+			}
 
 			/*$userFiles = DB::table('users')
 				->leftjoin('review_user', 'users.id', '=', 'review_user.user_id')
@@ -326,10 +336,11 @@ class PaperController extends BaseController {
 				->with('selectedauthors', $selectedauthors)
 				->with('submission', $submission)
 				->with('files', $files)
-				->with('userNames', $userNames)
-				->with('fileNames', $fileNames)
-				->with('reviews', $reviews)
-				->with('owner', $owner);
+				//->with('userNames', $userNames)
+				//->with('fileNames', $fileNames)
+				->with('reviewRequests', $reviewRequests)
+				->with('owner', $owner)
+				->with('requestAnswers', $requestAnswers);
 				//->with('userFiles', $userFiles);
 
 		} else {
@@ -443,19 +454,7 @@ class PaperController extends BaseController {
 	}
 	
 
-	public function postCreateReviewRequest(){
-		if (Input::has('deadline') && Input::has('selectedUsers') && Input::has('selectedFiles') && Input::has('paperId')) {
-			$review = new Review(array("user_id" => Auth::user()->id, "deadline" => Input::get('deadline'), 'paper_id' => Input::get('paperId')));
-			if(Input::has('message'))
-				$review->message = Input::get('message');
-			$review->save();
-			$review->users()->sync(Input::get('selectedUsers'));
-			$review->files()->sync(Input::get('selectedFiles'));
-			
-			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
-		} else
-			return App::abort(404);
-	}
+
 
 	/**
 	 * Target for asynchronous submission updates.

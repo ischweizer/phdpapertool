@@ -94,11 +94,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $this->hasMany('Review');
 	}
 
-	public function reviewRequests()
-	{
-		return $this->belongsToMany('Review')->withPivot('answer');
-	}
-
 	/**
 	 * Returns all users waiting for activation who this user may manage.
 	 *
