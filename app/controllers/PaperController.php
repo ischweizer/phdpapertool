@@ -561,6 +561,24 @@ class PaperController extends BaseController {
 			App::abort(404);
 		}
 	}
+	
+	/**
+	 * Autocomplete for authors.
+	 */
+    public function getAutocomplete($query) {
+        if(Request::ajax()) {
+			// order for consistent results
+			$search = '%'.$query.'%';
+			return Author::select(array('id', 'last_name', 'first_name', 'email'))->
+				where('last_name', 'LIKE', $search)->
+	            orWhere('first_name', 'LIKE', $search)->
+	            orWhere('email', 'LIKE', $search)->
+	            having('id', '>', 1)->
+	            orderBy('id', 'ASC')->take(5)->get()->toJson();
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Checks whether the currently authed user is an author of the given paper

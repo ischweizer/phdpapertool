@@ -69,6 +69,52 @@
 					}
 				});
 				
+				// install authors typeahead
+				var authors = new Bloodhound({
+					datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+					queryTokenizer: Bloodhound.tokenizers.whitespace,
+					remote: {
+						url: "{{ URL::action('PaperController@getAutocomplete', array('QUERY')) }}",
+						replace: function (url, query) {
+							// double encode query as it gets decoded -> splitted, which would destroy queries containing '/'
+							return url.replace('QUERY', encodeURIComponent(encodeURIComponent(query)));
+						},
+						filter: function(list) {
+					    	return $.grep(list, function( author ) {
+									  return $("#selected_authors option[value='"+author.id+"']").length == 0;;
+									});
+					    }
+					}
+				});
+				authors.initialize();
+				$('#author_list').typeahead({
+					highlight: true
+				}, {
+					name: 'authors',
+					displayKey: 'name',
+					source: authors.ttAdapter(),
+					templates: {
+						suggestion: function (obj) {
+							return obj.last_name + ' ' + obj.first_name + ' ('+ obj.email + ')';
+						}
+					}
+				}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
+					$('#selected_authors').append(
+				        $('<option></option>').val(data.id).html(data.last_name + ' ' + data.first_name + ' ('+ data.email + ')')
+				    );
+					/*$('#paper-form')
+						.data('bootstrapValidator')
+						.updateStatus('author_list', 'NOT_VALIDATED', null)
+						.validateField('author_list');*/
+					authorNameChange();
+				});
+				$('#author_list').on('input', authorNameChange);
+				function authorNameChange() {
+					
+				}
+				authorNameChange();
+				
+				
 				$('#remove_author').click(function(){
 					var selection = $("#selected_authors").children("option").filter(":selected");
 					$.each(selection, function( index, author ) {
@@ -303,8 +349,7 @@
 			{{ Form::label('authors', 'Authors') }}<br>
 			<div class="form-group">
 				<!-- add author -->
-				{{ Form::select('authorlist', $authors, null, array('id' => 'authorlist', 'class' => 'form-control')) }}<br>
-				{{ Form::button('Add', array('id' => 'add_author', 'class' => 'btn btn-sm btn-primary')) }}
+				{{ Form::text('authorlist', null, array('placeholder' => 'Author', 'class' => 'form-control', 'id' => 'author_list')) }}<br>
 				{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}<br><br>
 			</div>
 			<div class="form-group">
