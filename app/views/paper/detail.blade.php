@@ -186,7 +186,7 @@
 						@endif	
 						<table class="table table-bordered">
 							<tr>
-								<th>Requested author</th>
+								<th>Requested reviewer</th>
 								<th>Status</th>
 							</tr>
 							@foreach ($reviewRequest->requestedAuthors as $author)

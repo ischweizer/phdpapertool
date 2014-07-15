@@ -19,7 +19,7 @@ class CreateAuthorReviewRequest extends Migration {
 			$table->integer('review_request_id')->unsigned();
 			$table->boolean('answer')->nullable()->default(NULL);
 
-			$table->primary('author_id', 'review_request_id');
+			$table->primary(array('author_id', 'review_request_id'));
 
 			$table->foreign('review_request_id')->references('id')->on('review_requests')->onUpdate('cascade');
 			$table->foreign('author_id')->references('id')->on('authors')->onUpdate('cascade');
