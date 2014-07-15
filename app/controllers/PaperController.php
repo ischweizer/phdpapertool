@@ -283,7 +283,7 @@ class PaperController extends BaseController {
 				}
 				foreach ($paper->authors as $author) {
 					foreach ($usersBelow as $userBelow) {
-						if($author->id == $userBelow->id){
+						if($author->id == $userBelow->author->id){
 							$allowed = true;
 							break;
 						}
