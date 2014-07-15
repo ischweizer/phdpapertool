@@ -285,13 +285,22 @@ class PaperController extends BaseController {
 					foreach ($usersBelow as $userBelow) {
 						if($author->id == $userBelow->author->id){
 							$allowed = true;
-							break;
+							break 2;
 						}
 					}
-					if ($allowed) {
-						break;
-					}
+					
 				}	
+			}
+
+			if(!$allowed){
+				foreach ($paper->reviewRequests as $reviewRequest) {
+					foreach ($reviewRequest->authors as $author) {
+						if ($author->id == Auth::user()->author->id) {
+							$allowed = true;
+							break 2;
+						}
+					}
+				}
 			}
 
 			if (!$allowed) {
@@ -315,12 +324,12 @@ class PaperController extends BaseController {
 					$userNames[$user->id] = $user->formatName();
 			}*/
 
-			$reviewRequests = ReviewRequest::where('paper_id', '=', $paper->id)->get();
+			//$reviewRequests = $paper->reviewRequests;//ReviewRequest::where('paper_id', '=', $paper->id)->get();
 
 			$requestAnswers = array();
-			foreach ($reviewRequests as $reviewRequest) {
+			foreach ($paper->reviewRequests as $reviewRequest) {
 				$requestAnswers[$reviewRequest->id] = array();
-				foreach ($reviewRequest->requestedAuthors as $author) {
+				foreach ($reviewRequest->authors as $author) {
 					if($author->pivot->answer) {
 						$requestAnswers[$reviewRequest->id][$author->id] = Review::where('author_id', '=', $author->id)->where('review_request_id', '=', $reviewRequest->id)->firstOrFail();
 					}
@@ -342,7 +351,7 @@ class PaperController extends BaseController {
 				->with('files', $files)
 				//->with('userNames', $userNames)
 				//->with('fileNames', $fileNames)
-				->with('reviewRequests', $reviewRequests)
+				//->with('reviewRequests', $reviewRequests)
 				->with('owner', $owner)
 				->with('requestAnswers', $requestAnswers);
 				//->with('userFiles', $userFiles);

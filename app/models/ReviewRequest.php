@@ -16,7 +16,7 @@ class ReviewRequest extends Eloquent{
 		return $this->belongsToMany('FileObject', 'file_review_request', 'review_request_id', 'file_id');
 	}
 
-	public function requestedAuthors(){
+	public function authors(){
 		return $this->belongsToMany('Author')->withPivot('answer');
 	}
 

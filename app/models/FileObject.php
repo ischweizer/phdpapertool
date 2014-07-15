@@ -13,6 +13,11 @@ class FileObject extends Eloquent {
 	{
 		return $this->belongsTo('Author');
 	}
+
+	public function formatName()
+	{
+		return $this->name." - uploaded: ".date_format($this->created_at, 'M d, Y G:i');
+	}
 	
 	/**
 	 * Validate the given input.

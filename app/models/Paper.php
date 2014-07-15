@@ -23,6 +23,10 @@ class Paper extends Eloquent {
 	{
 		return $this->hasOne('Submission')->where('active', '=', 1);
 	}
+
+	public function reviewRequests(){
+		return $this->hasMany('ReviewRequest');
+	}
 	
 	/*public function scopeUsers($fluentQuery, $usersIds) {
 	    $fluentQuery->whereExists(function($query) use ($usersIds) {

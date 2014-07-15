@@ -39,13 +39,13 @@ class ReviewController extends BaseController{
 			App::abort(404);
 
 		$authorNames = array();
-		foreach (Author::notAdmin()->where('id', '<>', Auth::user()->author->id)->get() as $author) {
+		foreach (Author::notAdmin()->get() as $author) {
 				$authorNames[$author->id] = $author->formatName();
 		}
 
 		$fileNames = array();
-		foreach ($paper->files as $file) {
-			$fileNames[$file->id] = $file->name;
+		foreach ($paper->files()->orderby('created_at', 'desc')->get() as $file) {
+			$fileNames[$file->id] = $file->formatName();
 		}
 
 		return View::make('review/create')
@@ -60,7 +60,7 @@ class ReviewController extends BaseController{
 			if(Input::has('message'))
 				$reviewRequest->message = Input::get('message');
 			$reviewRequest->save();
-			$reviewRequest->requestedAuthors()->sync(Input::get('selectedAuthors'));
+			$reviewRequest->authors()->sync(Input::get('selectedAuthors'));
 			$reviewRequest->files()->sync(Input::get('selectedFiles'));
 			
 			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
