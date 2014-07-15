@@ -68,8 +68,27 @@ class ReviewController extends BaseController{
 			return App::abort(404);
 	}
 
-	public function getDetails(){
-		//TODO
+	public function getDetails($id){
+		$review = Review::find($id);
+		if(is_null($review))
+			App::abort(404);
+
+		$access = false;
+		if($review->author_id == Auth::user()->author->id)
+			$access = true;
+
+		if(!$access){
+			foreach($review->reviewRequest->paper->authors as $author){
+				if($author->id == Auth::user()->author->id)
+					$access = true;
+			}
+			if(!$access)
+				App::abort(404);
+		}
+
+
+
+		return View::make('review/detail')->with('review', $review);
 	}
 
 

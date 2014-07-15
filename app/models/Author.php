@@ -24,7 +24,7 @@ class Author extends Eloquent {
 	}
 
 	public function reviewRequests(){
-		return $this->belongsToMany('ReviewRequest')->with('answer');
+		return $this->belongsToMany('ReviewRequest')->withPivot('answer');
 	}
 
 	/**

@@ -17,7 +17,7 @@ class Review extends Eloquent {
 		return $this->belongsToMany('FileObject', 'file_review', 'review_id', 'file_id');
 	}
 
-	public function request()
+	public function reviewRequest()
 	{
 		return $this->belongsTo('ReviewRequest');
 	}

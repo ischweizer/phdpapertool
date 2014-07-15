@@ -5,7 +5,7 @@ class ReviewRequest extends Eloquent{
 	protected $fillable = array('user_id','paper_id', 'deadline', 'message');
 
 	public function user(){
-		$this->belongsTo('User');
+		return $this->belongsTo('User');
 	}
 
 	public function paper(){

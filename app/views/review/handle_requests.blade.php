@@ -11,18 +11,20 @@
 		<ul class="list-group">
 			@foreach ($reviewRequests as $reviewRequest)
 				<li class="list-group-item">
-					From: {{{ $reviewRequest->user->formatName() }}} <br>
-					Deadline: {{{ @date_format($reviewRequest->deadline, 'M d, Y') }}} <br>
+					{{ Form::label('from', 'From: ') }}
+					{{{ $reviewRequest->user->formatName() }}} <br>
+					{{ Form::label('deadline', 'Deadline') }}
+					{{{ @date_format($reviewRequest->deadline, 'M d, Y') }}} <br>
 					@if ($reviewRequest->message)
-						Message: <pre>{{{ $reviewRequest->message }}}</pre>
+						{{ Form::label('message', 'Message') }}
+						<pre>{{{ $reviewRequest->message }}}</pre>
 					@endif
+					{{ Form::label('files', 'Files') }}
 					@foreach ($reviewRequest->files as $file)
-						@if ($file->author_id == $reviewRequest->user->author->id)
-							<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
-						@endif
+						<a href="{{ URL::action('FileController@getFile', $file->id) }}" type="submit" class="btn btn-xs btn-default" role="button">{{$file->name}}</a>
 					@endforeach
-				</li>		
-			@endforeach	
+				</li>
+			@endforeach
 		</ul>
 	</div>
 
