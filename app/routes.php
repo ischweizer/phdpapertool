@@ -36,8 +36,6 @@ Route::group(array('before' => 'auth'), function()
 	Route::controller('event', 'EventController');
 
 	Route::controller('timeline', 'TimelineController');
-	
-	Route::controller('papermanager', 'PaperManagerController');
 
 	Route::controller('review', 'ReviewController');
 
