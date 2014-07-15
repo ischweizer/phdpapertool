@@ -271,7 +271,8 @@ class PaperController extends BaseController {
 				$selectedauthors[$author->id] = $author->last_name . " " . $author->first_name . " (" . $author->email . ")";
 			}
 
-			if(Auth::user()->isAdmin()){
+			if(!$allowed && Auth::user()->isAdmin()){
+				// XXX this can be done a lot more efficient as a SQL query
 				if(Auth::user()->isLabLeader()){
 					$lab = Auth::user()->group->lab;
 					$groups = $lab->groups;
@@ -286,6 +287,9 @@ class PaperController extends BaseController {
 							$allowed = true;
 							break;
 						}
+					}
+					if ($allowed) {
+						break;
 					}
 				}	
 			}
@@ -558,6 +562,27 @@ class PaperController extends BaseController {
 				Redirect::action('PaperController@getIndex');
 		} else {
 			App::abort(404);
+		}
+	}
+	
+	/**
+	 * Autocomplete for authors.
+	 */
+    public function getAutocomplete($query) {
+        if(Request::ajax()) {
+			// order for consistent results
+			$search = '%'.$query.'%';
+			return Author::select(array('id', 'last_name', 'first_name', 'email'))->
+				where('id', '<>', '1')->
+				where(function($q) use ($search)
+	            {
+	                $q->where('first_name', 'LIKE', $search)->
+	                	orWhere('last_name', 'LIKE', $search)->
+	                    orWhere('email', 'LIKE', $search);
+	            })->
+	            orderBy('id', 'ASC')->take(5)->get()->toJson();
+		} else {
+			return null;
 		}
 	}
 
