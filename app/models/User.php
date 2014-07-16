@@ -95,21 +95,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
-	 * Returns all users waiting for activation who this user may manage.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Collection
-	 */
-	public function getInactiveManagedUsers()
-	{
-		$result = new Collection;
-		foreach ($this->userRoles()->with('role')->get() as $userRole)
-		{
-			$result->merge($userRole->role->getInactiveUsersQuery()->get());
-		}
-		return $result;
-	}
-
-	/**
 	 * Returns true iff this user is already enrolled in a Group, or the approval is pending
 	 */
 	public function hasGroup()
