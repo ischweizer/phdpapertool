@@ -20,7 +20,8 @@
 		var TimelineData;
 
 		$(document).ready(function() {
-			Timeline.load('{{URL::action('TimelineController@getData')}}', '', 'abstract_due', 'asc');
+			Timeline.init('{{URL::action('TimelineController@getTableData')}}', '{{URL::action('TimelineController@getGraphData')}}');
+			Timeline.loadTable('');
 			
 			$( "#selectGroups" ).chosen();
 			$(".dropdown-menu .chosen-container").width('200px');
@@ -35,7 +36,7 @@
 					});
 				}
 				
-			 	Timeline.reloadGroups(selectedGroups.join( "," ));
+			 	Timeline.loadTable(selectedGroups.join( "," ));
 			 	$('#selectPapersBtn').dropdown('toggle');
 			});
 			
@@ -178,9 +179,10 @@
 
 	<p>&nbsp;</p>
 	<h3 class="cat-title">Papers</h3>
-	<table id="example" class="table table-bordered table-hover" cellspacing="0" width="100%">
+	<table id="paper-table" class="table table-bordered table-hover" cellspacing="0" width="100%">
 		<thead>
 			<tr>
+				<th name='id'>Id</th>
 				<th name='title'>Paper</th>
 				<th name='abstract_due'>Abstract Submission Deadline</th>
 				<th name='paper_due'>Paper Submission Deadline</th>

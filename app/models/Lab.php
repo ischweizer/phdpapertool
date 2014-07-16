@@ -6,6 +6,10 @@ class Lab extends Eloquent {
 		return $this->hasMany('Group');
 	}
 
+	public function users() {
+		return $this->hasManyThrough('User', 'Group');
+	}
+
 	public static function getLabs($groups) {
 		$labs = Lab::where('id', '!=', 1)->get();;
 		if($groups == null)

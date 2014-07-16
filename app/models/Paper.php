@@ -9,6 +9,10 @@ class Paper extends Eloquent {
 		return $this->belongsToMany('Author')->withPivot('order_position')->orderBy('order_position', 'asc');
 	}
 
+	public function scopeNotArchived($query) {
+		$query->where('archived', '<>', 1);
+	}
+
 	public function submissions()
 	{
 		return $this->hasMany('Submission');

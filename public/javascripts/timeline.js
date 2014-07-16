@@ -1,113 +1,114 @@
-
-$(document).ready(function() {
-	jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-		"our-date-pre": function ( a ) {
-			var x = a;
-			if (x.indexOf("<") > -1) {
-				x = x.substring(0, x.indexOf("<"));
-			}
-			var date = (x == "") ? 0 : $.fn.datepicker.DPGlobal.parseDate(x, "M dd, yyyy", $.fn.datepicker.defaults.language);
-			return date;
-		},
-	 
-		"our-date-asc": function ( a, b ) {
-			return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-		},
-	 
-		"our-date-desc": function ( a, b ) {
-			return ((a < b) ? 1 : ((a > b) ? -1 : 0));
-		}
-	} );
-});
-
 var Timeline = new function() {
-	var _url, _sort, _order, _groups, _table;
-	
-	this.load = function(url, groups, sort, order) {
-		_url = url;
-		_sort = sort;
-		_order = order;
-		
-		var update = 0;
-		if (groups != _groups) {
-			_groups = groups;
-			update = 1;
-		}
-		
-		$.ajax({
-			'global': false,
-			'url': url + '?groupids=' + groups + '&sort=' + sort + '&order=' + order + '&update=' + update,
-			'dataType': "json",
-			'success': function (data) {
-				data.graph.items.forEach(function(entry) {
-					entry.start = new Date(entry.start);
-					entry.end = new Date(entry.end);
-				});
-				
-				TimelineData = data.graph;
-				$('#graph').html('');
-				Timeline.draw(data.graph);
-				$('.long-title').tooltip({
-					animated : 'fade',
-					placement : 'top',
-					container: '#graph'
-				});
-				
-				if (data.table != false) {
-					if (typeof _table != 'undefined') {
-						_table.fnDestroy();
-					}
-					$('#example tbody').html('');
-				
-					$.each(data.table, function(index, item) {
-						$(item).appendTo('#example tbody');
-					});
-					var initialSortColumn = 1;
-					if (sort == "title") {
-						initialSortColumn = 0;
-					} else if (sort == "paper_due") {
-						initialSortColumn = 2;
-					} else if (sort == "notification_date") {
-						initialSortColumn = 3;
-					} else if (sort == "camera_ready_due") {
-						initialSortColumn = 4;
-					}
+	var _tableUrl, _graphUrl, _groups, _papers, _table;
 
-					_table = $('#example').dataTable({
-						"order": [[ initialSortColumn, order ]],
-						"columnDefs": [
-							{ "type": "our-date", targets: 1 },
-							{ "type": "our-date", targets: 2 },
-							{ "type": "our-date", targets: 3 },
-							{ "type": "our-date", targets: 4 }
-						]
+	this.init = function(tableUrl, graphUrl) {
+		_tableUrl = tableUrl;
+		_graphUrl = graphUrl;
+		_table = $('#paper-table').DataTable({
+			'stateSave': true,
+			'stateDuration': -1,
+			'lengthMenu': [5, 10, 25, 50],
+			'pageLength': 10,
+			'order': [[ 2, 'asc' ]],
+			'columnDefs': [
+				{ 'targets': [0], 'visible': false, 'searchable': false },
+				{ 'targets': [6], 'searchable': false }
+			]
+		});
+
+		$('#paper-table').on('draw.dt', this.loadGraph);
+	}
+
+	this.loadGraph = function() {
+		var papers = _table.rows($('#paper-table tbody tr')).data().map(function(row){return row[0]}).join(',');
+		if (papers != _papers) {
+			_papers = papers;
+
+			$.ajax({
+				'global': false,
+				'url': _graphUrl + '?paperIds=' + papers,
+				'dataType': 'json',
+				'success': function (data) {
+					data.items.forEach(function(entry) {
+						entry.start = new Date(entry.start);
+						entry.end = new Date(entry.end);
+					});
+
+					$('#graph').html('');
+					Timeline.draw(data);
+					$('.long-title').tooltip({
+						animated : 'fade',
+						placement : 'top',
+						container: '#graph'
 					});
 				}
+			});
+		}
+	}
 
-				$('#example').on( 'order.dt',  function () {
-					var asc = $('#example .sorting_asc');
-					var desc = $('#example .sorting_desc');
-					
-					if (asc.length == 1) {
-						Timeline.sort(asc.attr('name'), 'asc');
-					} else if (desc.length == 1) {
-						Timeline.sort(desc.attr('name'), 'desc');
-					}
-				});
-			}
-		});
-	}; 
-	
-	this.reloadGroups = function(groups) {
-		Timeline.load(_url, groups, _sort, _order);
+	this.loadTable = function(groups) {
+		if (groups != _groups) {
+			_groups = groups;
+			$.ajax({
+				'global': false,
+				'url': _tableUrl + '?groupIds=' + groups,
+				'dataType': 'json',
+				'success': function (data) {
+					_table.destroy();
+					$('#paper-table tbody').html('');
+					$.each(data, function(index, item) {
+						$(item).appendTo('#paper-table tbody');
+					});
+					_table = $('#paper-table').DataTable({
+						'stateSave': true,
+						'stateDuration': -1,
+						'stateLoadParams': function (settings, data) {
+							data.iStart = 0; // start at 0 on group change
+						},
+						'lengthMenu': [5, 10, 25, 50],
+						'pageLength': 10,
+						'columnDefs': [
+							{ 'targets': [0], 'visible': false, 'searchable': false },
+							{ 'targets': [2, 3, 4, 5], 'type': 'date', 'data': function (row, type, val, meta) {
+								if (typeof type === 'undefined') {
+									return '';
+								}
+								if (type === 'set') {
+									if (val === '') {
+										val = row[meta.col];
+									}
+									if (typeof row.sortDate === 'undefined') {
+										row.sortDate = new Object();
+										row.filterDate = new Object();
+									}
+									var date = val;
+									var dateString = val;
+									if (dateString != '') {
+										if (dateString.indexOf('<') > -1) {
+											dateString = dateString.substring(0, dateString.indexOf('<'));
+										}
+										date = (dateString == '') ? '' : $.fn.datepicker.DPGlobal.parseDate(dateString, "M dd, yyyy", $.fn.datepicker.defaults.language);
+									}
+									row.sortDate[meta.col] = date;
+									row.filterDate[meta.col] = dateString;
+								}
+								if (type === 'filter') {
+									return row.filterDate[meta.col];
+								}
+								if (type === 'sort') {
+									return row.sortDate[meta.col];
+								}
+								return row[meta.col];
+							}},
+							{ 'targets': [6], 'searchable': false }
+						]
+					});
+					_table.draw();
+				}
+			});
+		}
 	}
-	
-	this.sort = function(sort, order) {
-		if (typeof sort != 'undefined') {
-			Timeline.load(_url, _groups, sort, order);
-		}	
-	}
-	
+
 	this.draw = function(data) {
 		var lanes = data.lanes, 
 			items = data.items, 

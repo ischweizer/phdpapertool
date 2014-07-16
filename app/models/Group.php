@@ -6,6 +6,10 @@ class Group extends Eloquent {
 		return $this->belongsTo('Lab');
 	}
 
+	public function users() {
+		return $this->hasMany('User');
+	}
+
 	public static function getGroups($users) {
 		$groups = Group::where('id', '!=', 1)->get();
 		if($users == null)
