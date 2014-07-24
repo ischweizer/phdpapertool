@@ -23,8 +23,18 @@ class Author extends Eloquent {
 		return $query->where('id', '<>', '1');
 	}
 
+	/**
+	 * Relation to get review requests to this author.
+	 */
 	public function reviewRequests(){
 		return $this->belongsToMany('ReviewRequest')->withPivot('answer');
+	}
+
+	/**
+	 * Relation to get review answers created by this author.
+	 */
+	public function reviews() {
+		return $this->hasMany('Review');
 	}
 
 	/**

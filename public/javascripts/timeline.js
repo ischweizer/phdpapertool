@@ -1,5 +1,5 @@
 var Timeline = new function() {
-	var _tableUrl, _graphUrl, _groups, _papers, _table;
+	var _tableUrl, _graphUrl, _groups, _papers, _reviews, _table;
 
 	this.init = function(tableUrl, graphUrl) {
 		_tableUrl = tableUrl;
@@ -21,12 +21,19 @@ var Timeline = new function() {
 
 	this.loadGraph = function() {
 		var papers = _table.rows($('#paper-table tbody tr')).data().map(function(row){return row[0]}).join(',');
-		if (papers != _papers) {
+		var reviews = (_groups == '');
+		if (papers != _papers || reviews != _reviews) {
 			_papers = papers;
+			_reviews = reviews;
+
+			var reviewParam = '';
+			if (_reviews) {
+				reviewParam = '&reviews=1';
+			}
 
 			$.ajax({
 				'global': false,
-				'url': _graphUrl + '?paperIds=' + papers,
+				'url': _graphUrl + '?paperIds=' + _papers + reviewParam,
 				'dataType': 'json',
 				'success': function (data) {
 					data.items.forEach(function(entry) {
@@ -34,12 +41,19 @@ var Timeline = new function() {
 						entry.end = new Date(entry.end);
 					});
 
+					TimelineData = data;
 					$('#graph').html('');
 					Timeline.draw(data);
 					$('.long-title').tooltip({
 						animated : 'fade',
 						placement : 'top',
 						container: '#graph'
+					});
+					$('[data-toggle=popover]').popover({
+						animated : 'fade',
+						placement : 'top',
+						container: '#graph',
+						html: true
 					});
 				}
 			});
@@ -120,23 +134,25 @@ var Timeline = new function() {
 			miniHeight = lanes.length * 28,//* 12 + 50,
 			mainHeight = height - miniHeight - 50;
 
+		var x = d3.time.scale().clamp(true);
 		if(typeof timelineFrom != "undefined" && typeof timelineTo != "undefined"){
 			var monthMs = 2628000000;
 
-			var x = d3.time.scale()
-			.domain([d3.time.day(new Date(now.getTime()+timelineFrom*monthMs)),
-				d3.time.day(new Date(now.getTime()+timelineTo*monthMs))])
-			.range([0, width]);
+			x
+				.domain([d3.time.day(new Date(now.getTime()+timelineFrom*monthMs)),
+					d3.time.day(new Date(now.getTime()+timelineTo*monthMs))])
+				.range([0, width]);
 		} else {
-			var x = d3.time.scale()
+			x
 				.domain([d3.time.sunday(d3.min(items, function(d) { return d.start; })),
 					d3.max(items, function(d) { return d.end; })])
 				.range([0, width]);
 		}
-		var x1 = d3.time.scale().range([0, width]);
+
+		var visibleItems = items.filter(function (d) { return d.start < x.domain()[1] && d.end > x.domain()[0] });
+		var visibleComplexItems = visibleItems.filter(function (d) { return d.hasOwnProperty('complex') && d.complex });
 
 		var ext = d3.extent(lanes, function(d) { return d.id; });
-		var y1 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, mainHeight]);
 		var y2 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, miniHeight]);
 
 		var chart = d3.select('#graph')
@@ -196,25 +212,11 @@ var Timeline = new function() {
 			.tickFormat(d3.time.format('%d'))
 			.tickSize(6, 0, 0);
 
-		var x1DateAxis = d3.svg.axis()
-			.scale(x1)
-			.orient('bottom')
-			.ticks(d3.time.days, 1)
-			.tickFormat(d3.time.format('%a %d'))
-			.tickSize(6, 0, 0);
-
 		var xMonthAxis = d3.svg.axis()
 			.scale(x)
 			.orient('top')
 			.ticks(d3.time.months, 1)
 			.tickFormat(d3.time.format('%b %Y'))
-			.tickSize(15, 0, 0);
-
-		var x1MonthAxis = d3.svg.axis()
-			.scale(x1)
-			.orient('top')
-			.ticks(d3.time.mondays, 1)
-			.tickFormat(d3.time.format('%b - Week %W'))
 			.tickSize(15, 0, 0);
 
 		mini.append('g')
@@ -230,18 +232,34 @@ var Timeline = new function() {
 				.attr('dx', 5)
 				.attr('dy', 12);
 	
-		mini.append('line')
-			.attr('x1', x(now) + 0.5)
-			.attr('y1', 0)
-			.attr('x2', x(now) + 0.5)
-			.attr('y2', miniHeight)
-			.attr('class', 'todayLine');
+		if (x.domain()[0] < now && x.domain()[1] > now) {
+			mini.append('line')
+				.attr('x1', x(now) + 0.5)
+				.attr('y1', 0)
+				.attr('x2', x(now) + 0.5)
+				.attr('y2', miniHeight)
+				.attr('class', 'todayLine');
+		}
 
 		mini.append('g').selectAll('miniItems')
-			.data(Timeline.getPaths(x, y2, items))
+			.data(Timeline.getPaths(x, y2, visibleItems))
 			.enter().append('path')
 			.attr('class', function(d) { return 'miniItem ' + d.class; })
 			.attr('d', function(d) { return d.path; });
+
+		var offsetComplexItem = 0.5 * y2(1) - 2.5;
+		// for more complex elements generate one rect for each
+		mini.append('g').selectAll('complexItems')
+			.data(visibleComplexItems)
+			.enter().append('rect')
+			.attr('x', function(d) { return x(d.start); })
+			.attr('y', function(d) { return y2(d.lane) + offsetComplexItem; })
+			.attr('width', function(d) { return x(d.end) - x(d.start); })
+			.attr('height', function(d) { return 6; })
+			.attr('class', function(d) { return 'complexItem ' + d.class; })
+			.attr('data-toggle', 'popover')
+			.attr('title', function(d) { return d.desc; })
+			.attr('data-content', function(d) { return '<a href="' + d.link + '">' + d['link-desc'] + '</a>'; });
 	};
 
 	// generates a single path for each item class in the mini display
@@ -251,13 +269,15 @@ var Timeline = new function() {
 		var paths = {}, d, offset = 0.5 * y2(1) + 0.5, result = [];
 		for (var i = 0; i < items.length; i++) {
 			d = items[i];
+			if (d.complex)
+				continue;
 
 			if (!paths[d.class]) paths[d.class] = '';	
 
 			var temp = x(d.start);
 			
 
-			paths[d.class] += ['M',(x(d.start) > 0 ? x(d.start) : 0),(y2(d.lane) + offset),'H',(x(d.end) > 0 ? x(d.end) : 0)].join(' ');
+			paths[d.class] += ['M',x(d.start),(y2(d.lane) + offset),'H',x(d.end)].join(' ');
 			//console.log(paths[d.class]);
 		}
 
@@ -267,4 +287,5 @@ var Timeline = new function() {
 		}
 		return result;
 	};
+
 };

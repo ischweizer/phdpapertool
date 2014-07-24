@@ -62,6 +62,23 @@
 	color: #A34B4B;
 }
 
+.complexItem {
+	cursor: pointer;
+}
+
+.review {
+	stroke: #0000ff;
+	stroke-width:2;
+}
+
+.review.received-request {
+	fill: #ff0000;
+}
+
+.review.created-request {
+	fill: #00ff00;
+}
+
 .brush .extent {
 	stroke: gray;
 	fill: blue;
