@@ -1,12 +1,15 @@
 @extends('layouts/main')
 
 @section('head')
-
+	<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 	{{ HTML::script('javascripts/bootstrap-datepicker.min.js') }}
 	{{ HTML::style('stylesheets/datepicker3.min.css')}}
 
 	{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
 	{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
+	<style type="text/css">
+		
+	</style>
 	<script type="text/javascript">
 		
 		$(document).ready(function(){
@@ -59,6 +62,47 @@
 				$('#selectedAuthors option').prop('selected', true);
 				$('#selectedFiles option').prop('selected', true);
 			});
+			
+			// install authors typeahead
+			var authors = new Bloodhound({
+				datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+				queryTokenizer: Bloodhound.tokenizers.whitespace,
+				remote: {
+					url: "{{ URL::action('PaperController@getAutocomplete', array('QUERY')) }}",
+					replace: function (url, query) {
+						// double encode query as it gets decoded -> splitted, which would destroy queries containing '/'
+						return url.replace('QUERY', encodeURIComponent(encodeURIComponent(query)));
+					},
+					filter: function(list) {
+				    	return $.grep(list, function( author ) {
+								  return $("#selectedAuthors option[value='"+author.id+"']").length == 0;;
+								});
+				    }
+				}
+			});
+			authors.initialize();
+			$('#author_list').typeahead({
+				highlight: true
+			}, {
+				name: 'authors',
+				displayKey: 'name',
+				source: authors.ttAdapter(),
+				templates: {
+					suggestion: function (obj) {
+						return obj.last_name + ' ' + obj.first_name + ' ('+ obj.email + ')';
+					}
+				}
+			}).on('typeahead:selected typeahead:autocompleted', function(event, data) {
+				$('#selectedAuthors').append(
+			        $('<option></option>').val(data.id).html(data.last_name + ' ' + data.first_name + ' ('+ data.email + ')')
+			    );
+				authorNameChange();
+			});
+			$('#author_list').on('input', authorNameChange);
+			function authorNameChange() {
+				
+			}
+			authorNameChange();
 
 		});
 
@@ -85,7 +129,8 @@
 		<div class="form-group">
 			{{ Form::label('author', 'Author') }}
 			<div class="input-group"> 
-				{{ Form::select('authorSelect', $authorNames, null, array('class' => 'form-control', 'id' => 'authorSelect')) }}
+				{{-- Form::select('authorSelect', $authorNames, null, array('class' => 'form-control', 'id' => 'authorSelect')) --}}
+				{{ Form::text('authorlist', null, array('placeholder' => 'Author', 'class' => 'form-control', 'id' => 'author_list')) }}
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="button" id="addUser"><span class="glyphicon glyphicon-plus"></span></button>
 				</span>
