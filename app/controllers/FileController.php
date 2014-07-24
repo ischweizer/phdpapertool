@@ -86,7 +86,7 @@ class FileController extends BaseController {
 			$validator = FileObject::validate(Input::all());
 
 			if ($validator->fails()) {
-				return Redirect::action('PaperController@getEditFile')->withErrors($validator)->withInput();
+				return Redirect::action('FileController@getEditFile')->withErrors($validator)->withInput();
 			}
 			$file = FileObject::find($id);
 			$file->fill(Input::all());
@@ -94,12 +94,12 @@ class FileController extends BaseController {
 			$success = $file->save();
 			// check for success
 			if (!$success) {
-				return Redirect::action('PaperController@getEditFile')->
+				return Redirect::action('FileController@getEditFile')->
 					withErrors(new MessageBag(array('Sorry, couldn\'t save file to database.')))->
 					withInput();
 			}
 			
-			return Redirect::action('PaperController@getFileDetails', $id);
+			return Redirect::action('FileController@getFileDetails', $id);
 		}
 		App::abort(404);
 	}

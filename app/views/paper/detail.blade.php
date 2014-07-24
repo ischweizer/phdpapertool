@@ -26,10 +26,10 @@
 						$('#fileUploadModal').modal('show');
 					});
 					
-					$('#fileUploadModal').on('hidden.bs.modal', function () {
+					/*$('#fileUploadModal').on('hidden.bs.modal', function () {
 					    if(filesUploaded) 
 					    	location.reload();
-					})
+					})*/
 					
 					$('#fileupload').fileupload({
 				        url: "{{ URL::action('FileController@postUploadFile', array('id' => $paper->id)) }}",
@@ -49,12 +49,15 @@
 				        	if (data.result.success == 1) {
 				        		filesUploaded = true;
 					        	$('#uploadstatus').html('Upload finished.');
+					        	location.reload();
 				        	} else {
-					        	$('#uploadstatus').html("Some problems occured!");
+					        	//$('#uploadstatus').html("Some problems occured!");
+					        	alert("Some problems occured!");
 				        	}
 				        },
 				        fail : function (e, data) {
 					        console.log("Failed");
+					        alert("Some problems occured!");
 				        },
 				        progressall: function (e, data) {
 				            var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -142,6 +145,7 @@
 						<tr>
 							<th>Name</th>
 							<th>Comment</th>
+							<th>Uploaded At</th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -150,6 +154,7 @@
 							<tr>
 								<td>{{{ $file->name }}}</td>
 								<td>{{{ Str::limit($file->comment, 90) }}}</td>
+								<td>{{{ $file->created_at->format('M d, Y') }}}</td>
 								<td>
 									{{ Form::open(array('action' => array('FileController@getFileDetails', 'id' => $file->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 										<button type="submit" class="btn btn-xs btn-primary">Details</button>
