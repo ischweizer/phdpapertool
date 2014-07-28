@@ -25,6 +25,7 @@ Route::group(array('before' => 'guest'), function() {
 	Route::post('register', 'RegistrationController@register');
 });
 
+Route::get('activate', 'RegistrationController@activate');
 
 // In here go sites which are accessible as a authenticated user
 Route::group(array('before' => 'auth'), function()
