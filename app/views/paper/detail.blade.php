@@ -175,7 +175,7 @@
 			<div class="form-group">
 
 				
-				{{ Form::open(array('action' => array('ReviewController@getCreate', $paper->id), 'method' => 'get')) }}
+				{{ Form::open(array('action' => array('ReviewController@getCreateRequest', $paper->id), 'method' => 'get')) }}
 				{{ Form::label('reviews', 'Review Requests') }}
 					{{ Form::submit('Create Review Request', array('class' => 'btn btn-xs btn-primary')) }}
 				{{ Form::close() }}
