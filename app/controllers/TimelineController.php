@@ -135,6 +135,48 @@ class TimelineController extends BaseController {
 			$laneId++;
 		}
 
+		if (Input::has('reviews') && Input::get('reviews')) {
+			// include review lane if some data fits in
+			$createdReviewRequests = $user->createdReviewRequests->load('paper');
+			$receivedReviewRequests = $user->author->reviewRequests()->wherePivot('answer', '<>', 0)->get()->load('paper');
+			if (!$createdReviewRequests->isEmpty() || !$receivedReviewRequests->isEmpty()) {
+				$data['lanes'][] = array(
+					'id' => $laneId,
+					'label' => 'Reviews'
+				);
+
+				foreach($createdReviewRequests as $reviewRequest) {
+					$data['items'][] = array(
+						'id' => $count++,
+						'desc' => 'Created Review Request',
+						'class' => 'review created-request',
+						'lane' => $laneId,
+						'complex' => true,
+						'link' => URL::action('PaperController@getDetails', array($reviewRequest->paper->id)), // XXX maybe a single page for the review without all the paper clutter?
+						'link-desc' => $reviewRequest->paper->title,
+						'start' => $reviewRequest->deadline->format($format),
+						'end' => $reviewRequest->deadline->addDay()->format($format),
+					);
+				}
+
+				foreach($receivedReviewRequests as $reviewRequest) {
+					$data['items'][] = array(
+						'id' => $count++,
+						'desc' => 'Received Review Request',
+						'class' => 'review received-request',
+						'lane' => $laneId,
+						'complex' => true,
+						'link' => '#', // TODO link to handle review
+						'link-desc' => $reviewRequest->paper->title,
+						'start' => $reviewRequest->deadline->format($format),
+						'end' => $reviewRequest->deadline->addDay()->format($format),
+					);
+				}
+
+				$laneId++;
+			}
+		}
+
 		return Response::json($data);
 	}
 
@@ -238,8 +280,9 @@ class TimelineController extends BaseController {
 	}
 	
 	private function getPapers($usersIds) {
-	    return Paper::
-			  join('author_paper', 'papers.id', '=', 'author_paper.paper_id') // needed for users
+	    return Paper::with('authors', 'activeSubmission', 'activeSubmission.event')
+			->notArchived()
+			->join('author_paper', 'papers.id', '=', 'author_paper.paper_id') // needed for users
 			->join('users', 'author_paper.author_id', '=', 'users.author_id') // needed for whereIn userIds
 			->whereIn('users.id', $usersIds)
 			->select('papers.*') // for distinct to work correctly

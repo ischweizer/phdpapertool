@@ -205,10 +205,14 @@
 										</td>
 										<td>
 											@if ($author->pivot->answer)
-												<?php $review = $requestAnswers[$reviewRequest->id][$author->id]; ?>
-												{{ Form::open(array('action' => array('ReviewController@getDetails', 'id' => $review->id), 'method' => 'GET')) }}
-													Review recieved <button type="submit" class="btn btn-xs btn-primary">Details</button>
-												{{ Form::close() }}
+												@if ($requestAnswers[$reviewRequest->id] && $requestAnswers[$reviewRequest->id][$author->id])
+													<?php $review = $requestAnswers[$reviewRequest->id][$author->id]; ?>
+													{{ Form::open(array('action' => array('ReviewController@getDetails', 'id' => $review->id), 'method' => 'GET')) }}
+														Review recieved <button type="submit" class="btn btn-xs btn-primary">Details</button>
+													{{ Form::close() }}
+												@else 
+													Review request accepted
+												@endif
 											@elseif (is_null($author->pivot->answer)) 
 												No answer recieved yet
 											@else

@@ -18,9 +18,10 @@
 			$.fn.datepicker.defaults.format = "M dd, yyyy";
 			$.fn.datepicker.defaults.multidateSeparator = ";";
 
-			$('#deadline').datepicker({
+			$('#deadline-datepicker').datepicker({
 				startDate: '+1d'
-			}).on('change', function(e) {
+			});
+			$('#deadline').on('change', function(e) {
 				var field = $(this).attr('name');
 				$('#createReviewForm')
 					.data('bootstrapValidator')

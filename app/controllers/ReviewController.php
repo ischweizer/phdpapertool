@@ -15,13 +15,70 @@ class ReviewController extends BaseController{
 				array_push($reviews, $review);
 		}*/
 
-		$reviewRequests = array();
+		$unansweredReviewRequests = array();
+		$acceptedReviewRequests = array();
+		$finishedReviewRequests = array();
 		foreach(Auth::user()->author->reviewRequests as $reviewRequest){
 			if(is_null($reviewRequest->pivot->answer))
-				array_push($reviewRequests, $reviewRequest);
+				array_push($unansweredReviewRequests, $reviewRequest);
+			else if($reviewRequest->pivot->answer){
+				$answered = false;
+				foreach ($reviewRequest->reviews as $review) {
+					if($review->author_id == Auth::user()->author_id){
+						$answered = true;
+						array_push($finishedReviewRequests, $reviewRequest);
+						break;
+					}
+				}
+				if(!$answered)
+					array_push($acceptedReviewRequests, $reviewRequest);
+					
+			}
 		}
 
-		return View::make('review/handle_requests')->with('reviewRequests', $reviewRequests);
+		return View::make('review/handle_requests')
+			->with('unansweredReviewRequests', $unansweredReviewRequests)
+			->with('acceptedReviewRequests', $acceptedReviewRequests)
+			->with('finishedReviewRequests', $finishedReviewRequests);
+
+	}
+
+	public function getAccept($id)
+	{
+		$reviewRequest = ReviewRequest::findOrFail($id);
+
+		$access = false;
+		foreach($reviewRequest->authors as $author){
+			if($author->id == Auth::user()->author_id){
+				$access = true;
+				$author->pivot->answer = true;
+				$author->pivot->save();
+				break;
+			}
+		} 
+		if(!$access)
+			App::abort(404);
+
+		return Redirect::to('review');
+	}
+
+	public function getDecline($id)
+	{
+		$reviewRequest = ReviewRequest::findOrFail($id);
+
+		$access = false;
+		foreach($reviewRequest->authors as $author){
+			if($author->id == Auth::user()->author_id){
+				$access = true;
+				$author->pivot->answer = false;
+				$author->pivot->save();
+				break;
+			}
+		} 
+		if(!$access)
+			App::abort(404);
+
+		return Redirect::to('review');
 	}
 
 	public function getCreate($paper_id){
@@ -48,7 +105,7 @@ class ReviewController extends BaseController{
 			$fileNames[$file->id] = $file->formatName();
 		}
 
-		return View::make('review/create')
+		return View::make('review/createRequest')
 			->with('paper', $paper)
 			->with('fileNames', $fileNames)
 			->with('authorNames', $authorNames);

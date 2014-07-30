@@ -119,6 +119,6 @@ return array(
 	|
 	*/
 
-	'pretend' => $_ENV['MAIL_PRETEND'],
+	'pretend' => false,
 
 );
