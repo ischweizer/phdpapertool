@@ -81,7 +81,7 @@ class ReviewController extends BaseController{
 		return Redirect::to('review');
 	}
 
-	public function getCreate($paper_id){
+	public function getCreateRequest($paper_id){
 
 		$paper = Paper::find($paper_id);
 		if(!$paper)
@@ -143,9 +143,30 @@ class ReviewController extends BaseController{
 				App::abort(404);
 		}
 
-
-
 		return View::make('review/detail')->with('review', $review);
+	}
+
+	public function getCreate($reviewRequestId){
+
+		$reviewRequest = ReviewRequest::findOrFail($reviewRequestId);
+
+		return View::make('review/create')
+			->with('reviewRequest', $reviewRequest);
+	}
+
+	public function postCreate(){
+		if(Input::has('reviewRequestId') && Input::has('files')){
+			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
+
+			$review = new Review(array('author_id' => Auth::user()->author->id, 'review_request_id' => Input::get('reviewRequestId')));
+			if(Input::has('message'))
+				$review->message = Input::get('message');
+			$review->save();
+			$review->files()->sync(Input::get('files'));
+
+			return Redirect::action('ReviewController@getDetails', array('id' => $review->id));
+		} else 
+			App::abort(404);
 	}
 
 

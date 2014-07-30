@@ -105,7 +105,7 @@
 							@endforeach
 						</td>
 						<td>
-						create answer
+							<a href="{{ URL::action('ReviewController@getCreate', $reviewRequest->id) }}" class="btn btn-xs btn-primary">create review</a>
 						</td>
 					</tr>
 				@endforeach
