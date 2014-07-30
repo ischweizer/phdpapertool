@@ -7,6 +7,7 @@
 
 	{{ HTML::script('javascripts/bootstrapValidator.min.js') }}
 	{{ HTML::style('stylesheets/bootstrapValidator.min.css') }}
+	{{ HTML::style('stylesheets/jquery.fileupload.css') }}
 	<style type="text/css">
 		
 	</style>
@@ -37,6 +38,51 @@
 					validating: 'glyphicon glyphicon-refresh'
 				},
 			});
+			
+			$('#open_new_author').click(function(){
+				$('#authorCreationModal').modal('show');
+			});
+			
+			$('#open_file_upload').click(function(){
+				$('#fileUploadModal').modal('show');
+			});
+			
+			$('#new_author').click(function(){
+				var lastname = $('#last_name').val();
+				var firstname = $('#first_name').val();
+				var email = $('#email').val();
+				if (lastname == '' || firstname == '' || email == '') {
+					alert("Please fill all fields!");
+				} else {
+					var data = {
+						last_name : lastname,
+						first_name : firstname,
+						email : email
+					};
+					
+					$.ajax({
+						type: "POST",
+						url: "{{ URL::action('PaperController@postCreateAuthor') }}",
+						data: data,
+						success: function(response) {
+							if (response.success !== undefined && response.success == 1) {
+								$.each(response.authors, function(key, value){
+									$('#selectedAuthors').append(
+								        $('<option></option>').val(key).html(value)
+								    );
+								    $('#authorCreationModal').modal('hide');
+								});
+								
+								$('#last_name').val('');
+								$('#first_name').val('');
+								$('#email').val('');
+							} else {
+								alert("An authors with the given email address already exists!");
+							}
+						}
+					});
+				}
+			});
 
 			$('#addUser').click(function() {
 				var chosenAuthor = $('#authorSelect option:selected').remove();
@@ -57,6 +103,49 @@
 				var chosenFile = $('#selectedFiles option:selected').remove();
 				$('#fileSelect').append(chosenFile);
 			});
+			
+			$('#fileupload').fileupload({
+		        url: "{{ URL::action('FileController@postUploadFile', array('id' => $paper->id)) }}",
+		        dataType: 'json',
+		        autoUpload: false,
+		        type: 'POST',
+		        add: function (e, data) {
+		        	$.each(data.files, function (index, file) {
+		                $('<p/>').text(file.name).appendTo('#files');
+		            });
+		        	$('#startupload').click(function () {
+	                    data.submit();
+	                });
+		        },
+		        done: function (e, data) {
+		        	if (data.result.success == 1) {
+		        		filesUploaded = true;
+			        	$('#uploadstatus').html('Upload finished.');
+			        	var files = data.result.files;
+			        	$.each( files, function( key, value ) {
+						    $('#selectedFiles').append(
+						        $('<option></option>').val(key).html(value)
+						    );
+						});
+						$('#fileUploadModal').modal('hide');
+		        	} else {
+			        	//$('#uploadstatus').html("Some problems occured!");
+			        	alert("Some problems occured!");
+		        	}
+		        },
+		        fail : function (e, data) {
+			        console.log("Failed");
+			        alert("Some problems occured!");
+		        },
+		        progressall: function (e, data) {
+		            var progress = parseInt(data.loaded / data.total * 100, 10);
+		            $('#progress .progress-bar').css(
+		                'width',
+		                progress + '%'
+		            );
+		        }
+		    }).prop('disabled', !$.support.fileInput)
+		        .parent().addClass($.support.fileInput ? undefined : 'disabled');
 
 			$('#createReviewForm').submit(function(){
 				$('#selectedAuthors option').prop('selected', true);
@@ -128,13 +217,8 @@
 		</div>
 		<div class="form-group">
 			{{ Form::label('author', 'Author') }}
-			<div class="input-group"> 
-				{{-- Form::select('authorSelect', $authorNames, null, array('class' => 'form-control', 'id' => 'authorSelect')) --}}
-				{{ Form::text('authorlist', null, array('placeholder' => 'Author', 'class' => 'form-control', 'id' => 'author_list')) }}
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" id="addUser"><span class="glyphicon glyphicon-plus"></span></button>
-				</span>
-			</div>
+			{{ Form::text('authorlist', null, array('placeholder' => 'Author', 'class' => 'form-control', 'id' => 'author_list')) }}
+			{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
 		<div class="form-group">
 			{{ Form::label('selectedUser', 'Selected User') }}
@@ -143,9 +227,9 @@
 					{{ Form::select('selectedAuthors[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedAuthors', 'multiple' => true)) }}
 				</div>
 				<div class="col-xs-1">
-						<div class="btn-group-vertical" >
-							{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'removeUser', 'class' => 'btn btn-sm btn-default')) }}
-						</div>
+					<div class="btn-group-vertical" >
+						{{ Form::button('<span class="glyphicon glyphicon-remove"></span>', array('id' => 'removeUser', 'class' => 'btn btn-sm btn-default')) }}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -157,6 +241,7 @@
 					<button class="btn btn-default" type="button" id="addFile"><span class="glyphicon glyphicon-plus"></span></button>
 				</span>
 			</div>
+			{{ Form::button('Upload File', array('id' => 'open_file_upload', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
 		<div class="form-group">
 			{{ Form::label('selectedFiles', 'Selected Files') }}
@@ -181,8 +266,73 @@
 		{{ Form::submit('Save', array('class' => 'btn btn-primary', 'id' => 'createReviewModalSave')) }}
 
 	{{ Form::close() }}
-
-
+	
+	<div class="modal fade" id="authorCreationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Create an Author</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="row">
+						<div class="col-md-6">
+							<label for="first_name" class="sr-only">First name</label>
+							<input type="text" class="form-control" id="first_name" placeholder="First name">
+						</div>
+						<div class="col-md-6">
+							<label for="last_name" class="sr-only">Last name</label>
+							<input type="text" class="form-control" id="last_name" placeholder="Last name">
+						</div>
+					</div>
+					<br>
+					<div class="form-group">
+						<label for="email" class="sr-only">Group name</label>
+						<input type="text" class="form-control" id="email" placeholder="Email">
+						
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="new_author">Save author</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Upload a File</h4>
+				</div>
+				<div class="modal-body">
+					
+					<span class="btn btn-success fileinput-button">
+						<i class="glyphicon glyphicon-plus"></i>
+						<span>Select files...</span>
+						<!-- The file input field used as target for the file upload widget -->
+						<input id="fileupload" type="file" name="files[]" multiple>
+					</span>
+					<br>
+					<br>
+					<!-- The global progress bar -->
+					<div id="progress" class="progress">
+						<div class="progress-bar progress-bar-success"></div>
+					</div>
+					<!-- The container for the uploaded files -->
+					<div id="files" class="files"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="startupload">Upload</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{ HTML::script('javascripts/jquery.ui.widget.js') }}
+	{{ HTML::script('javascripts/jquery.fileupload.js') }}
 
 
 @stop
