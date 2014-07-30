@@ -164,7 +164,7 @@ class ReviewController extends BaseController{
 			$review->save();
 			$review->files()->sync(Input::get('files'));
 
-			return Redirect::to('review');
+			return Redirect::action('ReviewController@getDetails', array('id' => $review->id));
 		} else 
 			App::abort(404);
 	}
