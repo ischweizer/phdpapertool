@@ -42,4 +42,8 @@ class EventModel extends Eloquent {
 		);
 		return $rules;
 	}
+	
+	public function getDates() {
+	    return array();
+	}
 }

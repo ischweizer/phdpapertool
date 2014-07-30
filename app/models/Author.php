@@ -70,4 +70,16 @@ class Author extends Eloquent {
 		);
 		return Validator::make($input, $rules);
 	}
+	
+	public function scopeFromPapers($query, $papers) {
+	    $papersIds = array();
+	    foreach($papers as $paper)
+		$papersIds[] = $paper->id;
+	    $query->whereExists(function($query2) use ($papersIds) {
+		$query2->select(DB::raw(1))
+			->from('author_paper')
+			->where('author_paper.author_id', DB::raw('authors.id'))
+			->whereIn('author_paper.paper_id', $papersIds);
+	    });
+	}
 }

@@ -200,4 +200,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
             }
             return $result;
         }
+	
+	public function scopeFromAuthors($query, $authors) {
+	    $authorsIds = array();
+	    foreach($authors as $author)
+		$authorsIds[] = $author->id;
+	    $query->whereIn('users.author_id', $authorsIds);
+	}
 }

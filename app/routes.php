@@ -11,6 +11,9 @@
 |
 */
 
+//test
+Route::get('cronjob', 'CronjobController@index');
+
 // Sites which should be accessible in both states
 // / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
 // either way it should become our "welcome" page.

@@ -37,5 +37,9 @@ class ReviewRequest extends Eloquent{
 		}
 		return parent::fromDateTime($value);
 	}
+	
+	public function getDates() {
+	    return array();
+	}
 
 }

@@ -57,4 +57,14 @@ class Paper extends Eloquent {
 		);
 		return Validator::make($input, $rules);
 	}
+	
+	
+	public function scopeWithEvent($query, $event) {
+	    $query->whereExists(function($query2) use ($event) {
+		$query2->select(DB::raw(1))
+			    ->from('submissions')
+			    ->where('submissions.paper_id', DB::raw('papers.id'))
+			    ->where('submissions.event_id', DB::raw($event->id));
+	    });
+	}
 }
