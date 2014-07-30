@@ -15,16 +15,73 @@ class ReviewController extends BaseController{
 				array_push($reviews, $review);
 		}*/
 
-		$reviewRequests = array();
+		$unansweredReviewRequests = array();
+		$acceptedReviewRequests = array();
+		$finishedReviewRequests = array();
 		foreach(Auth::user()->author->reviewRequests as $reviewRequest){
 			if(is_null($reviewRequest->pivot->answer))
-				array_push($reviewRequests, $reviewRequest);
+				array_push($unansweredReviewRequests, $reviewRequest);
+			else if($reviewRequest->pivot->answer){
+				$answered = false;
+				foreach ($reviewRequest->reviews as $review) {
+					if($review->author_id == Auth::user()->author_id){
+						$answered = true;
+						array_push($finishedReviewRequests, $reviewRequest);
+						break;
+					}
+				}
+				if(!$answered)
+					array_push($acceptedReviewRequests, $reviewRequest);
+					
+			}
 		}
 
-		return View::make('review/handle_requests')->with('reviewRequests', $reviewRequests);
+		return View::make('review/handle_requests')
+			->with('unansweredReviewRequests', $unansweredReviewRequests)
+			->with('acceptedReviewRequests', $acceptedReviewRequests)
+			->with('finishedReviewRequests', $finishedReviewRequests);
+
 	}
 
-	public function getCreate($paper_id){
+	public function getAccept($id)
+	{
+		$reviewRequest = ReviewRequest::findOrFail($id);
+
+		$access = false;
+		foreach($reviewRequest->authors as $author){
+			if($author->id == Auth::user()->author_id){
+				$access = true;
+				$author->pivot->answer = true;
+				$author->pivot->save();
+				break;
+			}
+		} 
+		if(!$access)
+			App::abort(404);
+
+		return Redirect::to('review');
+	}
+
+	public function getDecline($id)
+	{
+		$reviewRequest = ReviewRequest::findOrFail($id);
+
+		$access = false;
+		foreach($reviewRequest->authors as $author){
+			if($author->id == Auth::user()->author_id){
+				$access = true;
+				$author->pivot->answer = false;
+				$author->pivot->save();
+				break;
+			}
+		} 
+		if(!$access)
+			App::abort(404);
+
+		return Redirect::to('review');
+	}
+
+	public function getCreateRequest($paper_id){
 
 		$paper = Paper::find($paper_id);
 		if(!$paper)
@@ -48,7 +105,7 @@ class ReviewController extends BaseController{
 			$fileNames[$file->id] = $file->formatName();
 		}
 
-		return View::make('review/create')
+		return View::make('review/createRequest')
 			->with('paper', $paper)
 			->with('fileNames', $fileNames)
 			->with('authorNames', $authorNames);
@@ -86,9 +143,30 @@ class ReviewController extends BaseController{
 				App::abort(404);
 		}
 
-
-
 		return View::make('review/detail')->with('review', $review);
+	}
+
+	public function getCreate($reviewRequestId){
+
+		$reviewRequest = ReviewRequest::findOrFail($reviewRequestId);
+
+		return View::make('review/create')
+			->with('reviewRequest', $reviewRequest);
+	}
+
+	public function postCreate(){
+		if(Input::has('reviewRequestId') && Input::has('files')){
+			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
+
+			$review = new Review(array('author_id' => Auth::user()->author->id, 'review_request_id' => Input::get('reviewRequestId')));
+			if(Input::has('message'))
+				$review->message = Input::get('message');
+			$review->save();
+			$review->files()->sync(Input::get('files'));
+
+			return Redirect::action('ReviewController@getDetails', array('id' => $review->id));
+		} else 
+			App::abort(404);
 	}
 
 

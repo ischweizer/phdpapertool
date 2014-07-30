@@ -30,6 +30,10 @@ class Author extends Eloquent {
 		return $this->belongsToMany('ReviewRequest')->withPivot('answer');
 	}
 
+	public function countReviewRequestNotAnswered(){
+		return $this->reviewRequests()->whereNull('answer')->count(); //TODO
+	}
+
 	/**
 	 * Relation to get review answers created by this author.
 	 */

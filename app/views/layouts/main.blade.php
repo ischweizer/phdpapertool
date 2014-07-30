@@ -43,7 +43,13 @@
 					<ul class="pull-right nav nav-pills">
 						<li {{ (Route::current()->uri() == 'timeline') ? 'class="active"' : '' }}>{{ HTML::link('timeline', 'Timeline') }}</li>
 						<li {{ (Route::current()->uri() == 'paper') ? 'class="active"' : '' }}>{{ HTML::link('paper', 'My Paper') }}</li>
-						{{--<li {{ (Route::current()->uri() == 'data') ? 'class="active"' : '' }}>{{ HTML::link('data', 'My Review') }}</li>--}}
+						<li {{ (Route::current()->uri() == 'review') ? 'class="active"' : '' }}>
+							<a href="/review">My Review 
+								@if (Auth::user()->author->countReviewRequestNotAnswered() > 0) 
+									<span class="badge">{{{Auth::user()->author->countReviewRequestNotAnswered()}}}</span>
+								@endif
+							</a>
+						</li>
 						<li {{ (Route::current()->uri() == 'profile') ? 'class="active"' : '' }}>{{ HTML::link('profile', 'My Profile') }}</li>
 						<li {{ (Route::current()->uri() == 'conferences') ? 'class="active"' : '' }}>{{ HTML::link('event', 'Conferences') }}</li>
 						@if (Auth::user()->isAdmin())
@@ -69,8 +75,8 @@
 				<p>Designed and built with all the love in the world by <a href="" target="_blank">TU Darmstadt</a>.</p>
 				<p>Maintained by the <a href="#">core team</a> with the help of <a href="#">our contributors</a>.</p>
 				<p>Code licensed under <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">MIT</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+				<p>{{ HTML::link('impressum', 'Impressum') }}</p>
 			</div>
 		</div>
 	</body>
 </html>
-

@@ -26,6 +26,8 @@ class FileController extends BaseController {
 			$paper = Paper::with('authors')->find($paperId);
 			if (!is_null($paper)) {
 				$files = Input::file('files');
+				
+				$fileNames = array();
 				foreach ($files as $file) {
 					$destinationPath = storage_path().'/uploads/';
 					
@@ -45,12 +47,14 @@ class FileController extends BaseController {
 						$fileObject->filepath = $destinationPath.$filename;
 						$fileObject->comment = '';
 						$fileObject->save();
+						
+						$fileNames[$fileObject->id] = $fileObject->formatName();
 					} else {
 						return Response::json(array('success' => 0, 'error' => 'Error uploading file'));
 					}
 				}
 				
-				return Response::json(array('success' => 1));
+				return Response::json(array('success' => 1, 'files' => $fileNames));
 			} else {
 				return Response::json(array('success' => 0, 'error' => 'No Paper with given id found!'));
 			}

@@ -18,6 +18,7 @@ Route::get('cronjob', 'CronjobController@index');
 // / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
 // either way it should become our "welcome" page.
 Route::get('/', 'LoginController@showForm');
+Route::get('impressum', 'HomeController@getImpressum');
 
 // In here go sites which are accessible as a guest
 Route::group(array('before' => 'guest'), function() {

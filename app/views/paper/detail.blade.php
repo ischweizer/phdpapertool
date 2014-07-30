@@ -175,7 +175,7 @@
 			<div class="form-group">
 
 				
-				{{ Form::open(array('action' => array('ReviewController@getCreate', $paper->id), 'method' => 'get')) }}
+				{{ Form::open(array('action' => array('ReviewController@getCreateRequest', $paper->id), 'method' => 'get')) }}
 				{{ Form::label('reviews', 'Review Requests') }}
 					{{ Form::submit('Create Review Request', array('class' => 'btn btn-xs btn-primary')) }}
 				{{ Form::close() }}
@@ -205,10 +205,14 @@
 										</td>
 										<td>
 											@if ($author->pivot->answer)
-												<?php $review = $requestAnswers[$reviewRequest->id][$author->id]; ?>
-												{{ Form::open(array('action' => array('ReviewController@getDetails', 'id' => $review->id), 'method' => 'GET')) }}
-													Review recieved <button type="submit" class="btn btn-xs btn-primary">Details</button>
-												{{ Form::close() }}
+												@if ($requestAnswers[$reviewRequest->id] && $requestAnswers[$reviewRequest->id][$author->id])
+													<?php $review = $requestAnswers[$reviewRequest->id][$author->id]; ?>
+													{{ Form::open(array('action' => array('ReviewController@getDetails', 'id' => $review->id), 'method' => 'GET')) }}
+														Review recieved <button type="submit" class="btn btn-xs btn-primary">Details</button>
+													{{ Form::close() }}
+												@else 
+													Review request accepted
+												@endif
 											@elseif (is_null($author->pivot->answer)) 
 												No answer recieved yet
 											@else
