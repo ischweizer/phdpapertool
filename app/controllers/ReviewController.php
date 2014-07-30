@@ -105,7 +105,7 @@ class ReviewController extends BaseController{
 			$fileNames[$file->id] = $file->formatName();
 		}
 
-		return View::make('review/create')
+		return View::make('review/createRequest')
 			->with('paper', $paper)
 			->with('fileNames', $fileNames)
 			->with('authorNames', $authorNames);
