@@ -331,7 +331,11 @@ class PaperController extends BaseController {
 				$requestAnswers[$reviewRequest->id] = array();
 				foreach ($reviewRequest->authors as $author) {
 					if($author->pivot->answer) {
-						$requestAnswers[$reviewRequest->id][$author->id] = Review::where('author_id', '=', $author->id)->where('review_request_id', '=', $reviewRequest->id)->firstOrFail();
+						foreach ($reviewRequest->reviews as $review) {
+							if ($review->author_id == $author->id) {
+								$requestAnswers[$reviewRequest->id][$author->id] = $review;
+							}
+						}	
 					}
 				}
 			}
