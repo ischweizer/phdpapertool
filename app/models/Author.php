@@ -31,7 +31,7 @@ class Author extends Eloquent {
 	}
 
 	public function countReviewRequestNotAnswered(){
-		return reviewRequests()->where('answer'); //TODO
+		return $this->reviewRequests()->whereNull('answer')->count(); //TODO
 	}
 
 	/**
