@@ -158,7 +158,7 @@ class ReviewController extends BaseController{
 		if(Input::has('reviewRequestId') && Input::has('files')){
 			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
 
-			$review = new Review(array('user_id' => Auth::user()->id, 'review_request_id' => Input::get('reviewRequestId')));
+			$review = new Review(array('author_id' => Auth::user()->author->id, 'review_request_id' => Input::get('reviewRequestId')));
 			if(Input::has('message'))
 				$review->message = Input::get('message');
 			$review->save();

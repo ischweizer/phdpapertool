@@ -14,6 +14,8 @@
 	<div class="form-group">
 		{{ Form::label('files', 'Upload Files') }}
 
+		{{Form::select('files[]', array('8' => 'ahll'), null, array('size' => 5, 'class' => 'form-control', 'multiple' => true))}}
+
 		{{--
 
 		TODO:

@@ -5,7 +5,7 @@ use Carbon\Carbon;
 class Review extends Eloquent {
 	
 	protected $dates = array('deadline');
-	protected $fillable = array('user_id', 'review_request_id', 'message');
+	protected $fillable = array('author_id', 'review_request_id', 'message');
 	
 	public function author()
 	{
