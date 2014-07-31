@@ -132,46 +132,57 @@ class TimelineController extends BaseController {
 				);
 			}
 
+			if ($paper->authors->contains($user->author)) {
+				foreach ($paper->reviewRequests as $reviewRequest) {
+					$data['items'][] = array(
+						'id' => $count++,
+						'desc' => 'Review Request',
+						'class' => 'paper-review',
+						'lane' => $laneId,
+						'start' => $reviewRequest->deadline->format($format),
+						'end' => $reviewRequest->deadline->addDay()->format($format),
+					);
+				}
+			}
+
 			$laneId++;
 		}
 
 		if (Input::has('reviews') && Input::get('reviews')) {
 			// include review lane if some data fits in
-			$createdReviewRequests = $user->createdReviewRequests->load('paper');
-			$receivedReviewRequests = $user->author->reviewRequests()->wherePivot('answer', '<>', 0)->get()->load('paper');
-			if (!$createdReviewRequests->isEmpty() || !$receivedReviewRequests->isEmpty()) {
+			$receivedReviewRequests = $user->author->reviewRequests->load('paper');
+			$reviewLane = false;
+			foreach($receivedReviewRequests as $reviewRequest) {
+				$reviewLink = null;
+				if (is_null($reviewRequest->pivot->answer)) {
+					$reviewLink = URL::action('ReviewController@getIndex');
+				} else if ($reviewRequest->pivot->answer) {
+					$review = Review::where('author_id', '=', $user->author_id)->where('review_request_id', '=', $reviewRequest->id)->first();
+					if (!$review) {
+						$reviewLink = URL::action('ReviewController@getCreate', array($reviewRequest->id));
+					}
+				}
+				if ($reviewLink) {
+					$reviewLane = true;
+					$data['items'][] = array(
+						'id' => $count++,
+						'desc' => 'Received Review Request',
+						'class' => 'review-request',
+						'lane' => $laneId,
+						'complex' => true,
+						'link' => $reviewLink,
+						'link-desc' => $reviewRequest->paper->title,
+						'start' => $reviewRequest->deadline->format($format),
+						'end' => $reviewRequest->deadline->addDay()->format($format),
+					);
+				}
+			}
+
+			if ($reviewLane) {
 				$data['lanes'][] = array(
 					'id' => $laneId,
 					'label' => 'Reviews'
 				);
-
-				foreach($createdReviewRequests as $reviewRequest) {
-					$data['items'][] = array(
-						'id' => $count++,
-						'desc' => 'Created Review Request',
-						'class' => 'review created-request',
-						'lane' => $laneId,
-						'complex' => true,
-						'link' => URL::action('PaperController@getDetails', array($reviewRequest->paper->id)), // XXX maybe a single page for the review without all the paper clutter?
-						'link-desc' => $reviewRequest->paper->title,
-						'start' => $reviewRequest->deadline->format($format),
-						'end' => $reviewRequest->deadline->addDay()->format($format),
-					);
-				}
-
-				foreach($receivedReviewRequests as $reviewRequest) {
-					$data['items'][] = array(
-						'id' => $count++,
-						'desc' => 'Received Review Request',
-						'class' => 'review received-request',
-						'lane' => $laneId,
-						'complex' => true,
-						'link' => '#', // TODO link to handle review
-						'link-desc' => $reviewRequest->paper->title,
-						'start' => $reviewRequest->deadline->format($format),
-						'end' => $reviewRequest->deadline->addDay()->format($format),
-					);
-				}
 
 				$laneId++;
 			}

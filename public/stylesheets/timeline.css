@@ -66,17 +66,14 @@
 	cursor: pointer;
 }
 
-.review {
+.review-request {
 	stroke: #0000ff;
 	stroke-width:2;
-}
-
-.review.received-request {
 	fill: #ff0000;
 }
 
-.review.created-request {
-	fill: #00ff00;
+.paper-review {
+	stroke: #ff0000;
 }
 
 .brush .extent {
