@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ReviewController extends BaseController{
 
 	public function getIndex()
@@ -155,19 +157,54 @@ class ReviewController extends BaseController{
 	}
 
 	public function postCreate(){
-		if(Input::has('reviewRequestId') && Input::has('files')){
+		if(Input::has('reviewRequestId') /*&& Input::has('files')*/){
 			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
 
 			$review = new Review(array('author_id' => Auth::user()->author->id, 'review_request_id' => Input::get('reviewRequestId')));
 			if(Input::has('message'))
 				$review->message = Input::get('message');
 			$review->save();
-			$review->files()->sync(Input::get('files'));
-
-			return Redirect::action('ReviewController@getDetails', array('id' => $review->id));
+			
+			$errors = null;
+			if (Input::hasFile('files')) {
+				$files = Input::file('files');
+	
+				foreach ($files as $file) {
+					$destinationPath = storage_path().'/uploads/';
+					
+					if(!File::isDirectory($destinationPath))
+					{
+					     File::makeDirectory($destinationPath);
+					}
+					
+					$filename = time()."_".$file->getClientOriginalName();
+					$uploadSuccess = $file->move($destinationPath, $filename);
+					
+					if($uploadSuccess) {
+						$fileObject = new FileObject();
+						$fileObject->author_id = Auth::user()->author->id;
+						$fileObject->paper_id = $review->reviewRequest->paper->id;
+						$fileObject->review_id = $review->id;
+						$fileObject->name = $file->getClientOriginalName();
+						$fileObject->filepath = $destinationPath.$filename;
+						$fileObject->comment = '';
+						$fileObject->save();
+					} else {
+						$errors = array('message' => 'Couldn\'t save some files.');
+					}
+				}
+			}
+			return Redirect::action('ReviewController@getDetails', array('id' => $review->id))->withErrors($errors);
 		} else 
 			App::abort(404);
 	}
-
+	
+	public function getFiles() {
+		$review = Review::find(1);
+		$files = $review->files()->get();
+		foreach($files as $file) {
+			echo $file->formatName();
+		}
+	}
 
 }

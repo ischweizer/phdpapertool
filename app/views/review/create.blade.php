@@ -8,14 +8,12 @@
 
 	<h1>Create a Review</h1>
 
-	{{ Form::open(array('action' => 'ReviewController@postCreate')) }}
+	{{ Form::open(array('action' => 'ReviewController@postCreate', 'files' => true)) }}
 	{{ Form::hidden('reviewRequestId', $reviewRequest->id) }}
 
 	<div class="form-group">
-		{{ Form::label('files', 'Upload Files') }}
-
-		{{Form::select('files[]', array('8' => 'ahll'), null, array('size' => 5, 'class' => 'form-control', 'multiple' => true))}}
-
+		{{ Form::label('file', 'Upload Files') }}
+		<input class="input-file" name="files[]" id="files" type="file" multiple>
 		{{--
 
 		TODO:
