@@ -59,16 +59,15 @@ class CronjobController extends BaseController {
     private function checkEntry($tableName, $entry, $earlierBound, $laterBound) {
 	foreach($this->tablesAttributes[$tableName] as $attrName => $relTime) {
 	    
-	    if($entry->$attrName + $relTime > $earlierBound &&
-		$entry->$attrName + $relTime <= $laterBound) {
+	    //if($entry->$attrName->timestamp + $relTime > $earlierBound &&
+		//$entry->$attrName->timestamp + $relTime <= $laterBound) {
 		$this::addToUsers($tableName, $entry, $attrName);
-	    }
+	    //}
 		
 	}	
     }
     
     private function addToUsers($tableName, $entry, $attrName) {
-	//finde betroffene users und schicke ihnen eine benachrichtigung via email
 	if($tableName == "events")
 	    $users = $this::getUsersFromEvent($entry);
 	else if($tableName == "review_requests")
@@ -76,6 +75,7 @@ class CronjobController extends BaseController {
 	else
 	    return;
 	
+	$papers = $entry->getPapers();
 	foreach($users as $user) {
 	    if(!isset($this->usersAuthors[$user->id])) {
 		$this->usersAuthors[$user->id] = Author::find($user->author_id);
@@ -83,9 +83,9 @@ class CronjobController extends BaseController {
 	    }
 	    $this->usersMailContents[$user->id][] = array(
 		"tableName" => $tableName,
+		"papers" => $papers,
 		"attrName" => $attrName,
 		"entry" => $entry);
-	    //echo $user->email." ".$tableName." ".$entry->id."<br>";
 	}
     }
     
@@ -107,16 +107,19 @@ class CronjobController extends BaseController {
     private function informUsers() {
 	foreach($this->usersAuthors as $userId => $author) {
 	    $authorName = $author->first_name." ".$author->last_name;
-	    Mail::send('emails/reminder', array('name' => $authorName, 'contents' => $this->usersMailContents[$userId]), function($message) use ($author) {
+	    Mail::send('emails/reminder', array('name' => $authorName, 'contents' => $this->usersMailContents[$userId]), function($message) use ($author, $authorName) {
 		$message->to($author->email, $authorName)
 			->subject('Reminder')
 			->from('noreply@da-sense.de', 'PHDPapertool');
 	    });
-	    /*echo $author->first_name." ".$author->last_name.": <br>";
+	    echo $author->first_name." ".$author->last_name.": <br>";
 	    foreach($this->usersMailContents[$userId] as $content) {
-		echo $content["tableName"].": ".$content["entry"]->id." (".$content["attrName"].")<br>";
+		echo $content["tableName"].": ".$content["entry"]->id." (".$content["attrName"]."):<br>";
+		foreach($content["papers"] as $paper) {
+		    echo " ".$paper->title."<br>";
+		}
 	    }
-	    echo "<br>";*/
+	    echo "<br>";
 	}
     }
 }

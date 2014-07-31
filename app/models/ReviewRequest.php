@@ -38,4 +38,7 @@ class ReviewRequest extends Eloquent{
 		return parent::fromDateTime($value);
 	}
 
+	public function getPapers() {
+	    return array(Paper::find($this->paper_id));
+	}
 }

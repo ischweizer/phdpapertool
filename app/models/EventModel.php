@@ -42,4 +42,16 @@ class EventModel extends Eloquent {
 		);
 		return $rules;
 	}
+	
+	
+	public function getPapers() {
+	    $eventId = $this->id;
+	    return Paper::whereExists(function($query) use($eventId) {
+		$query->select(DB::raw(1))
+			->from('submissions')
+			->where('submissions.paper_id', DB::raw('papers.id'))
+			->where('submissions.event_id', DB::raw($eventId))
+			->where('submissions.active', DB::raw(1));
+	    })->get();
+	}
 }
