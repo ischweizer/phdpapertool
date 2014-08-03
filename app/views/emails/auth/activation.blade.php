@@ -6,11 +6,14 @@
 	<body>
 		<div>
 		    Dear {{{ $name }}},<br>
-		    You have been registered to 'PHDPapertool'. To confirm  
+		    You have been registered to 'PHDPapertool'. To confirm 
 		    the registration and to activate your account you have to 
 		    click the following link:<br>
 		    <br>
 		    {{link_to_action('RegistrationController@activate', 'Activation link', array('email' => $email, 'code' => $code), array())}}<br>
+		    <br>
+		    Please do not reply to this email. Mails sent to this address 
+		    cannot be answered.<br>
 		    <br>
 		    Regards,<br>
 		    The PHDPapertool-Team

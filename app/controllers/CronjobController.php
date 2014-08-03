@@ -13,7 +13,7 @@
  */
 class CronjobController extends BaseController {
     
-    //relative reminder dates (positive and negative numbers are allowed)
+    //relative reminder dates in seconds (positive and negative numbers are allowed)
     //delete attributes which are not supposed to reminded
     //[tableName][attributeName]
     var $tablesAttributes = array(
@@ -30,13 +30,10 @@ class CronjobController extends BaseController {
 	    "finished_at" => 0)*/
     );
     
-    /*var $tablesModels = array(
-	"events" => EventModel::getClass, 
-	"review_requests" => ReviewRequest::getClass);*/
-    
     //in seconds
     const intervalLength = 86400; //every day
     
+    //tableName, {papers}, attrName, entry
     var $usersMailContents = array();
     var $usersAuthors = array();
     
@@ -45,8 +42,8 @@ class CronjobController extends BaseController {
 	$earlierBound = $timestamp - $this::intervalLength/2;
 	$laterBound = $timestamp + $this::intervalLength/2;
 	$tablesData = array(
-	    "events" => EventModel::all(), 
-	    "review_requests" => ReviewRequest::all());//$this::getTablesData();
+	    "events" => EventModel::/*where('abstract_due', '<=', DB::raw('CURDATE()'))->*/where('end', '>=', DB::raw('CURDATE()'))->get(),
+	    "review_requests" => ReviewRequest::where('deadline', '>=', DB::raw('CURDATE()'))->get());
 	foreach($tablesData as $tableName => $entries) {
 	    foreach($entries as $entry) {
 		$this::checkEntry($tableName, $entry, $earlierBound, $laterBound);
@@ -54,16 +51,22 @@ class CronjobController extends BaseController {
 	}
 	
 	$this->informUsers();
+	
+	
+	foreach($this->usersAuthors as $userId => $author) {
+	    $authorName = $author->first_name." ".$author->last_name;
+	    return View::make('emails/reminder', array(
+		'name' => $authorName, 
+		'contents' => $this->usersMailContents[$userId]));
+	}
     }
     
     private function checkEntry($tableName, $entry, $earlierBound, $laterBound) {
 	foreach($this->tablesAttributes[$tableName] as $attrName => $relTime) {
-	    
 	    //if($entry->$attrName->timestamp + $relTime > $earlierBound &&
 		//$entry->$attrName->timestamp + $relTime <= $laterBound) {
 		$this::addToUsers($tableName, $entry, $attrName);
 	    //}
-		
 	}	
     }
     

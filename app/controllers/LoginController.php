@@ -53,11 +53,28 @@ class LoginController extends BaseController {
 				)
 			);
         }
-         
-        $isRembered = Input::has('isRembered') && Input::get('isRembered');
-        if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password')), $isRembered)) 
-            return Redirect::intended('timeline'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
-            
+	
+	$entry = User::where('email', '=', Input::get('email'))->first();
+	if($entry != null) {
+	    if($entry->email_confirmed == 0) {
+		    return View::make(
+				    'login', 
+				    array(
+					    'mode' => 'login', 
+					    'msg' => array(
+						    'success' => false,
+						    'content' => "The email-address was not confirmed yet."
+					    ),
+					    'input' => Input::get()
+				    )
+			    );	    
+	    }
+	    
+	    $isRembered = Input::has('isRembered') && Input::get('isRembered');
+	    if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password')), $isRembered)) 
+		return Redirect::intended('timeline'); //"Login successful! " . ($isRembered ? '<br>you will be rembered' : '');
+	}
+                    
         return View::make(
 				'login', 
 				array(
