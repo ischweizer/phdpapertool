@@ -20,9 +20,9 @@ class HomeController extends BaseController {
 		return View::make('hello');
 	}
 	
-	public function getImpressum()
+	public function getImprint()
 	{
-		return View::make('impressum');
+		return View::make('imprint');
 	}
 
 }

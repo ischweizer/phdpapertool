@@ -13,6 +13,11 @@ class FileObject extends Eloquent {
 	{
 		return $this->belongsTo('Author');
 	}
+	
+	public function review()
+	{
+		return $this->belongsTo('Review');
+	}
 
 	public function formatName()
 	{
