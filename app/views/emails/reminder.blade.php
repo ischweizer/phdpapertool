@@ -10,36 +10,59 @@
 		    <br>
 		    @foreach($contents as $content)
 			<?php
-			    $timeForm = $content["entry"][$content["attrName"]]->year."-".
-				$content["entry"][$content["attrName"]]->month."-".
-				$content["entry"][$content["attrName"]]->day;
+			    if($content["entry"][$content["attrName"]] == Carbon::today())
+				$timeForm = "today";
+			    else if($content["entry"][$content["attrName"]] == Carbon::tomorrow())
+				$timeForm = "tomorrow";
+			    else
+				$timeForm = "on ".
+				    $content["entry"][$content["attrName"]]->year."-".
+				    $content["entry"][$content["attrName"]]->month."-".
+				    $content["entry"][$content["attrName"]]->day;
 			?>
 			@if($content["tableName"] == "review_requests")
 			    There is request for a review on the paper '{{{$content["papers"][0]->title}}}'
-			    with deadline on {{{$timeForm}}}.
+			    which deadline is {{{$timeForm}}}.
+			    <br>
 			@elseif($content["tableName"] == "events")
 			    @if($content["attrName"] == "start")
-				A {{{$content["entry"]->detail_type}}} starts 
-				on {{{$timeForm}}}.
-			    @elseif($content["attrName"] == "end")
-				A {{{$content["entry"]->detail_type}}} ends 
-				on {{{$timeForm}}}.
-			    @elseif($content["attrName"] == "abstract_due")
-				There is an abstract submission deadline on {{{$timeForm}}}.
-			    @elseif($content["attrName"] == "paper_due")
-				There is a paper submission deadline on {{{$timeForm}}}.
-			    @elseif($content["attrName"] == "notification_date")
-				There is a notification date on {{{$timeForm}}}.
-			    @elseif($content["attrName"] == "camera_ready_due")
-				There is a camera ready submission deadline on {{{$timeForm}}}.
+				@if($content["entry"]->detail_type == "Workshop")
+				    The workshop "{{{$entry["workshop"]->name}}}" 
+				    of conference "{{{$entry["conference"]->name}}}"
+				    starts {{{$timeForm}}}.
+				@elseif($content["entry"]->detail_type == "ConferenceEdition")
+				    The conference "{{{$content["conference"]->name}}}"
+				    starts {{{$timeForm}}}.
+				@endif
+			     @elseif($content["attrName"] == "end")
+				@if($content["entry"]->detail_type == "Workshop")
+				    The workshop "{{{$content["workshop"]->name}}}" 
+				    of conference "{{{$content["conference"]->name}}}"
+				    ends {{{$timeForm}}}.
+				@elseif($content["entry"]->detail_type == "ConferenceEdition")
+				    The conference "{{{$content["conference"]->name}}}"
+				    ends {{{$timeForm}}}.
+				@endif 
+			    @else
+				@foreach($content["papers"] as $paper)
+				    @if($content["attrName"] == "abstract_due")
+					The abstract submission deadline for your paper
+					"{{{$paper->title}}}" is {{{$timeForm}}}.
+				    @elseif($content["attrName"] == "paper_due")
+					The paper submission deadline for your paper
+					"{{{$paper->title}}}" is {{{$timeForm}}}.
+				    @elseif($content["attrName"] == "notification_date")
+					The notification date for your paper
+					"{{{$paper->title}}}" is {{{$timeForm}}}.
+				    @elseif($content["attrName"] == "camera_ready_due")
+					The camera ready submission deadline for your paper
+					"{{{$paper->title}}}" is {{{$timeForm}}}.
+				    @endif
+				    <br>
+				@endforeach
 			    @endif
 			    <br>
-			    Following papers are concerned:<br>
-			    @foreach($content["papers"] as $paper)
-				{{{$paper->title}}} 
-			    @endforeach
 			@endif
-			<br>
 			<br>
 		    @endforeach
 		    <br>

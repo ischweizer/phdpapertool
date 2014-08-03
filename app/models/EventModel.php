@@ -54,4 +54,16 @@ class EventModel extends Eloquent {
 			->where('submissions.active', DB::raw(1));
 	    })->get();
 	}
+	
+	public function getWorkshop() {
+	    if($this->detail_type == "Workshop")
+		return Workshop::find($this->detail_id);
+	    return null;
+	}
+	
+	public function getConferenceEdition() {
+	    if($this->detail_type == "ConferenceEdition")
+		return ConferenceEdition::find($this->detail_id);
+	    return null;
+	}
 }

@@ -33,7 +33,7 @@ class CronjobController extends BaseController {
     //in seconds
     const intervalLength = 86400; //every day
     
-    //tableName, {papers}, attrName, entry
+    //tableName, workshop, conferenceEdition, conference, {papers}, attrName, entry
     var $usersMailContents = array();
     var $usersAuthors = array();
     
@@ -71,8 +71,22 @@ class CronjobController extends BaseController {
     }
     
     private function addToUsers($tableName, $entry, $attrName) {
-	if($tableName == "events")
+	$workshop = null;
+	$conferenceEdition = null;
+	$conference = null;
+	if($tableName == "events") {
 	    $users = $this::getUsersFromEvent($entry);
+	    if($attrName == "start" || $attrName == "end") {
+		if($entry->detail_type == 'Workshop') {
+		    $workshop = $entry->getWorkshop();
+		    $conferenceEdition = ConferenceEdition::find($workshop->conference_edition_id);
+		    $conference = Conference::find($conferenceEdition->conference_id);
+		} else if($entry->detail_type == "ConferenceEdition") {
+		    $conferenceEdition = $entry->getConferenceEdition();
+		    $conference = Conference::find($conferenceEdition->conference_id);
+		}
+	    }
+	}
 	else if($tableName == "review_requests")
 	    $users = $this::getUsersFromReviewRequest($entry);
 	else
@@ -86,6 +100,9 @@ class CronjobController extends BaseController {
 	    }
 	    $this->usersMailContents[$user->id][] = array(
 		"tableName" => $tableName,
+		"workshop" => $workshop,
+		"conferenceEdition" => $conferenceEdition,
+		"conference" => $conference,
 		"papers" => $papers,
 		"attrName" => $attrName,
 		"entry" => $entry);
