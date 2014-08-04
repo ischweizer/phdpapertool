@@ -23,7 +23,6 @@
 			@if($content["tableName"] == "review_requests")
 			    There is request for a review on the paper '{{{$content["papers"][0]->title}}}'
 			    which deadline is {{{$timeForm}}}.
-			    <br>
 			@elseif($content["tableName"] == "events")
 			    @if($content["attrName"] == "start")
 				@if($content["entry"]->detail_type == "Workshop")
@@ -34,6 +33,7 @@
 				    The conference "{{{$content["conference"]->name}}}"
 				    starts {{{$timeForm}}}.
 				@endif
+				<br>
 			     @elseif($content["attrName"] == "end")
 				@if($content["entry"]->detail_type == "Workshop")
 				    The workshop "{{{$content["workshop"]->name}}}" 
@@ -43,6 +43,7 @@
 				    The conference "{{{$content["conference"]->name}}}"
 				    ends {{{$timeForm}}}.
 				@endif 
+				<br>
 			    @else
 				@foreach($content["papers"] as $paper)
 				    @if($content["attrName"] == "abstract_due")
@@ -61,7 +62,6 @@
 				    <br>
 				@endforeach
 			    @endif
-			    <br>
 			@endif
 			<br>
 		    @endforeach
