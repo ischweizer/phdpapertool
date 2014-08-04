@@ -66,6 +66,7 @@
 			<br>
 		    @endforeach
 		    <br>
+		    <br>
 		    Please do not reply to this email. Mails sent to this address 
 		    cannot be answered.<br>
 		    <br>
