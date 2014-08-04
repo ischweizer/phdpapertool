@@ -63,10 +63,10 @@ class CronjobController extends BaseController {
     
     private function checkEntry($tableName, $entry, $earlierBound, $laterBound) {
 	foreach($this->tablesAttributes[$tableName] as $attrName => $relTime) {
-	    //if($entry->$attrName->timestamp + $relTime > $earlierBound &&
-		//$entry->$attrName->timestamp + $relTime <= $laterBound) {
+	    if($entry->$attrName->timestamp + $relTime > $earlierBound &&
+		$entry->$attrName->timestamp + $relTime <= $laterBound) {
 		$this::addToUsers($tableName, $entry, $attrName);
-	    //}
+	    }
 	}	
     }
     
