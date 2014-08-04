@@ -13,6 +13,7 @@
 
 //test
 Route::get('cronjob', 'CronjobController@index');
+Route::get('mailtest', 'MailTestController@index');
 
 // Sites which should be accessible in both states
 // / should be accessible in both states. We can still redirect to another site if we want to (as it currently does).
