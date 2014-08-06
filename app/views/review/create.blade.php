@@ -14,18 +14,6 @@
 	<div class="form-group">
 		{{ Form::label('file', 'Upload Files') }}
 		<input class="input-file" name="files[]" id="files" type="file" multiple>
-		{{--
-
-		TODO:
-			implement upload, so that somehow a array of File Id's can be provided for 
-			the Controller who handles this Page. ReviewController@postCreate needs a 
-			Input with the Name "files" which is an array (ex. array(5, 6, 17)) of 
-			corresponding file ids 
-
-			- Anton 
-
-		--}}
-
 	</div>
 
 	<div class="form-group">

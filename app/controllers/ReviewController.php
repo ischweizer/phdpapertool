@@ -122,6 +122,16 @@ class ReviewController extends BaseController{
 			$reviewRequest->authors()->sync(Input::get('selectedAuthors'));
 			$reviewRequest->files()->sync(Input::get('selectedFiles'));
 			
+			//set Token for not registrered authors
+			foreach ($reviewRequest->authors() as $author) {
+				if(!$author->user){
+					$author->pivot->auth_token = Hash::make(time()+rand()); //Not tested
+					$author->save();
+				}
+			}
+
+			//TODO Send email
+
 			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
 		} else
 			return App::abort(404);

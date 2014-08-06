@@ -27,7 +27,7 @@ class Author extends Eloquent {
 	 * Relation to get review requests to this author.
 	 */
 	public function reviewRequests(){
-		return $this->belongsToMany('ReviewRequest')->withPivot('answer');
+		return $this->belongsToMany('ReviewRequest')->withPivot('answer')->withPivot('auth_token');
 	}
 
 	public function countReviewRequestNotAnswered(){

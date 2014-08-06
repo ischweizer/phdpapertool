@@ -17,7 +17,7 @@ class ReviewRequest extends Eloquent{
 	}
 
 	public function authors(){
-		return $this->belongsToMany('Author')->withPivot('answer');
+		return $this->belongsToMany('Author')->withPivot('answer')->withPivot('auth_token');
 	}
 
 	public function reviews(){
