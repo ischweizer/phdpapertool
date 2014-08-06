@@ -161,6 +161,7 @@
 	<div id="graph"></div>
 	<div style="float:right">
 		<ul class="list-inline" style="display:inline-block">
+			<li><span class="paper-review">&#9608; </span>Review Deadline</li>
 			<li><span class="paper">&#9608; </span>Paper Submission Stage</li>
 			<li><span class="noti">&#9608; </span>Notification Stage</li>
 			<li><span class="cam">&#9608; </span>Camera Ready Submission Stage</li>
