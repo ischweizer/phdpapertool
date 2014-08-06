@@ -47,14 +47,11 @@ class ReviewController extends BaseController{
 
 	public function getAuth()
 	{
-		if(Input::has('author_id') && Input::has('review_request_id') && Input::has('email') && Input::has('auth_token')){
+		if(Input::has('author_id') && Input::has('review_request_id') && Input::has('auth_token')){
 			$author = Author::findOrFail(Input::get('author_id'));
-			if($author->email == Input::get('email')){
-				foreach ($author->reviewRequests as $reviewRequest) {
-					if($reviewRequest->id == Input::get('review_request_id')
-						&& $reviewRequest->pivot->auth_token == Input::get('auth_token')){
-						return $this->getCreate(Input::get('review_request_id'));
-					}
+			foreach ($author->reviewRequests as $reviewRequest) {
+				if($reviewRequest->id == Input::get('review_request_id') && $reviewRequest->pivot->auth_token == Input::get('auth_token')){
+					return $this->getCreate(Input::get('review_request_id'));
 				}
 			}
 		} 
@@ -140,10 +137,10 @@ class ReviewController extends BaseController{
 			$reviewRequest->files()->sync(Input::get('selectedFiles'));
 			
 			//set Token for not registrered authors
-			foreach ($reviewRequest->authors() as $author) {
+			foreach ($reviewRequest->authors as $author) {
 				if(!$author->user){
-					$author->pivot->auth_token = Hash::make(time()+rand()); //Not tested
-					$author->save();
+					$author->pivot->auth_token = Hash::make((string)(time()+rand())); //Not tested
+					$author->pivot->save();
 				}
 			}
 
@@ -177,6 +174,7 @@ class ReviewController extends BaseController{
 
 	public function getCreate($reviewRequestId){
 
+		//TODO fehlt auth check
 		$reviewRequest = ReviewRequest::findOrFail($reviewRequestId);
 
 		return View::make('review/create')
@@ -184,6 +182,9 @@ class ReviewController extends BaseController{
 	}
 
 	public function postCreate(){
+
+		//TODO fehlt auth check
+
 		if(Input::has('reviewRequestId') /*&& Input::has('files')*/){
 			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
 
