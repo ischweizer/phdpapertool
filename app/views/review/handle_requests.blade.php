@@ -8,7 +8,7 @@
 	
 	<div>
 	<h1>Review Requests:</h1>
-		<ul class="list-group">
+		{{--<ul class="list-group">
 			@foreach ($unansweredReviewRequests as $reviewRequest)
 				<li class="list-group-item">
 					{{ Form::label('from', 'From: ') }}
@@ -25,7 +25,7 @@
 					@endforeach
 				</li>
 			@endforeach
-		</ul>
+		</ul>--}}
 		<table class="table table-bordered table-hover">
 			<tr>
 				<th colspan="5">

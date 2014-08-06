@@ -20,7 +20,7 @@ class Paper extends Eloquent {
 	
 	public function files()
 	{
-		return $this->hasMany('FileObject')->where('review_id', '==', '0');
+		return $this->hasMany('FileObject')->whereNull('review_id');
 	}
 
 	public function activeSubmission()
