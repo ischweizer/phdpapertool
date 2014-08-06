@@ -40,7 +40,7 @@ class RegistrationController extends BaseController {
             $user->save();
 	    
 	    Mail::send('emails/auth/activation', 
-		    array('name' => $user->first_name.' '.$user->last_name,
+		    array('name' => $author->first_name.' '.$author->last_name,
 			'email' => $user->email,
 			'code' => $user->remember_token), function($message) use($user)
 	    {
