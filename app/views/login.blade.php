@@ -1,17 +1,22 @@
 @extends('layouts/main')
 
 @section('content')
-		<div id="phd-carousel" class="carousel slide" data-ride="carousel" style="width:1140px; margin: 0 auto;">
+		<p>&nbsp;</p>
+		<div id="phd-carousel" class="carousel slide" data-ride="carousel" style="width:1140px; margin: 0 auto;box-shadow: 2px 2px 2px #888888;">
 			<!-- Indicators -->
 			<ol class="carousel-indicators">
 				<li data-target="#phd-carousel" data-slide-to="0" class="active"></li>
 				<li data-target="#phd-carousel" data-slide-to="1"></li>
+				<li data-target="#phd-carousel" data-slide-to="2"></li>
 			</ol>
 
 			<!-- Wrapper for slides -->
 			  <div class="carousel-inner">
-				<div class="item active">
-				  <img src="images/carousel/timeline.png">
+			  	<div class="item active">
+				  <img src="images/carousel/first.png">
+				</div>
+				<div class="item">
+				  <img src="images/carousel/home.png">
 				  <div class="carousel-caption">
 					<p>Get a quick overview over your papers.</p>
 				  </div>
@@ -32,18 +37,13 @@
 				<span class="glyphicon glyphicon-chevron-right"></span>
 			</a>
 		</div>
-		
-		<p>&nbsp;</p>
-		<p>&nbsp;</p>
-		<div class="jumbotron" style="text-align:center; margin-bottom: 0px;padding-top: 15px;padding-bottom: 15px;">
-		  <h1>Welcome to PhD Paper Tool!</h1>
-		</div>
 
 		<p></p>
 		<div class="panel panel-success">
 		  <div class="panel-heading">Account Login</div>
 			  <div class="panel-body">	  
 				<div class="row">
+					<div class="col-xs-2"></div>
 					<div class="col-xs-8">
 					
 				@if ($mode == 'login')					
@@ -68,7 +68,7 @@
 							</label>
 						</div>
 
-						<div class="uiButton">
+						<div class="uiButton" style="text-align:center">
 							<input type="submit" class="btn btn-primary btn-lg" value="Login">
 							{{ HTML::link('registration', 'Registration', array('class' => 'btn btn-default btn-lg')) }}
 						</div>
@@ -84,7 +84,8 @@
 					<br>
 					<p class="text-center">{{ HTML::link('', 'Login again', array('class' => 'btn btn-info')) }}</p>
 				@endif	
-				</div>    
+				</div>
+				<div class="col-xs-2"></div>    
         		</div>
 			</div>    
         </div>
