@@ -52,7 +52,7 @@
 					<tr>
 						<td>{{{ $paper->title }}}</td>
 						<td>{{{ Str::limit($paper->abstract, 90) }}}</td>
-						<td>{{{ $paper->repository_url }}}</td>
+						<td>@if ($paper->repository_url) {{ HTML::link($paper->repository_url) }} @endif</td>
 						<td>
 							{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 								<button type="submit" class="btn btn-xs btn-primary">Details</button>

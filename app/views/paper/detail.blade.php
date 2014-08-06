@@ -91,7 +91,13 @@
 
 		<div class="form-group">
 			{{ Form::label('repository_url', 'Repository') }}
-			{{ Form::url('repository_url', $paper->repository_url, array('class' => 'form-control', 'readonly')) }}
+			<div class="form-control">
+			@if($paper->repository_url)
+				{{ HTML::link($paper->repository_url) }}
+			@else
+				Not specified.
+			@endif
+			</div>
 		</div>
 
 		<div class="form-group">

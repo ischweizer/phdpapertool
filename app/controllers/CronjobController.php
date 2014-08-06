@@ -53,12 +53,14 @@ class CronjobController extends BaseController {
 	$this->informUsers();
 	
 	
-	foreach($this->usersAuthors as $userId => $author) {
+	/*foreach($this->usersAuthors as $userId => $author) {
 	    $authorName = $author->first_name." ".$author->last_name;
 	    return View::make('emails/reminder', array(
 		'name' => $authorName, 
 		'contents' => $this->usersMailContents[$userId]));
-	}
+	}*/
+	
+	//return View::make('hello');
     }
     
     private function checkEntry($tableName, $entry, $earlierBound, $laterBound) {
@@ -132,14 +134,14 @@ class CronjobController extends BaseController {
 			->subject('Reminder')
 			->from('noreply@da-sense.de', 'PHDPapertool');
 	    });
-	    echo $author->first_name." ".$author->last_name.": <br>";
+	    /*echo $author->first_name." ".$author->last_name.": <br>";
 	    foreach($this->usersMailContents[$userId] as $content) {
 		echo $content["tableName"].": ".$content["entry"]->id." (".$content["attrName"]."):<br>";
 		foreach($content["papers"] as $paper) {
 		    echo " ".$paper->title."<br>";
 		}
 	    }
-	    echo "<br>";
+	    echo "<br>";*/
 	}
     }
 }

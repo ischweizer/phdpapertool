@@ -53,7 +53,8 @@ class Paper extends Eloquent {
 			$input = Input::all();
 		}
 		$rules = array(
-				'title'	=> 'Required'
+				'title'	=> 'Required',
+				'repository_url' => 'url'
 		);
 		return Validator::make($input, $rules);
 	}

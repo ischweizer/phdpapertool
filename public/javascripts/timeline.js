@@ -181,24 +181,24 @@ var Timeline = new function() {
 			.data(lanes)
 			.enter().append('foreignObject')
 			.attr("width", "150")
-			.attr("height", "70")
+			.attr("height", d3.round(y2(1)))
 			.attr('x', -160)
 			.attr('y', function(d) { return y2(d.id); })
 			.attr('dy', '0.5ex')
 			.attr('text-anchor', 'end')
-			.attr('class', 'laneText')
 			.append("xhtml:span")
 			.attr('class', function(d) { 
 				if (d.label.length > 20) {
-					return 'long-title';
+					return 'laneText long-title';
 				} else { 
-					return '';
+					return 'laneText';
 				}
 			})
+			.attr('style', 'line-height: ' + d3.round(y2(1)) + 'px;')
 			.attr('title', function(d) { return d.label; })
     		.text(function(d) {
 				if (d.label.length > 20) {
-					return d.label.substr(0, 20) + ' ...';
+					return d.label.substr(0, 18) + ' ...';
 				} else { 
 					return d.label;
 				}
