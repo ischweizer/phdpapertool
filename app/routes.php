@@ -28,6 +28,8 @@ Route::group(array('before' => 'guest'), function() {
 
 	Route::get('registration', 'RegistrationController@showForm');
 	Route::post('register', 'RegistrationController@register');
+
+	Route::get('email_review', 'ReviewController@getAuth');
 });
 
 Route::get('activate', 'RegistrationController@activate');

@@ -45,6 +45,23 @@ class ReviewController extends BaseController{
 
 	}
 
+	public function getAuth()
+	{
+		if(Input::has('author_id') && Input::has('review_request_id') && Input::has('email') && Input::has('auth_token')){
+			$author = Author::findOrFail(Input::get('author_id'));
+			if($author->email == Input::get('email')){
+				foreach ($author->reviewRequests as $reviewRequest) {
+					if($reviewRequest->id == Input::get('review_request_id')
+						&& $reviewRequest->pivot->auth_token == Input::get('auth_token')){
+						return $this->getCreate(Input::get('review_request_id'));
+					}
+				}
+			}
+		} 
+
+		App::abort(404);
+	}
+
 	public function getAccept($id)
 	{
 		$reviewRequest = ReviewRequest::findOrFail($id);
