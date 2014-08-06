@@ -2,7 +2,7 @@
 
 @section('content')
 		<p>&nbsp;</p>
-		<div id="phd-carousel" class="carousel slide" data-ride="carousel" style="width:1140px; margin: 0 auto;">
+		<div id="phd-carousel" class="carousel slide" data-ride="carousel" style="width:1140px; margin: 0 auto;box-shadow: 2px 2px 2px #888888;">
 			<!-- Indicators -->
 			<ol class="carousel-indicators">
 				<li data-target="#phd-carousel" data-slide-to="0" class="active"></li>
@@ -34,8 +34,7 @@
 			</a>
 		</div>
 		
-		<p>&nbsp;</p>
-		<p>&nbsp;</p>
+		<p></p>
 		<div class="jumbotron" style="text-align:center; margin-bottom: 0px;padding-top: 15px;padding-bottom: 15px;">
 		  <h1>Welcome to PhD Paper Tool!</h1>
 		</div>
