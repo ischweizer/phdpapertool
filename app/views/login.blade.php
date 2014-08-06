@@ -7,11 +7,15 @@
 			<ol class="carousel-indicators">
 				<li data-target="#phd-carousel" data-slide-to="0" class="active"></li>
 				<li data-target="#phd-carousel" data-slide-to="1"></li>
+				<li data-target="#phd-carousel" data-slide-to="2"></li>
 			</ol>
 
 			<!-- Wrapper for slides -->
 			  <div class="carousel-inner">
-				<div class="item active">
+			  	<div class="item active">
+				  <img src="images/carousel/first.png">
+				</div>
+				<div class="item">
 				  <img src="images/carousel/home.png">
 				  <div class="carousel-caption">
 					<p>Get a quick overview over your papers.</p>
@@ -32,11 +36,6 @@
 			<a class="right carousel-control" href="#phd-carousel" role="button" data-slide="next">
 				<span class="glyphicon glyphicon-chevron-right"></span>
 			</a>
-		</div>
-		
-		<p></p>
-		<div class="jumbotron" style="text-align:center; margin-bottom: 0px;padding-top: 15px;padding-bottom: 15px;">
-		  <h1>Welcome to PhD Paper Tool!</h1>
 		</div>
 
 		<p></p>
