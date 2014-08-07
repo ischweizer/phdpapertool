@@ -11,7 +11,11 @@
 					<form role="form" action="register" method="POST">
 						<div class="form-group">
 							<label>Email *</label>
-							<input type="email" class="form-control" name="email" placeholder="Email">
+							@if ($email)
+								<input type="email" class="form-control" name="email" placeholder="Email" value="{{{ $email }}}">
+							@else
+								<input type="email" class="form-control" name="email" placeholder="Email">
+							@endif
 						</div>
 
 						<div class="form-group">

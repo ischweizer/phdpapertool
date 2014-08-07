@@ -7,7 +7,13 @@
 class RegistrationController extends BaseController {
     
     public function showForm() {
-        return View::make('register', array('mode' => 'register'));
+    	if(Input::has('email'))
+    		$email = Input::get('email');
+    	else
+    		$email = null;
+        return View::make('register')
+			->with('mode', 'register')
+			->with('email', $email);
     }
     
     public function register() {

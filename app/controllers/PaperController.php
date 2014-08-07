@@ -378,7 +378,7 @@ class PaperController extends BaseController {
 	    }
 		$author = Author::create( $input );
 		$authorName = $author->first_name.' '.$author->last_name;
-		Mail::send('emails/postCreateAuthor', array('name' => $authorName), function($message) use ($author, $authorName) {
+		Mail::send('emails/postCreateAuthor', array('name' => $authorName, 'email' => $author->email), function($message) use ($author, $authorName) {
 		    $message->to($author->email, $authorName)
 			    ->subject('PHDPapertool')
 			    ->from('noreply@da-sense.de', 'PHDPapertool');
