@@ -107,7 +107,7 @@ class ReviewController extends BaseController{
 				
 				if(!File::isDirectory($destinationPath))
 				{
-				     File::makeDirectory($destinationPath);
+					 File::makeDirectory($destinationPath);
 				}
 				
 				$filename = time()."_".$file->getClientOriginalName();
@@ -201,21 +201,39 @@ class ReviewController extends BaseController{
 	public function postCreateReviewRequest(){
 		if (Input::has('deadline') && Input::has('selectedAuthors') && Input::has('selectedFiles') && Input::has('paperId')) {
 			$reviewRequest = new ReviewRequest(array("user_id" => Auth::user()->id, "deadline" => Input::get('deadline'), 'paper_id' => Input::get('paperId')));
-			if(Input::has('message'))
+			if(Input::has('message')) {
 				$reviewRequest->message = Input::get('message');
+				$message = Input::get('message');
+			} else 
+				$message = null;
+			
 			$reviewRequest->save();
 			$reviewRequest->authors()->sync(Input::get('selectedAuthors'));
 			$reviewRequest->files()->sync(Input::get('selectedFiles'));
 			
-			//set Token for not registrered authors
+			//set Token for not registrered authors and send mail
 			foreach ($reviewRequest->authors as $author) {
+				$authorName = $author->first_name." ".$author->last_name;
 				if(!$author->user){
-					$author->pivot->auth_token = Hash::make((string)(time()+rand())); //Not tested
+					$auth_token = Hash::make((string)(time()+rand()));
+					$author->pivot->auth_token = $auth_token;
 					$author->pivot->save();
-				}
-			}
 
-			//TODO Send email
+					Mail::send('emails/review_unregistered_author', array('name' => $authorName, 'reviewRequest' => $reviewRequest, 'author' => $author, 'auth_token' => $auth_token), function($message) use ($author, $authorName, $reviewRequest){
+						$message->to($author->email, $authorName) 
+							->subject('Review Request from '.$reviewRequest->user->formatName())
+							->from('noreply@da-sense.de', 'PHDPapertool');
+					});
+				} else {
+					Mail::send('emails/review_registered_user', array('name' => $authorName, 'reviewRequest' => $reviewRequest, 'author' => $author), function($message) use ($author, $authorName, $reviewRequest){
+						$message->to($author->email, $authorName) 
+							->subject('Review Request from '.$reviewRequest->user->formatName())
+							->from('noreply@da-sense.de', 'PHDPapertool');
+					});
+				}
+
+			} 
+
 
 			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
 		} else
