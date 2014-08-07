@@ -25,10 +25,12 @@ Route::group(array('before' => 'guest'), function() {
 	Route::get('registration', 'RegistrationController@showForm');
 	Route::post('register', 'RegistrationController@register');
 
-	Route::get('email_review', 'ReviewController@getAuth');
+
 });
 
 Route::get('activate', 'RegistrationController@activate');
+
+Route::any('email_review', 'ReviewController@anyAuth');
 
 // In here go sites which are accessible as a authenticated user
 Route::group(array('before' => 'auth'), function()

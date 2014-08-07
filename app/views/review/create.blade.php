@@ -9,7 +9,7 @@
 	<h1>Create a Review</h1>
 
 	{{ Form::open(array('action' => 'ReviewController@postCreate', 'files' => true)) }}
-	{{ Form::hidden('reviewRequestId', $reviewRequest->id) }}
+	{{ Form::hidden('review_request_id', $reviewRequest->id) }}
 
 	<div class="form-group">
 		{{ Form::label('file', 'Upload Files') }}

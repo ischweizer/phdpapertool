@@ -45,18 +45,89 @@ class ReviewController extends BaseController{
 
 	}
 
-	public function getAuth()
+	public function anyAuth()
 	{
 		if(Input::has('author_id') && Input::has('review_request_id') && Input::has('auth_token')){
 			$author = Author::findOrFail(Input::get('author_id'));
-			foreach ($author->reviewRequests as $reviewRequest) {
-				if($reviewRequest->id == Input::get('review_request_id') && $reviewRequest->pivot->auth_token == Input::get('auth_token')){
-					return $this->getCreate(Input::get('review_request_id'));
+			$reviewRequest = ReviewRequest::findOrFail(Input::get('review_request_id'));
+
+			if(Input::has('accept'))
+				DB::update('update author_review_request set answer = 1 where author_id = ? and review_request_id = ?',array(Input::get('author_id'),Input::get('review_request_id')));
+			elseif(Input::has('decline'))
+				DB::update('update author_review_request set answer = 0 where author_id = ? and review_request_id = ?',array(Input::get('author_id'),Input::get('review_request_id')));
+			
+			if(Input::has('file_id')){
+				foreach ($reviewRequest->files as $file) {
+					if ($file->id == Input::get('file_id')) 
+						return Response::download($file->filepath, $file->name);
+				}
+				App::abort(404);
+			}
+			$review = null;
+			if(Input::has('create_review')){
+				if(Input::has('message'))
+					$message = Input::get('message');
+				else 
+					$message = null;
+				if(Input::hasFile('files'))
+					$files = Input::file('files');
+				else
+					$files = null;
+				$result = $this->create_review($reviewRequest, $author, $message, $files);
+				$review = Review::findOrFail($result['review_id']);
+			}
+
+			$result = DB::select('select answer from author_review_request where author_id = ? and review_request_id = ? and auth_token = ?', array(Input::get('author_id'),Input::get('review_request_id'),Input::get('auth_token')));
+
+			if(!count($result))
+				App::abort(404);
+
+			return View::make('review/email_review')
+				->with('author', $author)
+				->with('reviewRequest', $reviewRequest)
+				->with('auth_token', Input::get('auth_token'))
+				->with('answer', $result[0]->answer)
+				->with('review', $review);
+		} else
+			App::abort(404);
+	}
+
+	private function create_review($reviewRequest, $author, $message, $files)
+	{
+		$review = new Review(array('author_id' => $author->id, 'review_request_id' => $reviewRequest->id));
+		if($message)
+			$review->message = $message;
+		$review->save();
+		
+		$errors = null;
+
+		if ($files) {
+			foreach ($files as $file) {
+				$destinationPath = storage_path().'/uploads/';
+				
+				if(!File::isDirectory($destinationPath))
+				{
+				     File::makeDirectory($destinationPath);
+				}
+				
+				$filename = time()."_".$file->getClientOriginalName();
+				$uploadSuccess = $file->move($destinationPath, $filename);
+				
+				if($uploadSuccess) {
+					$fileObject = new FileObject();
+					$fileObject->author_id = $author->id;
+					$fileObject->paper_id = $review->reviewRequest->paper->id;
+					$fileObject->review_id = $review->id;
+					$fileObject->name = $file->getClientOriginalName();
+					$fileObject->filepath = $destinationPath.$filename;
+					$fileObject->comment = '';
+					$fileObject->save();
+				} else {
+					$errors = array('message' => 'Couldn\'t save some files.');
 				}
 			}
-		} 
-
-		App::abort(404);
+		}
+		return array('review_id' => $review->id, 'errors' => $errors);
 	}
 
 	public function getAccept($id)
@@ -183,48 +254,31 @@ class ReviewController extends BaseController{
 
 	public function postCreate(){
 
-		//TODO fehlt auth check
+		$reviewRequest = ReviewRequest::findOrFail(Input::get('review_request_id'));
+		$author = Auth::user()->author;
 
-		if(Input::has('reviewRequestId') /*&& Input::has('files')*/){
-			$reviewRequest = ReviewRequest::findOrFail(Input::get('reviewRequestId'));
-
-			$review = new Review(array('author_id' => Auth::user()->author->id, 'review_request_id' => Input::get('reviewRequestId')));
-			if(Input::has('message'))
-				$review->message = Input::get('message');
-			$review->save();
-			
-			$errors = null;
-			if (Input::hasFile('files')) {
-				$files = Input::file('files');
-	
-				foreach ($files as $file) {
-					$destinationPath = storage_path().'/uploads/';
-					
-					if(!File::isDirectory($destinationPath))
-					{
-					     File::makeDirectory($destinationPath);
-					}
-					
-					$filename = time()."_".$file->getClientOriginalName();
-					$uploadSuccess = $file->move($destinationPath, $filename);
-					
-					if($uploadSuccess) {
-						$fileObject = new FileObject();
-						$fileObject->author_id = Auth::user()->author->id;
-						$fileObject->paper_id = $review->reviewRequest->paper->id;
-						$fileObject->review_id = $review->id;
-						$fileObject->name = $file->getClientOriginalName();
-						$fileObject->filepath = $destinationPath.$filename;
-						$fileObject->comment = '';
-						$fileObject->save();
-					} else {
-						$errors = array('message' => 'Couldn\'t save some files.');
-					}
-				}
+		$access = false;
+		foreach ($reviewRequest->authors as $requested_author) {
+			if($author->id == $requested_author->id){
+				$access = true;
+				break;
 			}
-			return Redirect::action('ReviewController@getDetails', array('id' => $review->id))->withErrors($errors);
-		} else 
+		}
+		if(!$access)
 			App::abort(404);
+
+		if(Input::has('message'))
+			$message = Input::get('message');
+		else 
+			$message = null;
+		if(Input::hasFile('files'))
+			$files = Input::file('files');
+		else
+			$files = null;
+
+		$result = $this->create_review($reviewRequest, $author, $message, $files);
+		return Redirect::action('ReviewController@getDetails', array('id' => $result['review_id']))->withErrors($result['errors']);
+
 	}
 	
 	public function getFiles() {
