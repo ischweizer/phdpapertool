@@ -19,6 +19,11 @@ class FileObject extends Eloquent {
 		return $this->belongsTo('Review');
 	}
 
+	public function reviewRequests()
+	{
+		return $this->belongsToMany('ReviewRequest', 'file_review_request', 'file_id', 'review_request_id');
+	}
+
 	public function formatName()
 	{
 		return $this->name." - uploaded: ".date_format($this->created_at, 'M d, Y G:i');

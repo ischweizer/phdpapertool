@@ -114,6 +114,11 @@ class FileController extends BaseController {
 		if ($paperAccess) {
 			return true;
 		}
+
+		foreach ($file->reviewRequests as $reviewRequest) {
+			if($this->checkReviewRequestAccess($reviewRequest))
+				return true;
+		}
 		
 		return false;
 	}
@@ -128,6 +133,19 @@ class FileController extends BaseController {
 			if ($author->id == Auth::user()->author->id) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks whether the currently authed user is an requested Author of this paper 
+	 *
+	 * @param $reviewRequest the ReviewRequest model
+	 */
+	private function checkReviewRequestAccess($reviewRequest){
+		foreach ($reviewRequest->authors as $author) { 
+			if($author->id == Auth::user()->author_id)
+				return true;
 		}
 		return false;
 	}
