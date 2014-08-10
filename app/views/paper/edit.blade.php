@@ -36,13 +36,16 @@
 					var lastname = $('#last_name').val();
 					var firstname = $('#first_name').val();
 					var email = $('#email').val();
+					//doesnt work with jquery
+					var notifyAuthor = document.getElementById("notifyAuthor").checked ? 1 : 0;
 					if (lastname == '' || firstname == '' || email == '') {
 						alert("Please fill all fields!");
 					} else {
 						var data = {
 							last_name : lastname,
 							first_name : firstname,
-							email : email
+							email : email,
+							notifyAuthor : notifyAuthor
 						};
 						
 						$.ajax({
@@ -456,6 +459,11 @@
 							<label for="email" class="sr-only">Group name</label>
 							<input type="text" class="form-control" id="email" placeholder="Email">
 							
+						</div>
+						<div class="checkbox">
+						    <label>
+							<input type="checkbox" id="notifyAuthor"> Notify author via email
+						    </label>
 						</div>
 					</div>
 					<div class="modal-footer">

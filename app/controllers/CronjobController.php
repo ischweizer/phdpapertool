@@ -27,7 +27,7 @@ class CronjobController extends BaseController {
 	"review_requests" => array(
 	    "deadline" => 0),
 	/*"review_submissions" => array(
-	    "finished_at" => 0)*/
+	    "finished_at" => 0)*/ //no supported
     );
     
     //in seconds

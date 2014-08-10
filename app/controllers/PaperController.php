@@ -376,13 +376,15 @@ class PaperController extends BaseController {
 	    {
 	        return Response::json(array('success' => 0, 'authors' => array()));
 	    }
-		$author = Author::create( $input );
-		$authorName = $author->first_name.' '.$author->last_name;
-		Mail::send('emails/postCreateAuthor', array('name' => $authorName, 'email' => $author->email), function($message) use ($author, $authorName) {
-		    $message->to($author->email, $authorName)
-			    ->subject('PHDPapertool')
-			    ->from('noreply@da-sense.de', 'PHDPapertool');
-		});
+		if(Input::has('notifyAuthor') && Input::get('notifyAuthor') == 1) {
+		    $author = Author::create( $input );
+		    $authorName = $author->first_name.' '.$author->last_name;
+		    Mail::send('emails/postCreateAuthor', array('name' => $authorName, 'email' => $author->email), function($message) use ($author, $authorName) {
+			$message->to($author->email, $authorName)
+				->subject('PHDPapertool')
+				->from('noreply@da-sense.de', 'PHDPapertool');
+		    });
+		}
 		return Response::json(array('success' => 1, 'authors' => array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")")));
 	}
 
