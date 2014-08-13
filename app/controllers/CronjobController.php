@@ -18,14 +18,14 @@ class CronjobController extends BaseController {
     //[tableName][attributeName]
     var $tablesAttributes = array(
 	"events" => array(
-	    "start" => 0, 
-	    "end" => 0, 
-	    "abstract_due" => 0, 
-	    "paper_due" => 0, 
-	    "notification_date" => 0, 
-	    "camera_ready_due" => 0),
+	    "start" => -86400, 
+	    "end" => -86400, 
+	    "abstract_due" => -86400, 
+	    "paper_due" => -86400, 
+	    "notification_date" => -86400, 
+	    "camera_ready_due" => -86400),
 	"review_requests" => array(
-	    "deadline" => 0),
+	    "deadline" => -86400),
 	/*"review_submissions" => array(
 	    "finished_at" => 0)*/ //no supported
     );
@@ -46,7 +46,7 @@ class CronjobController extends BaseController {
 	    "review_requests" => ReviewRequest::where('deadline', '>=', DB::raw('CURDATE()'))->get());
 	foreach($tablesData as $tableName => $entries) {
 	    foreach($entries as $entry) {
-		$this::checkEntry($tableName, $entry, $earlierBound, $laterBound);
+			$this::checkEntry($tableName, $entry, $earlierBound, $laterBound);
 	    }
 	}
 	
