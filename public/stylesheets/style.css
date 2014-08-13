@@ -1,5 +1,6 @@
 body {
 	text-align: center;
+	background-color: #eee;
 }
 
 #main {
@@ -175,4 +176,14 @@ body {
 
 .carousel-caption {
 	padding-bottom:0px;
+}
+
+.carousel-control.left,
+.carousel-control.right {
+   background-image: none;
+}
+
+.carousel-control {
+	width: 5%;
+	color: #07DAB8;
 }
