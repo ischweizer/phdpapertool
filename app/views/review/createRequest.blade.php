@@ -239,12 +239,8 @@
 		</div>
 		<div class="form-group">
 			{{ Form::label('files', 'Files') }}
-			<div class="input-group"> 
-				{{ Form::select('fileSelect', $fileNames, null, array('class' => 'form-control', 'id' => 'fileSelect')) }}
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" id="addFile"><span class="glyphicon glyphicon-plus"></span></button>
-				</span>
-			</div>
+			{{ Form::select('fileSelect', $fileNames, null, array('class' => 'form-control', 'id' => 'fileSelect')) }}
+			{{ Form::button('Select File', array('id' => 'addFile', 'class' => 'btn btn-sm btn-primary')) }}
 			{{ Form::button('Upload File', array('id' => 'open_file_upload', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
 		<div class="form-group">
