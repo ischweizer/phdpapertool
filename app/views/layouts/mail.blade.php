@@ -5,7 +5,12 @@
 	</head>
 	<body>
 		<div>
-		    Dear {{{ $name }}},<br>
+		    @if(isset($name))
+			Dear {{{ $name }}}
+		    @else
+			Hi
+		    @endif
+		    ,<br>
 		    @yield('mailContent')
 		    <br><br>
 		    Please do not reply to this email. Mails sent to this address 
