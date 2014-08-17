@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en-US">
-	<head>
-		<meta charset="utf-8">
-	</head>
-	<body>
-		<h2>Password Reset</h2>
-
-		<div>
-			To reset your password, complete this form: {{ URL::to('password/reset', array($token)) }}.
-		</div>
-	</body>
-</html>
+@extends('layouts/mail')
+@section('mailContent')
+    To reset your password, complete this form: <br>
+    <br>
+    {{link_to_action('RemindersController@getReset', 'Password reset form', array('token' => $token), array())}}
+    <br>
+@stop

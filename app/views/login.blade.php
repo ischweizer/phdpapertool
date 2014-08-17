@@ -70,7 +70,8 @@
 
 						<div class="uiButton" style="text-align:center">
 							<input type="submit" class="btn btn-primary btn-lg" value="Login">
-							{{ HTML::link('registration', 'Registration', array('class' => 'btn btn-default btn-lg')) }}
+							{{ HTML::link('registration', 'Registration', array('class' => 'btn btn-default btn-lg')) }} 
+							{{ HTML::link('passwordShowReminder', 'Reset password', array('class' => 'btn btn-default btn-lg')) }}
 						</div>
 					</form>
 				@else

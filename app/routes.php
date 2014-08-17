@@ -16,6 +16,10 @@
 // either way it should become our "welcome" page.
 Route::get('/', 'LoginController@showForm');
 Route::get('imprint', 'HomeController@getImprint');
+Route::get('passwordShowReminder', 'RemindersController@getRemind');
+Route::post('passwordSendReminder', 'RemindersController@postRemind');
+Route::get('passwordShowReset', 'RemindersController@getReset');
+Route::post('passwordPostReset', 'RemindersController@postReset');
 
 // In here go sites which are accessible as a guest
 Route::group(array('before' => 'guest'), function() {
