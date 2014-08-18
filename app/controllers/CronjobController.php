@@ -12,11 +12,12 @@
  * @author jost
  */
 class CronjobController extends BaseController {
-
+    
 	//relative reminder dates in seconds (positive and negative numbers are allowed)
 	//delete attributes which are not supposed to reminded
 	//[tableName][attributeName]
-	var $tablesAttributes = array(
+	//var $tablesAttributes = array(
+	public static $tablesAttributes = array(
 	"events" => array(
 		"start" => -86400,
 		"end" => -86400,
@@ -64,7 +65,7 @@ class CronjobController extends BaseController {
 	}
 
 	private function checkEntry($tableName, $entry, $earlierBound, $laterBound) {
-		foreach($this->tablesAttributes[$tableName] as $attrName => $relTime) {
+		foreach($this::$tablesAttributes[$tableName] as $attrName => $relTime) {
 			if($entry->$attrName->timestamp + $relTime > $earlierBound &&
 				$entry->$attrName->timestamp + $relTime <= $laterBound) {
 				$this::addToUsers($tableName, $entry, $attrName);
@@ -119,12 +120,16 @@ class CronjobController extends BaseController {
 		$authors = Author::fromPapers($papers)->get();
 		if(count($authors) == 0)
 			return array();
-		$users = User::fromAuthors($authors)->get();
+		$users = User::fromAuthors($authors)->withReminder('events')->get();
 		return $users;
 	}
 
 	private function getUsersFromReviewRequest($entry) {
-		   return array(User::find($entry->user_id));
+		$users = User::where('id', $entry->user_id)->withReminder('review_requests')->get();
+		if(count($users) == 0)
+		    return array();
+		return $users;
+		//return array(User::find($entry->user_id));
 	}
 
 	private function informUsers() {
@@ -135,14 +140,14 @@ class CronjobController extends BaseController {
 				->subject('Reminder')
 				->from('noreply@da-sense.de', 'PHDPapertool');
 			});
-			/*echo $author->first_name." ".$author->last_name.": <br>";
+			echo $author->first_name." ".$author->last_name.": <br>";
 			foreach($this->usersMailContents[$userId] as $content) {
 			echo $content["tableName"].": ".$content["entry"]->id." (".$content["attrName"]."):<br>";
 			foreach($content["papers"] as $paper) {
 				echo " ".$paper->title."<br>";
 			}
 			}
-			echo "<br>";*/
+			echo "<br>";
 		}
 	}
 }

@@ -207,4 +207,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		$authorsIds[] = $author->id;
 	    $query->whereIn('users.author_id', $authorsIds);
 	}
+	
+	public function scopeWithReminder($fluentQuery, $reminderTable) {
+	    $fluentQuery->whereExists(function($query) use ($reminderTable) {
+		$query->select(DB::raw(1))
+			->from('email_reminders')
+			->where('email_reminders.user_id', DB::raw('users.id'))
+			->where('email_reminders.table', $reminderTable);
+	    });
+	}
 }

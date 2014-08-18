@@ -84,6 +84,10 @@
                     </div>
                 @endif
                 
+		<div class="form-group">
+		    <a href="reminderSettings">email reminder</a>
+		</div>
+		
                 <div class="form-group">
                     <label>Joined date</label>
                     <p>{{ $user['created_at'] }}</p>
