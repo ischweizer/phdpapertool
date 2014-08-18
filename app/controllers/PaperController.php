@@ -12,20 +12,20 @@ class PaperController extends BaseController {
 		return View::make('paper/index', array('papers' => $papers, 'archived' => false));
 	}
 	/*public function getIndex() {
-	    if(Input::has('groupids')) {
+		if(Input::has('groupids')) {
 		$groupsIds = explode(',', Input::get('groupids'));
 		$users = User::getUsers(Group::whereIn('id', $groupsIds)->get());
 		$usersIds = array();
-		foreach($users as $user) 
-		    $usersIds[] = $user->id;
-	    } else
+		foreach($users as $user)
+			$usersIds[] = $user->id;
+		} else
 		$usersIds = array(Auth::user()->id);
-	    
-	    $papers = Paper::users($usersIds)->get();//Auth::user()->author->papers;
-	    //$temp = Author::all();
-	    return View::make('paper/index', array('papers' => $papers, 'archived' => false));
+
+		$papers = Paper::users($usersIds)->get();//Auth::user()->author->papers;
+		//$temp = Author::all();
+		return View::make('paper/index', array('papers' => $papers, 'archived' => false));
 	}*/
-	
+
 	/**
 	 * List all archived papers.
 	 */
@@ -46,7 +46,7 @@ class PaperController extends BaseController {
 		$submissionEvent = null;
 		$files = array();
 		$paperAuthors = $this->getOldSelectedAuthors();
-		
+
 		// get authors
 		foreach ($autorList as $author) {
 			if (Auth::user()->author->id != $author->id) {
@@ -64,15 +64,15 @@ class PaperController extends BaseController {
 					App::abort(404);
 				}
 				$paperAuthors = (count($paperAuthors) == 0) ? $paper->authors : $paperAuthors;
-				
+
 				if ($paper->activeSubmission) {
 					$submissionEvent = $paper->activeSubmission->event;
 				}
 			}
-			
+
 			$files = $paper->files()->get();
 		}
-		
+
 		foreach ($paperAuthors as $author) {
 			if (array_key_exists($author->id, $selectedauthors)) {
 				unset($selectedauthors[$author->id]);
@@ -92,7 +92,7 @@ class PaperController extends BaseController {
 
 		return View::make('paper/edit', array('authors' => $authors, 'model' => $paper, 'selectedauthors' => $selectedauthors, 'submission' => $submission, 'files' => $files));
 	}
-	
+
 	private function getOldSelectedAuthors() {
 		$selectedAuthors = array();
 		if (Session::getOldInput('selectedauthors')) {
@@ -199,7 +199,7 @@ class PaperController extends BaseController {
 		}
 
 		$success = $paper->save();
-		
+
 		// check for success
 		if (!$success) {
 			return Redirect::action('PaperController@anyEdit')->
@@ -212,7 +212,7 @@ class PaperController extends BaseController {
 		$currentPosition = 1;
 		$authorListed = false;
 		if (isset($input['selectedauthors'])) {
-			
+
 			$authors = $input['selectedauthors'];
 			if($authors != null) {
 				foreach ($authors as $author) {
@@ -288,8 +288,8 @@ class PaperController extends BaseController {
 							break 2;
 						}
 					}
-					
-				}	
+
+				}
 			}
 
 			if(!$allowed){
@@ -335,7 +335,7 @@ class PaperController extends BaseController {
 							if ($review->author_id == $author->id) {
 								$requestAnswers[$reviewRequest->id][$author->id] = $review;
 							}
-						}	
+						}
 					}
 				}
 			}
@@ -370,20 +370,20 @@ class PaperController extends BaseController {
 	 */
 	public function postCreateAuthor() {
 		$input = Input::all();
-		
+
 		$validation = Author::validate();
 		if ($validation->fails())
-	    {
-	        return Response::json(array('success' => 0, 'authors' => array()));
-	    }
+		{
+			return Response::json(array('success' => 0, 'authors' => array()));
+		}
 		if(Input::has('notifyAuthor') && Input::get('notifyAuthor') == 1) {
-		    $author = Author::create( $input );
-		    $authorName = $author->first_name.' '.$author->last_name;
-		    Mail::send('emails/postCreateAuthor', array('name' => $authorName, 'email' => $author->email), function($message) use ($author, $authorName) {
+			$author = Author::create( $input );
+			$authorName = $author->first_name.' '.$author->last_name;
+			Mail::send('emails/postCreateAuthor', array('name' => $authorName, 'email' => $author->email), function($message) use ($author, $authorName) {
 			$message->to($author->email, $authorName)
 				->subject('PHDPapertool')
 				->from('noreply@da-sense.de', 'PHDPapertool');
-		    });
+			});
 		}
 		return Response::json(array('success' => 1, 'authors' => array($author->id => $author->last_name . " " . $author->first_name . " (" . $author->email . ")")));
 	}
@@ -425,7 +425,7 @@ class PaperController extends BaseController {
 			App::abort(404);
 		}
 		$oldActiveSubmission = $paper->activeSubmission;
-		
+
 		if ($paper->activeSubmission && $paper->activeSubmission->camera_ready_submitted) {
 			// no beautiful UI, because the user will never be navigated here by us
 			return "The submission for this paper finished successfully already.";
@@ -476,7 +476,7 @@ class PaperController extends BaseController {
 			with('id', $paper->id)->
 			with('edited', true);
 	}
-	
+
 
 
 
@@ -557,7 +557,7 @@ class PaperController extends BaseController {
 			return null;
 		}
 	}
-	
+
 	public function postArchivePaper($id) {
 		if (!is_null($id)) {
 			$paper = Paper::find($id);
@@ -569,38 +569,38 @@ class PaperController extends BaseController {
 			} else {
 				$paper->archived = 0;
 			}
-			
+
 			$success = $paper->save();
-			
+
 			// check for success
 			if (!$success) {
 				return Redirect::action('PaperController@getIndex')->
 					withErrors(new MessageBag(array('Sorry, couldn\'t archive paper.')));
 			}
-			return (Input::has('paperBackTarget')) ? 
-				Redirect::to(Input::get('paperBackTarget')) : 
+			return (Input::has('paperBackTarget')) ?
+				Redirect::to(Input::get('paperBackTarget')) :
 				Redirect::action('PaperController@getIndex');
 		} else {
 			App::abort(404);
 		}
 	}
-	
+
 	/**
 	 * Autocomplete for authors.
 	 */
-    public function getAutocomplete($query) {
-        if(Request::ajax()) {
+	public function getAutocomplete($query) {
+		if(Request::ajax()) {
 			// order for consistent results
 			$search = '%'.$query.'%';
 			return Author::select(array('id', 'last_name', 'first_name', 'email'))->
 				where('id', '<>', '1')->
 				where(function($q) use ($search)
-	            {
-	                $q->where('first_name', 'LIKE', $search)->
-	                	orWhere('last_name', 'LIKE', $search)->
-	                    orWhere('email', 'LIKE', $search);
-	            })->
-	            orderBy('id', 'ASC')->take(5)->get()->toJson();
+				{
+					$q->where('first_name', 'LIKE', $search)->
+						orWhere('last_name', 'LIKE', $search)->
+						orWhere('email', 'LIKE', $search);
+				})->
+				orderBy('id', 'ASC')->take(5)->get()->toJson();
 		} else {
 			return null;
 		}

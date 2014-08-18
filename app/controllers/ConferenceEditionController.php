@@ -3,7 +3,7 @@
 use Illuminate\Support\MessageBag;
 
 class ConferenceEditionController extends BaseController {
-	
+
 	public function __construct() {
 		$this->beforeFilter('csrf', array('only' => array('postEditTarget')));
 	}
@@ -18,14 +18,14 @@ class ConferenceEditionController extends BaseController {
 		} else {
 			App::abort(404);
 		}
-    }
-    
-    /**
+	}
+
+	/**
 	 * Edit or create a conference edition.
 	 *
 	 * @param $id the id to edit
 	 */
-    public function anyEdit($id = null) {
+	public function anyEdit($id = null) {
 		$initialConferenceName = null;
 		// save requested return information
 		if (Input::get('conference-edition-create-return-url')) {
@@ -64,7 +64,7 @@ class ConferenceEditionController extends BaseController {
 			with('backAction', 'ConferenceEditionController@postBack')->
 			with('conferenceName', 'conference[name]')->
 			with('initialConferenceName', $initialConferenceName);
-    }
+	}
 
 	/**
 	 * Handle edit/create result.
@@ -120,8 +120,8 @@ class ConferenceEditionController extends BaseController {
 			with('action', 'ConferenceEditionController@getDetails')->
 			with('id', $edition->id)->
 			with('edited', $edit);
-    }
-	
+	}
+
 	/**
 	 * Handle back button.
 	 */
@@ -134,17 +134,17 @@ class ConferenceEditionController extends BaseController {
 			return Redirect::to(Input::get('conferenceEditionBackTarget'));
 		}
 	}
-	
+
 	/**
 	 * Open paper creation view with given conference edition
 	 */
 	public function getNewPaper($id = null) {
-	    if (!is_null($id)) {
-	    	Session::forget('workshop_id');
-		    Session::set('conference_edition_id', $id);
-		    return Redirect::action('PaperController@anyEdit');
-	    } else {
+		if (!is_null($id)) {
+			Session::forget('workshop_id');
+			Session::set('conference_edition_id', $id);
+			return Redirect::action('PaperController@anyEdit');
+		} else {
 			App::abort(404);
 		}
-    }
+	}
 }

@@ -3,7 +3,7 @@
 use Illuminate\Support\MessageBag;
 
 class WorkshopController extends BaseController {
-	
+
 	public function __construct() {
 		$this->beforeFilter('csrf', array('only' => array('postEditTarget')));
 	}
@@ -18,12 +18,12 @@ class WorkshopController extends BaseController {
 		} else {
 			App::abort(404);
 		}
-    }
+	}
 
 	/**
 	 * Edit or create a workshop.
 	 */
-    public function anyEdit($id = null) {
+	public function anyEdit($id = null) {
 		$initialName = null;
 		// save requested return information
 		if (Input::get('workshop-create-return-url')) {
@@ -69,7 +69,7 @@ class WorkshopController extends BaseController {
 			with('initialConferenceEditionId', $initialConferenceEditionId)->
 			with('initialConferenceName', $initialConferenceName)->
 			with('initialName', $initialName);
-    }
+	}
 
 	/**
 	 * Handle edit/create result.
@@ -125,7 +125,7 @@ class WorkshopController extends BaseController {
 			with('action', 'WorkshopController@getDetails')->
 			with('id', $workshop->id)->
 			with('edited', $edit);
-    }
+	}
 
 	/**
 	 * Handle back button.
@@ -143,8 +143,8 @@ class WorkshopController extends BaseController {
 	/**
 	 * Autocomplete for workshops.
 	 */
-    public function getAutocomplete($query) {
-        if(Request::ajax()) {
+	public function getAutocomplete($query) {
+		if(Request::ajax()) {
 			// order for consistent results
 			$search = '%'.$query.'%';
 			return Workshop::select(array('id', 'name'))->where('name', 'LIKE', $search)->orderBy('id', 'ASC')->take(5)->get()->toJson();
@@ -156,8 +156,8 @@ class WorkshopController extends BaseController {
 	/**
 	 * Check the given workshop name for existence.
 	 */
-    public function anyCheck($name = null) {
-        if(Request::ajax()) {
+	public function anyCheck($name = null) {
+		if(Request::ajax()) {
 			if (is_null($name)) {
 				$name = Input::get('name');
 			}
@@ -173,7 +173,7 @@ class WorkshopController extends BaseController {
 	/**
 	 * Return the id of the workshop with the given name or nothing if it doesn't exist.
 	 */
-    public function anyId($name = null) {
+	public function anyId($name = null) {
 		if (Request::ajax()) {
 			if (is_null($name)) {
 				$name = Input::get('name');
@@ -188,17 +188,17 @@ class WorkshopController extends BaseController {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Open paper creation view with given workshop
 	 */
 	public function getNewPaper($id = null) {
-	    if (!is_null($id)) {
-	    	Session::forget('conference_edition_id');
-		    Session::set('workshop_id', $id);
-		    return Redirect::action('PaperController@anyEdit');
-	    } else {
+		if (!is_null($id)) {
+			Session::forget('conference_edition_id');
+			Session::set('workshop_id', $id);
+			return Redirect::action('PaperController@anyEdit');
+		} else {
 			App::abort(404);
 		}
-    }
+	}
 }

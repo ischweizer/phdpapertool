@@ -34,7 +34,7 @@ class ReviewController extends BaseController{
 				}
 				if(!$answered)
 					array_push($acceptedReviewRequests, $reviewRequest);
-					
+
 			}
 		}
 
@@ -55,10 +55,10 @@ class ReviewController extends BaseController{
 				DB::update('update author_review_request set answer = 1 where author_id = ? and review_request_id = ?',array(Input::get('author_id'),Input::get('review_request_id')));
 			elseif(Input::has('decline'))
 				DB::update('update author_review_request set answer = 0 where author_id = ? and review_request_id = ?',array(Input::get('author_id'),Input::get('review_request_id')));
-			
+
 			if(Input::has('file_id')){
 				foreach ($reviewRequest->files as $file) {
-					if ($file->id == Input::get('file_id')) 
+					if ($file->id == Input::get('file_id'))
 						return Response::download($file->filepath, $file->name);
 				}
 				App::abort(404);
@@ -67,7 +67,7 @@ class ReviewController extends BaseController{
 			if(Input::has('create_review')){
 				if(Input::has('message'))
 					$message = Input::get('message');
-				else 
+				else
 					$message = null;
 				if(Input::hasFile('files'))
 					$files = Input::file('files');
@@ -98,21 +98,21 @@ class ReviewController extends BaseController{
 		if($message)
 			$review->message = $message;
 		$review->save();
-		
+
 		$errors = null;
 
 		if ($files) {
 			foreach ($files as $file) {
 				$destinationPath = storage_path().'/uploads/';
-				
+
 				if(!File::isDirectory($destinationPath))
 				{
 					 File::makeDirectory($destinationPath);
 				}
-				
+
 				$filename = time()."_".$file->getClientOriginalName();
 				$uploadSuccess = $file->move($destinationPath, $filename);
-				
+
 				if($uploadSuccess) {
 					$fileObject = new FileObject();
 					$fileObject->author_id = $author->id;
@@ -142,7 +142,7 @@ class ReviewController extends BaseController{
 				$author->pivot->save();
 				break;
 			}
-		} 
+		}
 		if(!$access)
 			App::abort(404);
 
@@ -161,7 +161,7 @@ class ReviewController extends BaseController{
 				$author->pivot->save();
 				break;
 			}
-		} 
+		}
 		if(!$access)
 			App::abort(404);
 
@@ -204,13 +204,13 @@ class ReviewController extends BaseController{
 			if(Input::has('message')) {
 				$reviewRequest->message = Input::get('message');
 				$message = Input::get('message');
-			} else 
+			} else
 				$message = null;
-			
+
 			$reviewRequest->save();
 			$reviewRequest->authors()->sync(Input::get('selectedAuthors'));
 			$reviewRequest->files()->sync(Input::get('selectedFiles'));
-			
+
 			//set Token for not registrered authors and send mail
 			foreach ($reviewRequest->authors as $author) {
 				$authorName = $author->first_name." ".$author->last_name;
@@ -220,19 +220,19 @@ class ReviewController extends BaseController{
 					$author->pivot->save();
 
 					Mail::send('emails/review_unregistered_author', array('name' => $authorName, 'reviewRequest' => $reviewRequest, 'author' => $author, 'auth_token' => $auth_token), function($message) use ($author, $authorName, $reviewRequest){
-						$message->to($author->email, $authorName) 
+						$message->to($author->email, $authorName)
 							->subject('Review Request from '.$reviewRequest->user->formatName())
 							->from('noreply@da-sense.de', 'PHDPapertool');
 					});
 				} else {
 					Mail::send('emails/review_registered_user', array('name' => $authorName, 'reviewRequest' => $reviewRequest, 'author' => $author), function($message) use ($author, $authorName, $reviewRequest){
-						$message->to($author->email, $authorName) 
+						$message->to($author->email, $authorName)
 							->subject('Review Request from '.$reviewRequest->user->formatName())
 							->from('noreply@da-sense.de', 'PHDPapertool');
 					});
 				}
 
-			} 
+			}
 
 
 			return Redirect::action('PaperController@getDetails', array(Input::get('paperId')));
@@ -287,7 +287,7 @@ class ReviewController extends BaseController{
 
 		if(Input::has('message'))
 			$message = Input::get('message');
-		else 
+		else
 			$message = null;
 		if(Input::hasFile('files'))
 			$files = Input::file('files');
@@ -298,7 +298,7 @@ class ReviewController extends BaseController{
 		return Redirect::action('ReviewController@getDetails', array('id' => $result['review_id']))->withErrors($result['errors']);
 
 	}
-	
+
 	public function getFiles() {
 		$review = Review::find(1);
 		$files = $review->files()->get();

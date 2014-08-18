@@ -15,10 +15,10 @@ class TimelineController extends BaseController {
 		} elseif ($user->isGroupLeader()) {
 			$groups[] = $user->group;
 		}
-		
+
 		return View::make(
-			'timeline', 
-			array(	
+			'timeline',
+			array(
 				'groups' => $groups,
 				'selectedGroups' => array(),
 			)
@@ -42,7 +42,7 @@ class TimelineController extends BaseController {
 			$allowedUsers = $user->group->users->modelKeys();
 		}
 
-		
+
 		$format = 'm/d/Y'; // format for JS "new Date()" to understand
 
 		// initialize  used data
@@ -120,7 +120,7 @@ class TimelineController extends BaseController {
 				'start' => $eventStart->format($format),
 				'end' => $eventEnd->addDay()->format($format),
 			);
-			
+
 			if ($event->detail->isWorkshop()) {
 				$data['items'][] = array(
 					'id' => $count++,
@@ -201,7 +201,7 @@ class TimelineController extends BaseController {
 			} elseif ($user->isGroupLeader()) {
 				$allowedGroupIds[] = $user->group->id;
 			}
-		    $groupIds = explode(',', Input::get('groupIds'));
+			$groupIds = explode(',', Input::get('groupIds'));
 			$groupIds = array_filter($groupIds, function ($groupId) use ($allowedGroupIds) {
 				return in_array($groupId, $allowedGroupIds);
 			});
@@ -229,19 +229,19 @@ class TimelineController extends BaseController {
 					$isAuthor = true;
 				}
 			}
-			
+
 			if ($paper->activeSubmission) {
 				$abstract = self::buildHTML($paper, $isAuthor, 'abstract', 'abstract_submitted', 'abstract_due', $paper->activeSubmission->isAbstractReadyToSet());
 				$papersubmit = self::buildHTML($paper, $isAuthor, 'paper', 'paper_submitted', 'paper_due',$paper->activeSubmission->isPaperReadyToSet());
 				$notification = self::buildHTML($paper, $isAuthor, 'notification', 'notification_result', 'notification_date', $paper->activeSubmission->isNotificationReadyToSet());
 				$camera = self::buildHTML($paper, $isAuthor, 'camera', 'camera_ready_submitted', 'camera_ready_due', $paper->activeSubmission->isCameraReadyReadyToSet());
 			}
-			
+
 			$action = '<td>'
 					. Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline'))
 					. '<button type="submit" class="btn btn-xs btn-primary">Details</button>'
 					. Form::close();
-					
+
 			if (!$paper->activeSubmission && $isAuthor) {
 				$action .= Form::open(array('action' => array('PaperController@anyRetarget', 'id' => $paper->id), 'style' => 'display:inline'))
 						.  Form::hidden('paperRetargetBackTarget', URL::to('timeline'))
@@ -249,7 +249,7 @@ class TimelineController extends BaseController {
 						.  Form::close();
 			}
 			$action .= '</td>';
-			
+
 			$result[] = '<tr>'.
 				$id.
 				$title.
@@ -261,13 +261,13 @@ class TimelineController extends BaseController {
 				'</tr>'
 			;
 		}
-		
+
 		return $result;
 	}
-	
+
 	private function buildHTML($paper, $isAuthor, $type, $type_submitted, $type_due, $isReadyToSet) {
 		$result = '<td></td>';
-		
+
 		if($paper->activeSubmission->$type_submitted === null) {
 			if($isReadyToSet && $isAuthor) {
 				$result = '<td align="center" class="info" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y').
@@ -286,12 +286,12 @@ class TimelineController extends BaseController {
 				$result = '<td align="center" class="danger" id="cell_'. $paper->id. '_'. $type. '">'. $paper->activeSubmission->event->$type_due->format('M d, Y'). '</td>';
 			}
 		}
-		
-		return $result;			
+
+		return $result;
 	}
-	
+
 	private function getPapers($usersIds) {
-	    return Paper::with('authors', 'activeSubmission', 'activeSubmission.event')
+		return Paper::with('authors', 'activeSubmission', 'activeSubmission.event')
 			->notArchived()
 			->join('author_paper', 'papers.id', '=', 'author_paper.paper_id') // needed for users
 			->join('users', 'author_paper.author_id', '=', 'users.author_id') // needed for whereIn userIds

@@ -1,7 +1,7 @@
 <?php
 
 class ConferenceController extends BaseController {
-	
+
 	public function __construct() {
 		$this->beforeFilter('csrf', array('only' => array('postEditTarget')));
 	}
@@ -9,26 +9,26 @@ class ConferenceController extends BaseController {
 	/**
 	 * List of conferences.
 	 */
-    public function getIndex() {
+	public function getIndex() {
 		return View::make('conference/conferences');
-    }
+	}
 
-    /**
+	/**
 	 * Details of the specified conference.
 	 */
-    public function getDetails($id) {
+	public function getDetails($id) {
 		$conference = Conference::with('editions', 'editions.event')->find($id);
 		if (!is_null($conference)) {
 			return View::make('conference/conference')->with('conference', $conference);
 		} else {
 			App::abort(404);
 		}
-    }
+	}
 
 	/**
 	 * Edit or create a conference.
 	 */
-    public function anyEdit($id = null) {
+	public function anyEdit($id = null) {
 		$initialName = null;
 		if (Input::get('conference-create-return-url')) {
 			Session::set('conference-create-return', Input::all());
@@ -49,7 +49,7 @@ class ConferenceController extends BaseController {
 			with('rankingOptions', $rankingOptions)->
 			with('defaultRanking', $defaultRanking)->
 			with('initialName', $initialName);
-    }
+	}
 
 	/**
 	 * Handle edit/create result.
@@ -95,7 +95,7 @@ class ConferenceController extends BaseController {
 			with('action', 'ConferenceController@getDetails')->
 			with('id', $conference->id)->
 			with('edited', $edit);
-    }
+	}
 
 	/**
 	 * Handle back button.
@@ -113,10 +113,10 @@ class ConferenceController extends BaseController {
 	/**
 	 * Asynchronous loading of conference list.
 	 */
-    public function getData() {
-        if(Request::ajax()) {
+	public function getData() {
+		if(Request::ajax()) {
 			$query = Conference::join('rankings', 'rankings.id', '=', 'conferences.ranking_id')
-					->select(array('conferences.name', 'acronym', 'rankings.name AS ranking_name', 'field_of_research', 'conferences.id'));
+				->select(array('conferences.name', 'acronym', 'rankings.name AS ranking_name', 'field_of_research', 'conferences.id'));
 			return Datatables::of($query)->make();
 		} else {
 			return null;
@@ -126,14 +126,17 @@ class ConferenceController extends BaseController {
 	/**
 	 * Autocomplete for conferences.
 	 */
-    public function getAutocomplete($query) {
-        if(Request::ajax()) {
+	public function getAutocomplete($query) {
+		if(Request::ajax()) {
 			// order for consistent results
 			$search = '%'.$query.'%';
-			return Conference::select(array('id', 'name', 'acronym'))->
-				where('name', 'LIKE', $search)->
-				orWhere('acronym', 'LIKE', $search)->
-				orderBy('id', 'ASC')->take(5)->get()->toJson();
+			return Conference::select(array('id', 'name', 'acronym'))
+				->where('name', 'LIKE', $search)
+				->orWhere('acronym', 'LIKE', $search)
+				->orderBy('id', 'ASC')
+				->take(5)
+				->get()
+				->toJson();
 		} else {
 			return null;
 		}
@@ -142,8 +145,8 @@ class ConferenceController extends BaseController {
 	/**
 	 * Check the given conference name for existence.
 	 */
-    public function anyCheck($name = null) {
-        if(Request::ajax()) {
+	public function anyCheck($name = null) {
+		if(Request::ajax()) {
 			if (is_null($name)) {
 				$name = Input::get('name');
 			}
@@ -159,7 +162,7 @@ class ConferenceController extends BaseController {
 	/**
 	 * Return the id of the conference with the given name or nothing if it doesn't exist.
 	 */
-    public function anyId($name = null) {
+	public function anyId($name = null) {
 		if (Request::ajax()) {
 			if (is_null($name)) {
 				$name = Input::get('name');
@@ -178,7 +181,7 @@ class ConferenceController extends BaseController {
 	/**
 	 * Return a JSON of conference editions (id and edition string) of the conference with the given name.
 	 */
-    public function anyEditions($name = null) {
+	public function anyEditions($name = null) {
 		if (Request::ajax()) {
 			if (is_null($name)) {
 				$name = Input::get('name');
