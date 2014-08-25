@@ -135,7 +135,7 @@
 	<div class="page-header">
 		@if (count($groups) > 0)
 			<div id="paperDropdown" class="dropdown pull-right">
-				<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Papers</button>
+				<button id="selectPapersBtn" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Select Groups</button>
 				<div class="dropdown-menu panel-body" role="menu" aria-labelledby="selectPapersBtn">
 					<select class="form-control" id="selectGroups" data-placeholder="Select groups" multiple>
 						@foreach ($groups as $group)
