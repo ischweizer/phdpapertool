@@ -335,7 +335,8 @@ class PaperController extends BaseController {
 						foreach ($reviewRequest->reviews as $review) {
 							if ($review->author_id == $author->id) {
 								$requestAnswers[$reviewRequest->id][$author->id] = $review;
-							}
+							} else
+								$requestAnswers[$reviewRequest->id][$author->id] = false;
 						}
 					}
 				}
