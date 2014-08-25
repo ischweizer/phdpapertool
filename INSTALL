@@ -16,3 +16,5 @@ Installation Howto
 
 5. Run "php artisan migrate" to bring your database up to date.
 	Whenever someone pushed a migration this has to be done. To be sure, run it after each upgrade.
+
+6. Install a cronjob for delivering time dependend emails, the cronjob has to execute the command "php artisan cronjob:mail". A daily execution makes the most sense.

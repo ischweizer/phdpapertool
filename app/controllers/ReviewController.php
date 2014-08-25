@@ -4,6 +4,9 @@ use Carbon\Carbon;
 
 class ReviewController extends BaseController{
 
+	/**
+	 * Lists all review requests.
+	 */
 	public function getIndex()
 	{
 		/*$reviews = DB::table('reviews')
@@ -92,6 +95,14 @@ class ReviewController extends BaseController{
 			App::abort(404);
 	}
 
+	/**
+	 * Creates a review object and saves the uploaded files
+	 *
+	 * @param $reviewRequest a ReviewRequest object
+	 * @param $author an Author object
+	 * @param string $message the message of the review
+	 * @param array $files the list of FileObject objects
+	 */
 	private function create_review($reviewRequest, $author, $message, $files)
 	{
 		$review = new Review(array('author_id' => $author->id, 'review_request_id' => $reviewRequest->id));
@@ -130,6 +141,11 @@ class ReviewController extends BaseController{
 		return array('review_id' => $review->id, 'errors' => $errors);
 	}
 
+	/**
+	 * Accepts the review request for the currently authed user
+	 *
+	 * @param int $id the review request id
+	 */
 	public function getAccept($id)
 	{
 		$reviewRequest = ReviewRequest::findOrFail($id);
@@ -149,6 +165,11 @@ class ReviewController extends BaseController{
 		return Redirect::to('review');
 	}
 
+	/**
+	 * Declines the review request for the currently authed user
+	 *
+	 * @param int $id the review request id
+	 */
 	public function getDecline($id)
 	{
 		$reviewRequest = ReviewRequest::findOrFail($id);
@@ -168,6 +189,11 @@ class ReviewController extends BaseController{
 		return Redirect::to('review');
 	}
 
+	/**
+	 * Shows the view for creating a review request
+	 *
+	 * @param int $paper_id the paper id
+	 */
 	public function getCreateRequest($paper_id){
 
 		$paper = Paper::find($paper_id);
@@ -198,6 +224,9 @@ class ReviewController extends BaseController{
 			->with('authorNames', $authorNames);
 	}
 
+	/**
+	 * Creates a ReviewRequest object from the given Input data
+	 */
 	public function postCreateReviewRequest(){
 		if (Input::has('deadline') && Input::has('selectedAuthors') && Input::has('selectedFiles') && Input::has('paperId')) {
 			$reviewRequest = new ReviewRequest(array("user_id" => Auth::user()->id, "deadline" => Input::get('deadline'), 'paper_id' => Input::get('paperId')));
@@ -240,6 +269,11 @@ class ReviewController extends BaseController{
 			return App::abort(404);
 	}
 
+	/**
+	 * Shows the details of the review with the given id
+	 *
+	 * @param int $id the review id
+	 */
 	public function getDetails($id){
 		$review = Review::find($id);
 		if(is_null($review))
@@ -261,6 +295,11 @@ class ReviewController extends BaseController{
 		return View::make('review/detail')->with('review', $review);
 	}
 
+	/**
+	 * Shows the form for creating a review
+	 *
+	 * @param int $reviewRequestId the review request id of the new review
+	 */
 	public function getCreate($reviewRequestId){
 
 		//TODO fehlt auth check
@@ -270,6 +309,9 @@ class ReviewController extends BaseController{
 			->with('reviewRequest', $reviewRequest);
 	}
 
+	/**
+	 * Creates a review from the given Input data
+	 */
 	public function postCreate(){
 
 		$reviewRequest = ReviewRequest::findOrFail(Input::get('review_request_id'));
@@ -296,15 +338,6 @@ class ReviewController extends BaseController{
 
 		$result = $this->create_review($reviewRequest, $author, $message, $files);
 		return Redirect::action('ReviewController@getDetails', array('id' => $result['review_id']))->withErrors($result['errors']);
-
-	}
-
-	public function getFiles() {
-		$review = Review::find(1);
-		$files = $review->files()->get();
-		foreach($files as $file) {
-			echo $file->formatName();
-		}
 	}
 
 }

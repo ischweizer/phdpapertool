@@ -28,7 +28,7 @@ class CreateEmailRemindersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('emails_reminder');
+		Schema::drop('email_reminders');
 	}
 
 }
