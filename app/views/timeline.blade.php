@@ -63,7 +63,6 @@
 				timelineFrom *= mult;
 				timelineTo *= mult;
 				
-				$('#graph').html('');
 				Timeline.draw(TimelineData);
 			});
 
@@ -76,7 +75,6 @@
 
 				$('#timelineMinus').attr('disabled', false);
 
-				$('#graph').html('');
 				Timeline.draw(TimelineData);
 			});
 
@@ -85,7 +83,6 @@
 				timelineFrom -= dist*stepSize;
 				timelineTo -= dist*stepSize;
 				
-				$('#graph').html('');
 				Timeline.draw(TimelineData);
 			});
 
@@ -94,7 +91,6 @@
 				timelineFrom += dist*stepSize;
 				timelineTo += dist*stepSize;
 				
-				$('#graph').html('');
 				Timeline.draw(TimelineData);
 			});
 

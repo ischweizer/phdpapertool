@@ -16,6 +16,10 @@ var Timeline = new function() {
 			]
 		});
 
+		$(window).resize(function() {
+			Timeline.draw(TimelineData);
+		});
+
 		$('#paper-table').on('draw.dt', this.loadGraph);
 	}
 
@@ -42,19 +46,7 @@ var Timeline = new function() {
 					});
 
 					TimelineData = data;
-					$('#graph').html('');
 					Timeline.draw(data);
-					$('.long-title').tooltip({
-						animated : 'fade',
-						placement : 'top',
-						container: '#graph'
-					});
-					$('[data-toggle=popover]').popover({
-						animated : 'fade',
-						placement : 'top',
-						container: '#graph',
-						html: true
-					});
 				}
 			});
 		}
@@ -124,6 +116,8 @@ var Timeline = new function() {
 	}
 
 	this.draw = function(data) {
+		$('#graph').html('');
+
 		var lanes = data.lanes, 
 			items = data.items, 
 			now = new Date();
@@ -260,6 +254,18 @@ var Timeline = new function() {
 			.attr('data-toggle', 'popover')
 			.attr('title', function(d) { return d.desc; })
 			.attr('data-content', function(d) { return '<a href="' + d.link + '">' + d['link-desc'] + '</a>'; });
+
+		$('.long-title').tooltip({
+			animated : 'fade',
+			placement : 'top',
+			container: '#graph'
+		});
+		$('[data-toggle=popover]').popover({
+			animated : 'fade',
+			placement : 'top',
+			container: '#graph',
+			html: true
+		});
 	};
 
 	// generates a single path for each item class in the mini display
