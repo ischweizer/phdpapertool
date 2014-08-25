@@ -194,34 +194,6 @@ var Timeline = new function() {
 				}
 		});
 
-
-		/*mini.append('g').selectAll('.laneText')
-			.data(lanes)
-			.enter().append('foreignObject')
-			.attr("width", "150")
-			.attr("height", d3.round(y2(1)))
-			.attr('x', -160)
-			.attr('y', function(d) { return y2(d.id); })
-			.attr('dy', '0.5ex')
-			.attr('text-anchor', 'end')
-			.append("xhtml:span")
-			.attr('class', function(d) { 
-				if (d.label.length > 20) {
-					return 'laneText long-title';
-				} else { 
-					return 'laneText';
-				}
-			})
-			.attr('style', 'line-height: ' + d3.round(y2(1)) + 'px;')
-			.attr('title', function(d) { return d.label; })
-    		.text(function(d) {
-				if (d.label.length > 20) {
-					return d.label.substr(0, 18) + ' ...';
-				} else { 
-					return d.label;
-				}
-			});*/
-
 		// draw the x axis
 		var xDateAxis = d3.svg.axis()
 			.scale(x)
