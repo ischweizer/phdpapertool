@@ -4,6 +4,11 @@ use Carbon\Carbon;
 
 class FileController extends BaseController {
 
+	/**
+	 * Returns the file with given id for downloading
+	 *
+	 * @param int $id a file id
+	 */
 	public function getFile($id) {
 		$file = FileObject::with('paper', 'paper.authors')->find($id);
 
@@ -19,7 +24,9 @@ class FileController extends BaseController {
 	}
 
 	/**
-	 * Handle file uploads for given paper
+	 * Save uploaded file and connect with given paper id
+	 *
+	 * @param int $paperId a paper id
 	 */
 	public function postUploadFile($paperId) {
 		if (!is_null($paperId)) {
@@ -64,7 +71,9 @@ class FileController extends BaseController {
 	}
 
 	/**
-	 * Return Edit-File view
+	 * Show edit file view
+	 *
+	 * @param int $id a file id
 	 */
 	public function getEditFile($id) {
 		if (!is_null($id)) {
@@ -73,7 +82,12 @@ class FileController extends BaseController {
 			return View::make('file/edit', array('model' => $file, 'edit' => true));
 		}
 	}
-
+	
+	/**
+	 * Show file detail view
+	 *
+	 * @param int $id a file id
+	 */
 	public function getFileDetails($id) {
 		if (!is_null($id)) {
 			$file = FileObject::with('paper')->find($id);
@@ -83,7 +97,9 @@ class FileController extends BaseController {
 	}
 
 	/**
-	 * Update File
+	 * Update File with given id
+	 *
+	 * @param int $id a file id
 	 */
 	public function postEditFile($id) {
 		if (!is_null($id)) {
@@ -108,6 +124,11 @@ class FileController extends BaseController {
 		App::abort(404);
 	}
 
+	/**
+	 * Checks whether the currently authed user has access to the given file
+	 *
+	 * @param $file the file model
+	 */
 	private function checkFileAccess($file) {
 		$paperAccess = $this->checkPaperAccess($file->paper);
 

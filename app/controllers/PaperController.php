@@ -3,8 +3,9 @@
 use Carbon\Carbon;
 
 class PaperController extends BaseController {
+	
 	/**
-	 * List of papers.
+	 * Lists all papers.
 	 */
 	public function getIndex() {
 		$papers = Auth::user()->author->papers;
@@ -27,7 +28,7 @@ class PaperController extends BaseController {
 	}*/
 
 	/**
-	 * List all archived papers.
+	 * List all papers with the archived option set to true.
 	 */
 	public function getArchived() {
 		$papers = Auth::user()->author->archivedPapers;
@@ -36,7 +37,7 @@ class PaperController extends BaseController {
 	}
 
 	/**
-	 * Edit or create a paper.
+	 * Shows the view for editing an existing or new paper
 	 */
 	public function anyEdit($id = null) {
 		$autorList = Author::notAdmin()->get();
@@ -558,6 +559,11 @@ class PaperController extends BaseController {
 		}
 	}
 
+	/**
+	 * Archive paper with given id.
+	 * 
+	 * @param int $id a paper id
+	 */
 	public function postArchivePaper($id) {
 		if (!is_null($id)) {
 			$paper = Paper::find($id);
