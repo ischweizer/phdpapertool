@@ -24,6 +24,28 @@ class ReviewRequest extends Eloquent{
 		return $this->hasMany('Review');
 	}
 
+	public function remindableUsers(){
+		$users = array();
+		foreach ($this->authors as $author) {
+			if($author->user){
+				if(is_null($author->pivot->answer))
+					array_push($users, $author->user);
+				if($author->pivot->answer){
+					$finished = false;
+					foreach ($this->reviews as $review) {
+						if($review->author_id == $author->id){
+							$finished = true;
+							break;
+						}
+					}
+					if(!$finished)
+						array_push($users, $author->user);
+				}
+			}
+		}
+		return $users;
+	}
+
 	/**
 	 * Convert a DateTime to a storable string.
 	 * Overwrite fromDateTime to support the used format (e.g. May 26, 2014)
