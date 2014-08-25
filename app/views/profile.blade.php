@@ -2,7 +2,7 @@
 
 @section('content')
 		<div class="page-header">
-   		<h1>Your Profile</h1>
+   		<h1>My Profile</h1>
 		</div>
 
         
