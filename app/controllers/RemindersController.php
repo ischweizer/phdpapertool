@@ -19,7 +19,9 @@ class RemindersController extends Controller {
 	 */
 	public function postRemind()
 	{
-		switch ($response = Password::remind(Input::only('email')))
+		switch ($response = Password::remind(Input::only('email'), function($message) {
+		  $message->subject('Password reset');  
+		}))
 		{
 			case Password::INVALID_USER:
 				return View::make('passwordremind', array(
@@ -59,6 +61,9 @@ class RemindersController extends Controller {
 			'email', 'password', 'password_confirmation', 'token'
 		);
 
+		Password::validator(function($credentials) {
+		    return true;
+		});
 		$response = Password::reset($credentials, function($user, $password)
 		{
 			$user->password = Hash::make($password);
