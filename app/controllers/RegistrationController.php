@@ -101,8 +101,18 @@ class RegistrationController extends BaseController {
 			$user->remember_token = null;
 			$user->email_confirmed = 1;
 			$user->save();
+			$this->addFullReminder($user);
 			return View::make('activation', array('kind' => 'successful'));
 		}
 		return View::make('activation', array('kind' => 'wrongCode'));
+	}
+	
+	private function addFullReminder($user) {
+	    foreach(CronjobController::$tablesAttributes as $tableName => $attributes) {
+		$reminderEntry = new EmailReminder;
+		$reminderEntry->user_id = $user->id;
+		$reminderEntry->table = $tableName;
+		$reminderEntry->save();
+	    }	    
 	}
 }

@@ -6,11 +6,11 @@
 	<body>
 		<div>
 		    @if(isset($name))
-			Dear {{{ $name }}}
+			Dear {{{ $name }}},
 		    @else
-			Hi
+			Hi,
 		    @endif
-		    ,<br>
+		    <br>
 		    @yield('mailContent')
 		    <br><br>
 		    Please do not reply to this email. Mails sent to this address 

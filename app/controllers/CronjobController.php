@@ -128,11 +128,12 @@ class CronjobController extends BaseController {
 	}
 
 	private function getUsersFromReviewRequest($entry) {
-		$users = User::where('id', $entry->user_id)->withReminder('review_requests')->get();
-		if(count($users) == 0)
-		    return array();
-		return $users;
-		//return array(User::find($entry->user_id));
+	    $users = ReviewRequest::remindableUsers()->withReminder('review_requests')->get();
+	    //$users = User::where('id', $entry->user_id)->withReminder('review_requests')->get();
+	    if(count($users) == 0)
+		return array();
+
+	    return $users;
 	}
 
 	private function informUsers() {
