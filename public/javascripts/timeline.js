@@ -171,7 +171,31 @@ var Timeline = new function() {
 			.attr('y2', function(d) { return d3.round(y2(d.id)) + 0.5; })
 			.attr('stroke', function(d) { return d.label === '' ? 'white' : 'lightgray'; });
 
-		mini.append('g').selectAll('.laneText')
+ 	mini.append('g').selectAll('.laneText')
+ 		.data(lanes)
+		.enter().append('text')
+		.attr('x', -160)
+		.attr('y', function(d) { return y2(d.id + .55); })
+ 		.attr('dy', '0.5ex')
+ 		.attr('class', function(d) { 
+				if (d.label.length > 20) {
+					return 'laneText long-title';
+				} else { 
+					return 'laneText';
+				}
+		})
+ 		.attr('style', 'line-height: ' + d3.round(y2(1)) + 'px;')
+ 		.attr('title', function(d) { return d.label; })
+ 		.text(function(d) {
+				if (d.label.length > 20) {
+					return d.label.substr(0, 18) + ' ...';
+				} else { 
+					return d.label;
+				}
+		});
+
+
+		/*mini.append('g').selectAll('.laneText')
 			.data(lanes)
 			.enter().append('foreignObject')
 			.attr("width", "150")
@@ -196,7 +220,7 @@ var Timeline = new function() {
 				} else { 
 					return d.label;
 				}
-			});
+			});*/
 
 		// draw the x axis
 		var xDateAxis = d3.svg.axis()
