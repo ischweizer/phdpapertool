@@ -4,9 +4,9 @@
     <br>
     @foreach($contents as $content)
 	<?php
-	    if($content["entry"][$content["attrName"]] == Carbon::today())
+	    if($content["entry"][$content["attrName"]]->isToday())
 		$timeForm = "today";
-	    else if($content["entry"][$content["attrName"]] == Carbon::tomorrow())
+	    else if($content["entry"][$content["attrName"]]->isTomorrow())
 		$timeForm = "tomorrow";
 	    else
 		$timeForm = "on ".
@@ -15,8 +15,8 @@
 		    $content["entry"][$content["attrName"]]->day;
 	?>
 	@if($content["tableName"] == "review_requests")
-	    There is request for a review on the paper '{{{$content["papers"][0]->title}}}'
-	    which deadline is {{{$timeForm}}}.
+	    There is a request for a review on the paper '{{{$content["papers"][0]->title}}}'
+	    whose deadline is {{{$timeForm}}}.
 	@elseif($content["tableName"] == "events")
 	    @if($content["attrName"] == "start")
 		@if($content["entry"]->detail_type == "Workshop")
