@@ -21,24 +21,6 @@
 			$('#deadline-datepicker').datepicker({
 				startDate: '+1d'
 			});
-			$('#deadline').on('change', function(e) {
-				var field = $(this).attr('name');
-				$('#createReviewForm')
-					.data('bootstrapValidator')
-					.updateStatus(field, 'NOT_VALIDATED', null)
-					.validateField(field);
-			});
-
-			$('#createReviewForm').bootstrapValidator({
-				excluded: [':disabled'],
-				message: 'This value is not valid',
-				live: 'enabled',
-				feedbackIcons: {
-					valid: 'glyphicon glyphicon-ok',
-					invalid: 'glyphicon glyphicon-remove',
-					validating: 'glyphicon glyphicon-refresh'
-				},
-			});
 			
 			$('#open_new_author').click(function(){
 				$('#authorCreationModal').modal('show');
@@ -76,6 +58,10 @@
 								    );
 								    $('#authorCreationModal').modal('hide');
 								});
+								$('#createReviewForm')
+									.data('bootstrapValidator')
+									.updateStatus('selectedAuthors[]', 'NOT_VALIDATED', null)
+									.validateField('selectedAuthors[]');
 								
 								$('#last_name').val('');
 								$('#first_name').val('');
@@ -91,21 +77,37 @@
 			$('#addUser').click(function() {
 				var chosenAuthor = $('#authorSelect option:selected').remove();
 				$('#selectedAuthors').append(chosenAuthor);
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus('selectedAuthors[]', 'NOT_VALIDATED', null)
+					.validateField('selectedAuthors[]');
 			});
 
 			$('#removeUser').click(function(){
 				var chosenAuthor = $('#selectedAuthors option:selected').remove();
 				$('#authorSelect').append(chosenAuthor);
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus('selectedAuthors[]', 'NOT_VALIDATED', null)
+					.validateField('selectedAuthors[]');
 			});
 
 			$('#addFile').click(function() {
 				var chosenFile = $('#fileSelect option:selected').remove();
 				$('#selectedFiles').append(chosenFile);
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus('selectedFiles[]', 'NOT_VALIDATED', null)
+					.validateField('selectedFiles[]');
 			});
 
 			$('#removeFile').click(function(){
 				var chosenFile = $('#selectedFiles option:selected').remove();
 				$('#fileSelect').append(chosenFile);
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus('selectedFiles[]', 'NOT_VALIDATED', null)
+					.validateField('selectedFiles[]');
 			});
 			
 			$('#fileupload').fileupload({
@@ -131,6 +133,10 @@
 						        $('<option></option>').val(key).html(value)
 						    );
 						});
+						$('#createReviewForm')
+							.data('bootstrapValidator')
+							.updateStatus('selectedFiles[]', 'NOT_VALIDATED', null)
+							.validateField('selectedFiles[]');
 						$('#fileUploadModal').modal('hide');
 		        	} else {
 			        	//$('#uploadstatus').html("Some problems occured!");
@@ -189,6 +195,10 @@
 				$('#selectedAuthors').append(
 			        $('<option></option>').val(data.id).html(data.last_name + ' ' + data.first_name + ' ('+ data.email + ')')
 			    );
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus('selectedAuthors[]', 'NOT_VALIDATED', null)
+					.validateField('selectedAuthors[]');
 				authorNameChange();
 			});
 			$('#author_list').on('input', authorNameChange);
@@ -197,6 +207,37 @@
 			}
 			authorNameChange();
 
+			// enable form validation
+			$.fn.bootstrapValidator.validators.notemptyselect = {
+				html5Attributes: {
+						message: 'message'
+				},
+				validate: function(validator, $field, options) {
+					var count = validator.getFieldElements($field.attr('data-bv-field')).find('option').length;
+					alert(count);
+					if (count > 0) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			};
+			$('#createReviewForm').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				live: 'enabled'
+			});
+
+			$('#deadline').on('change', function(e) {
+				var field = $(this).attr('name');
+				$('#createReviewForm')
+					.data('bootstrapValidator')
+					.updateStatus(field, 'NOT_VALIDATED', null)
+					.validateField(field);
+			});
 		});
 
 
@@ -215,7 +256,7 @@
 		<div class="form-group single-date">
 			{{ Form::label('deadline', 'Review Deadline') }}
 			<div class="input-group date" id="deadline-datepicker">
-				{{ Form::text('deadline', '', array('class' => 'form-control input-sm datepicker', 'required')) }}
+				{{ Form::text('deadline', '', array('class' => 'form-control input-sm datepicker', 'required', 'data-bv-notempty-message' => 'May not be empty')) }}
 				<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 			</div>
 		</div>
@@ -225,10 +266,10 @@
 			{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
 		<div class="form-group">
-			{{ Form::label('selectedUser', 'Selected User') }}
+			{{ Form::label('selectedAuthors', 'Selected Reviewers') }}
 			<div class="row">
 				<div class="col-xs-11">
-					{{ Form::select('selectedAuthors[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedAuthors', 'multiple' => true)) }}
+					{{ Form::select('selectedAuthors[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedAuthors', 'multiple' => true, 'data-bv-notemptyselect' => true, 'data-bv-notemptyselect-message' => 'Must select at least one reviewer.')) }}
 				</div>
 				<div class="col-xs-1">
 					<div class="btn-group-vertical" >
@@ -247,7 +288,7 @@
 			{{ Form::label('selectedFiles', 'Selected Files') }}
 			<div class="row">
 				<div class="col-xs-11">
-					{{ Form::select('selectedFiles[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedFiles', 'multiple' => true)) }}
+					{{ Form::select('selectedFiles[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedFiles', 'multiple' => true, 'data-bv-notemptyselect' => true, 'data-bv-notemptyselect-message' => 'Must select at least one file.')) }}
 				</div>
 				<div class="col-xs-1">
 						<div class="btn-group-vertical" >
