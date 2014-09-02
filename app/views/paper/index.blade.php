@@ -42,8 +42,12 @@
 			<thead>
 				<tr>
 					<th>Title</th>
-					<th>Abstract</th>
-					<th>Repository</th>
+					<th>Start</th>
+					<th>End</th>
+					<th>Abstract Due</th>
+					<th>Paper Due</th>
+					<th>Notification Date</th>
+					<th>Camera Ready Due</th>
 					<th>Action</th>
 				</tr>
 			</thead>
@@ -51,8 +55,14 @@
 				@foreach ($papers as $paper)
 					<tr>
 						<td>{{{ $paper->title }}}</td>
-						<td>{{{ Str::limit($paper->abstract, 90) }}}</td>
-						<td>@if ($paper->repository_url) {{ HTML::link($paper->repository_url) }} @endif</td>
+						{{-- <td>{{{ Str::limit($paper->abstract, 90) }}}</td>
+						<td>@if ($paper->repository_url) {{ HTML::link($paper->repository_url) }} @endif</td> --}}
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->start->format('M d, Y') }}} @endif</td>
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->end->format('M d, Y') }}} @endif</td>
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->abstract_due->format('M d, Y') }}} @endif</td>
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->paper_due->format('M d, Y') }}} @endif</td>
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->notification_date->format('M d, Y') }}} @endif</td>
+						<td>@if ($paper->activeSubmission) {{{ $paper->activeSubmission->event->camera_ready_due->format('M d, Y') }}} @endif</td>
 						<td>
 							{{ Form::open(array('action' => array('PaperController@getDetails', 'id' => $paper->id), 'method' => 'GET', 'style' => 'display:inline')) }}
 								<button type="submit" class="btn btn-xs btn-primary">Details</button>
