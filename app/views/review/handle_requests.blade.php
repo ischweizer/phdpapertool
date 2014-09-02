@@ -7,7 +7,7 @@
 @section('content')
 	
 	<div>
-	<h1>Review Requests:</h1>
+	<h1>Review Requests</h1>
 		{{--<ul class="list-group">
 			@foreach ($unansweredReviewRequests as $reviewRequest)
 				<li class="list-group-item">
