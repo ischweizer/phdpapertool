@@ -144,8 +144,8 @@
 		        	}
 		        },
 		        fail : function (e, data) {
-			        console.log("Failed");
-			        alert("Some problems occured!");
+			        console.log(JSON.stringify(data.messages));
+			        alert(data.messages.uploadedBytes);
 		        },
 		        progressall: function (e, data) {
 		            var progress = parseInt(data.loaded / data.total * 100, 10);
