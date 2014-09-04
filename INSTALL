@@ -18,3 +18,7 @@ Installation Howto
 	Whenever someone pushed a migration this has to be done. To be sure, run it after each upgrade.
 
 6. Install a cronjob for delivering time dependend emails, the cronjob has to execute the command "php artisan cronjob:mail". A daily execution makes the most sense.
+
+7. Login as Super-Admin and change its information.
+   The default login is admin@example.org with password 1234. You should log in and change the mail address and password. The Super-Admin account is not meant to be used for other features except to accept lab-creation-requests or similar.
+   If you yourself want to actively use the platform, you should register another user.

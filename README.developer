@@ -1,0 +1,33 @@
+Developer guide to phdpapertool
+
+1. How to set up your environment
+Read INSTALL on instruction on how to set up phdpapertool. Otherwise you only need your preferred Web-Development-Tool.
+
+2. laravel
+phdpapertool is based on laravel (http://laravel.com/). A good start to working with laravel is its documentation (http://laravel.com/docs).
+
+2a. Basic stuff (a short intro if you don't want to read laravel docs)
+app/routes.php contains all available pages. Some are registered individually, others via the use of laravels controller feature.
+All controllers are in the controllers/ directory, each usually returning a view, which are in the views/ directory. We are using laravel's blade templating engine. The database 
+models are in the models/ directory. To manage database changes we use laravel migrations, which reside in the database/migrations/ directory. All database changes should be done 
+through a migration.
+Javascript, CSS and image files are the only things directly accessible in the public directory.
+
+3. Our database model
+The model classes are mostly self-explanatory. Each model corresponds to a database table, most relations are made available.
+In the following two things which may not be that obvious.
+
+3a. Author vs. User
+Authors are not necessarily users! Anyone can create an author any time. A user for an author is created when someone registers with the matching mail-address.
+
+3b. Conference-Model
+The conference model differentiates between "conferences", which is basically only a name with a ranking, "conference-edition", which is an edition/instance of a conference and 
+"workshop", which is a workshop collocated to a "conference-edition". Since "workshop" and "conference-edition" share many attributes there is the "event" model (which is called 
+"EventModel" because of a collision with a laravel feature). "event" has a polymorphic relation to either a "workshop" or a "conference-edition".
+Submissions then are planned towards an "event".
+
+3c. Reviews
+Whether a review was accepted or declined is stored in the pivot-table from review-request to author. A review is only created once the author accepted the review AND creates it.
+
+4. Artisan commands
+We only created one artisan command, which is MailCronjob and resides in the commands/ directory.
