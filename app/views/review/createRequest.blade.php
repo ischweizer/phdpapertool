@@ -214,7 +214,6 @@
 				},
 				validate: function(validator, $field, options) {
 					var count = validator.getFieldElements($field.attr('data-bv-field')).find('option').length;
-					alert(count);
 					if (count > 0) {
 						return true;
 					} else {
@@ -265,11 +264,11 @@
 			{{ Form::text('authorlist', null, array('placeholder' => 'Author', 'class' => 'form-control', 'id' => 'author_list')) }}
 			{{ Form::button('New Author', array('id' => 'open_new_author', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
-		<div class="form-group">
+		<div class="form-group select-field">
 			{{ Form::label('selectedAuthors', 'Selected Reviewers') }}
 			<div class="row">
 				<div class="col-xs-11">
-					{{ Form::select('selectedAuthors[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedAuthors', 'multiple' => true, 'data-bv-notemptyselect' => true, 'data-bv-notemptyselect-message' => 'Must select at least one reviewer.')) }}
+					{{ Form::select('selectedAuthors[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedAuthors', 'multiple' => true, 'data-bv-notemptyselect' => 'true', 'data-bv-notemptyselect-message' => 'Must select at least one reviewer.')) }}
 				</div>
 				<div class="col-xs-1">
 					<div class="btn-group-vertical" >
@@ -284,11 +283,11 @@
 			{{ Form::button('Select File', array('id' => 'addFile', 'class' => 'btn btn-sm btn-primary')) }}
 			{{ Form::button('Upload File', array('id' => 'open_file_upload', 'class' => 'btn btn-sm btn-default')) }}
 		</div>
-		<div class="form-group">
+		<div class="form-group select-field">
 			{{ Form::label('selectedFiles', 'Selected Files') }}
 			<div class="row">
 				<div class="col-xs-11">
-					{{ Form::select('selectedFiles[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedFiles', 'multiple' => true, 'data-bv-notemptyselect' => true, 'data-bv-notemptyselect-message' => 'Must select at least one file.')) }}
+					{{ Form::select('selectedFiles[]', array(), null, array('size' => 5, 'class' => 'form-control', 'id' => 'selectedFiles', 'multiple' => true, 'data-bv-notemptyselect' => 'true', 'data-bv-notemptyselect-message' => 'Must select at least one file.')) }}
 				</div>
 				<div class="col-xs-1">
 						<div class="btn-group-vertical" >

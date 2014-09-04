@@ -148,6 +148,9 @@ body {
 .single-date.has-feedback .form-control-feedback {
   right: 41px;
 }
+.select-field.has-feedback .form-control-feedback {
+  right: 24px;
+}
 
 /* static form-control with border */
 .form-control-static-bordered {
