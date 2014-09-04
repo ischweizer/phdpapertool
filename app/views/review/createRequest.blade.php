@@ -133,11 +133,11 @@
 						        $('<option></option>').val(key).html(value)
 						    );
 						});
+						$('#fileUploadModal').modal('hide');
 						$('#createReviewForm')
 							.data('bootstrapValidator')
 							.updateStatus('selectedFiles[]', 'NOT_VALIDATED', null)
 							.validateField('selectedFiles[]');
-						$('#fileUploadModal').modal('hide');
 		        	} else {
 			        	//$('#uploadstatus').html("Some problems occured!");
 			        	alert("Some problems occured!");
