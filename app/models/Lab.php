@@ -23,4 +23,14 @@ class Lab extends Eloquent {
 		}
 		return $result;
 	}
+
+	public function getAdmin(){
+		$users = $this->users;
+		foreach ($users as $user) {
+			if (UserRole::hasUserRole($user, UserRole::LAB_LEADER)) {
+				return $user;
+			}
+		}
+		return User::findOrFail(1);
+	}
 }

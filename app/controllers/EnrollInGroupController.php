@@ -19,7 +19,7 @@ class EnrollInGroupController extends BaseController {
 			$group = Group::find(Auth::user()->group_id);
 			$oldGroupLabId = $group->lab_id;
 		}
-		if(!Input::has('group') || !Auth::check()  || ($group != null && $group->active != 1))
+		if(!Input::has('group') || !Auth::check() || ($group != null && $group->active != 1))
 			return Response::json(false);
 		$groupId = Input::get('group');
 		$group = Group::find($groupId);
@@ -38,6 +38,18 @@ class EnrollInGroupController extends BaseController {
 					$user->group_confirmed = 1;
 			}
 
+		}
+		if($user->group_confirmed == 0){
+			//send Mail
+			$admin = $group->getAdmin();
+			$author = $admin->author;
+			$authorName = $author->first_name.' '.$author->last_name;
+			$user = Auth::user();
+			Mail::send('emails/enroll_in_group_request', array('user' => $user, 'group' => $group), function($message) use ($author, $authorName) {
+				$message->to($author->email, $authorName)
+					->subject('join group request')
+					->from('noreply@da-sense.de', 'PHDPapertool');
+			});
 		}
 		$user->group_id = $groupId;
 		$user->save();

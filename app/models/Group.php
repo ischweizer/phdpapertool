@@ -25,6 +25,16 @@ class Group extends Eloquent {
 		}
 		return $result;
 	}
+
+	public function getAdmin(){
+		$users = $this->users;
+		foreach ($users as $user) {
+			if (UserRole::hasUserRole($user, UserRole::GROUP_LEADER)) {
+				return $user;
+			}
+		}
+		return $this->lab->getAdmin();
+	}
 	
 	public static function getGroupsFromLabs($labs) {
 		$groups = Group::where('id', '!=', 1)->get();

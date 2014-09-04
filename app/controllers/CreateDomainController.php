@@ -58,6 +58,17 @@ class CreateDomainController extends BaseController {
 			$group->lab_id = $labId;
 			$group->active = $isGroupActive;
 			$group->save();
+			//mail sending
+			$lab = $group->lab;
+			$admin = $lab->getAdmin();
+			$author = $admin->author;
+			$authorName = $author->first_name.' '.$author->last_name;
+			$user = Auth::user();
+			Mail::send('emails/group_created', array('user' => $user), function($message) use ($author, $authorName) {
+				$message->to($author->email, $authorName)
+					->subject('group creation')
+					->from('noreply@da-sense.de', 'PHDPapertool');
+			});
 		}
 		$user = Auth::user();
 		$user->group_confirmed = $isGroupActive;
@@ -74,6 +85,17 @@ class CreateDomainController extends BaseController {
 		$lab->active = 0;
 		$lab->save();
 		//$this::updateRole(UserRole::LAB_LEADER, false);
+
+		//Mail an Super-Admin schicken.
+		$author = Author::findOrFail(1);
+		$authorName = $author->first_name.' '.$author->last_name;
+		$user = Auth::user();
+		Mail::send('emails/lab_created', array('user' => $user), function($message) use ($author, $authorName) {
+			$message->to($author->email, $authorName)
+				->subject('lab creation')
+				->from('noreply@da-sense.de', 'PHDPapertool');
+		});
+
 		return $lab;
 	}
 
